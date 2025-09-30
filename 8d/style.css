@@ -1,0 +1,1279 @@
+:root {
+    --accent-color: #6196ff;
+    --text-color: #333333;
+    --bg-color: #f9f9f9;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --highlight-color: #f5f5f5;
+    --current-hour-color: #81ade6;
+    --current-day-color: #81ade6;
+    --red: #ff0000;
+    --font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+    --transition-speed: 0.2s;
+}
+
+[data-theme="dark"] {
+    --text-color: #f0f0f0;
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --border-color: #3d3d3d;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --highlight-color: #424242;
+    --current-hour-color: #2a527a;
+    --current-day-color: #2a527a;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: all var(--transition-speed);
+}
+
+*::selection {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    overflow-x: hidden;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Fancy horizontal scroll indicator */
+#scroll-indicator-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--card-bg);
+    z-index: 9998;
+}
+
+#scroll-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--accent-color);
+    /* border-radius: 0 0 4px 4px; */
+    z-index: 9999;
+    transition: width 0.2s cubic-bezier(0.4, 1.3, 0.6, 1), background 0.2s;
+    pointer-events: none;
+}
+
+a {
+    text-decoration: none;
+    color: var(--accent-color);
+}
+
+.biggest-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.big-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.title {
+    font-size: 2rem;
+    color: var(--accent-color);
+    text-align: center;
+    /* moved a bit lower */
+    margin: 2rem auto 1rem;
+    font-weight: 700;
+    /* run fade-in and a subtle glow on load; keep the element visible after animation */
+    animation: fadeInDown 900ms ease, titleGlow 1000ms ease;
+    animation-fill-mode: both;
+    flex-grow: 1;
+    /* smooth updates when accent color changes */
+    transition: text-shadow 300ms ease, filter 300ms ease, transform 300ms ease;
+    /* start without visible glow (animation will apply it) */
+    text-shadow: none;
+    filter: none;
+}
+
+/* New keyframes for faint accent glow (subtle, matches --accent-color) */
+@keyframes titleGlow {
+    from {
+        /* no glow initially */
+        filter: drop-shadow(0 0 0 transparent);
+        text-shadow: none;
+    }
+    to {
+        /* faint, blurred glow using accent color */
+        filter: drop-shadow(0 10px 30px var(--accent-color));
+        /* small text halo for better effect on some backgrounds */
+        text-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    background-color: var(--card-bg);
+    color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    animation: fadeInDown 1s ease;
+}
+
+/* .btn:hover {
+    background-color: var(--highlight-color);
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px var(--shadow-color);
+} */
+
+.btn i {
+    font-size: 1.5rem;
+}
+
+.timetable-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    border-radius: 16px;
+    animation: fadeInUp 1s ease;
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.timetable th,
+.timetable td {
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    transition: background-color var(--transition-speed);
+    font-size: 1.5rem;
+}
+
+.timetable th {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 600;
+    text-transform: none; /* changed from uppercase to none */
+    letter-spacing: 1px;
+}
+
+.timetable td {
+    background-color: var(--card-bg);
+}
+
+/* support subject cells that are TD or TH (some rows use TH for subjects) */
+.timetable td.subject,
+.timetable th.subject {
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.timetable td.subject:hover,
+.timetable th.subject:hover {
+    z-index: 10000;
+    background-color: var(--highlight-color);
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+.current-day {
+    color: var(--accent-color) !important;
+}
+
+.current-hour {
+    color: var(--accent-color) !important;
+}
+
+.current-cell {
+    color: var(--accent-color) !important;
+}
+
+.info-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    animation: fadeInUp 1.5s ease;
+}
+
+.time-display {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    transition: color var(--transition-speed);
+    margin-top: 1.5rem;
+}
+
+.weather-container {
+    text-align: center;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    transition: all var(--transition-speed);
+}
+
+.weather-emoji {
+    font-size: 5.5rem;
+}
+
+.weather-temp {
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.weather-desc {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+}
+
+.weather-location {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+}
+
+.weather-details > p {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.weather-sun {
+    margin-top: 2rem;
+}
+
+.sun-info {
+    display: flex;
+    gap: 2rem;
+    font-size: 1rem;
+}
+
+.text-img {
+    height: 1.4rem;
+    transform: translateY(0.25rem);
+}
+
+mark {
+    background-color: var(--accent-color);
+    border-radius: 2px;
+    transition: all var(--transition-speed);
+    color: var(--bg-color);
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.color-picker input[type="color"] {
+    position: absolute;
+    opacity: 0; /* Hide the color input */
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.color-picker .btn {
+    background-color: var(--card-bg);
+    color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    animation: fadeInDown 1s ease;
+}
+
+.color-picker .btn i {
+    font-size: 1.5rem;
+}
+
+#classSelector {
+    background: var(--card-bg);
+    color: var(--accent-color);
+    /* border: 1.5px solid var(--accent-color); */
+    border-radius: 0.75rem;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 1rem;
+    transition: all var(--transition-speed);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    outline: none;
+}
+
+#classSelector.title {
+    display: block;
+    margin: 1.5rem auto 1rem auto;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    background: var(--card-bg);
+    /* border: 2px solid var(--accent-color); */
+    border-radius: 1rem;
+    padding: 0.75rem 2.5rem;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: all var(--transition-speed);
+}
+
+#classSelector option:hover,
+#classSelector option:focus {
+    background: var(--accent-color);
+    color: var(--bg-color);
+}
+
+[data-theme="dark"] #classSelector {
+    background: var(--card-bg);
+    color: var(--accent-color);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fa-sun {
+    animation: spin 15s linear infinite;
+}
+
+@keyframes rotate-once-right {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(180deg);
+    }
+}
+@keyframes rotate-once-left {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-180deg);
+    }
+}
+.rotate-once-right {
+    animation: rotate-once-right calc(var(--transition-speed) + 0.1s) linear;
+}
+.rotate-once-left {
+    animation: rotate-once-left calc(var(--transition-speed) + 0.1s) linear;
+}
+
+/* Remove fadeInDown and use slide for menu */
+.settings-menu {
+    position: absolute;
+    left: 60px;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px var(--shadow-color);
+    padding: 1rem;
+    z-index: 100;
+    flex-direction: row;
+    gap: 1rem;
+    min-width: 60px;
+    opacity: 0;
+    transform: translateX(-30px);
+    pointer-events: none;
+    transition: opacity var(--transition-speed), transform var(--transition-speed);
+    animation: none !important;
+    display: flex; /* Always flex for transition to work */
+}
+.settings-menu.open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+@media (max-width: 1450px) {
+    .big-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    .title {
+        font-size: 2.25rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .title {
+        font-size: 1.5rem;
+    }
+    .timetable th,
+    .timetable td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        align-items: center;
+        gap: 1rem;
+    }
+    .title {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    .timetable-wrapper {
+        margin-top: 1rem;
+    }
+    .timetable th,
+    .timetable td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    .time-display {
+        font-size: 2rem;
+    }
+
+    /* Adjust the To-Do List container */
+    .todo-container {
+        padding: 0; /* Remove padding around the container */
+        margin: 0; /* Remove margins */
+        width: 100%; /* Ensure the container spans the full width */
+    }
+
+    /* Adjust the To-Do Card */
+    .todo-card {
+        padding: 1.5rem; /* Adjust padding inside the card */
+        max-width: 95vw; /* Make the card take up 95% of the viewport width */
+        width: 95vw; /* Explicitly set the width to 95% of the viewport width */
+        margin: 0 auto; /* Center the card horizontally */
+        box-sizing: border-box; /* Include padding and border in the width calculation */
+    }
+
+    /* Adjust the heading */
+    .todo-card h2 {
+        font-size: 1.25rem; /* Reduce font size */
+    }
+
+    /* Adjust To-Do List items */
+    .todo-item {
+        padding: 0.5rem 0.75rem; /* Reduce padding */
+        font-size: 0.75rem; /* Reduce font size */
+    }
+
+    .todo-item label {
+        font-size: 0.75rem; /* Reduce label font size */
+    }
+
+    .todo-item input[type="checkbox"] {
+        width: 1rem; /* Reduce checkbox size */
+        height: 1rem;
+    }
+
+    .todo-item .delete-btn {
+        font-size: 0.75rem; /* Reduce delete button size */
+    }
+
+    /* Adjust Add Task section */
+    .add-task {
+        flex-direction: column; /* Stack input and button vertically */
+        gap: 0.25rem; /* Reduce gap */
+    }
+
+    .add-task input[type="text"] {
+        font-size: 0.75rem; /* Reduce font size */
+        padding: 0.5rem; /* Reduce padding */
+    }
+
+    .add-task button {
+        font-size: 0.75rem; /* Reduce font size */
+        padding: 0.5rem 1rem; /* Reduce padding */
+    }
+}
+
+@media (max-width: 576px) {
+    .title {
+        font-size: 0.75rem;
+    }
+    .timetable th,
+    .timetable td {
+        padding: 0.4rem;
+        font-size: 0.7rem;
+    }
+    .time-display {
+        font-size: 1.8rem;
+    }
+    .weather-display {
+        font-size: 1rem;
+    }
+
+    .todo-card {
+        max-width: 95vw;
+        width: 100%;
+        padding: 1rem; /* Reduce padding */
+        margin: 0 auto;
+    }
+
+    .todo-container {
+        padding: 0.5rem; /* Reduce padding */
+    }
+
+    /* Further adjustments for very small screens */
+    .todo-card h2 {
+        font-size: 1.25rem; /* Further reduce font size */
+    }
+
+    .todo-item {
+        padding: 0.5rem; /* Reduce padding further */
+    }
+
+    .todo-item input[type="checkbox"] {
+        width: 0.9rem; /* Further reduce checkbox size */
+        height: 0.9rem;
+    }
+
+    .add-task input[type="text"] {
+        font-size: 0.8rem; /* Further reduce font size */
+    }
+
+    .add-task button {
+        font-size: 0.8rem; /* Further reduce font size */
+        padding: 0.4rem 0.8rem; /* Further reduce padding */
+    }
+}
+
+/* Utilities */
+
+h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.boss-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeInUp 1.5s ease;
+    margin: auto;
+    width: 60vw;
+    height: 90vh;
+    overflow-y: scroll;
+    position: relative; /* Needed for absolute positioning of pseudo-elements */
+    border: var(--accent-color) 4px solid;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px var(--accent-color);
+}
+
+.container {
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    padding: 1rem;
+    margin-inline: auto;
+    width: 40%;
+    margin: 1rem;
+}
+
+.container > a > img {
+    display: block;
+    margin-inline: auto;
+    margin-bottom: 1rem;
+    width: 90%;
+    border-radius: 16px;
+    opacity: 0.9;
+    transition: var(--transition-speed);
+}
+
+.container > a > img:hover {
+    opacity: 1;
+    transform: scale(1.01);
+    transition: var(--transition-speed);
+}
+
+@media (max-width: 1440px) {
+    .boss-container {
+        height: 150vh;
+    }
+
+    .container {
+        width: 40%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        width: 100%;
+        margin: auto;
+        margin-bottom: 2rem;
+        margin-inline: 2rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .container > img {
+        width: 100%;
+    }
+    h2 {
+        margin-bottom: 0;
+    }
+}
+
+/*To do list*/
+
+/* Container to center the to-do card */
+.todo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto; /* Adjust height to fit content */
+    transition: all var(--transition-speed);
+    padding: 2rem; /* Add padding inside the container */
+    margin: 2rem 0;
+    box-sizing: border-box; /* Ensure padding is included in the height/width calculation */
+    width: 100%;
+}
+
+/* The to-do card itself */
+.todo-card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 20px var(--shadow-color);
+    width: 100%;
+    max-width: 50vw;
+    transition: all var(--transition-speed);
+    animation: fadeInUp 1s ease;
+    border: 1px solid var(--border-color);
+}
+
+/* Heading */
+.todo-card h2 {
+    /* margin-bottom: 1.5rem; */
+    color: var(--text-color);
+    font-size: 1.75rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* To-do list items */
+.todo-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--highlight-color);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.todo-item:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.todo-item label {
+    flex: 1;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-left: 0.5rem;
+    word-break: break-word;
+}
+
+.todo-item input[type="checkbox"] {
+    margin-right: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+    border-radius: 50%; /* Makes the checkbox completely round */
+    appearance: none; /* Removes the default checkbox styling */
+    border: 2px solid var(--accent-color); /* Adds a border */
+    background-color: var(--card-bg); /* Sets the background color */
+    display: inline-block;
+    position: relative;
+}
+
+.todo-item input[type="checkbox"]:checked {
+    background-color: var(--accent-color); /* Changes background when checked */
+    border-color: var(--accent-color);
+}
+
+.todo-item input[type="checkbox"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 50%;
+    background-color: var(--bg-color); /* Inner checkmark color */
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.todo-item input[type="checkbox"]:checked + label {
+    opacity: 0.75;
+    /* text-decoration: line-through; */
+    transition: opacity var(--transition-speed), text-decoration var(--transition-speed);
+}
+
+/* Delete button */
+.todo-item .delete-btn {
+    background-color: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.todo-item .delete-btn:hover {
+    color: var(--red);
+    transition: all var(--transition-speed);
+}
+
+/* Add task section */
+.add-task {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.add-task input[type="text"] {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    transition: all var(--transition-speed);
+}
+
+.add-task input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+}
+
+.add-task button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.add-task button:hover {
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+    transition: all var(--transition-speed);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+
+footer {
+    color: var(--text-color);
+    animation: fadeInUp 1.5s ease;
+}
+
+.footer-content {
+    margin-top: 4rem;
+    margin-inline: auto;
+    max-width: 50vw;
+}
+
+.socials {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.socials div {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    transition: all var(--transition-speed);
+    animation: fadeInUp 1.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.socials h3 {
+    font-size: 2rem;
+    color: var(--text-color);
+}
+.socials a {
+    color: var(--text-color);
+    font-size: 3rem;
+    transition: all var(--transition-speed);
+}
+.socials a:hover {
+    transition: all var(--transition-speed);
+    transform: scale(1.1);
+}
+
+.ig:hover {
+    background: radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%),
+        radial-gradient(circle farthest-corner at 0 140%, #fec564, transparent 50%),
+        radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%),
+        radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%),
+        radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%),
+        radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%),
+        radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent),
+        linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%);
+    background-clip: text; /* Standard property for compatibility */
+    -webkit-background-clip: text; /* Clip the background to the text */
+    -webkit-text-fill-color: transparent; /* Make the text transparent to show the gradient */
+}
+
+.dc:hover {
+    color: #7289da;
+}
+
+.gh:hover {
+    color: #000000;
+}
+
+.todo-card {
+    position: relative;
+    overflow: auto; /* Ensure scrollbars appear if content overflows */
+}
+
+.edit-task-input {
+    flex: 1;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    color: var(--text-color);
+    background-color: var(--card-bg);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+    margin-right: 0.5rem;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.edit-task-input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px var(--accent-color);
+}
+
+.todo-actions {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.todo-item.dragging {
+    opacity: 0.5;
+    background: var(--highlight-color, #e0e7ff);
+}
+
+.todo-item button {
+    pointer-events: auto;
+}
+
+/* Scroll bar */
+
+.boss-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+}
+
+/* Settings */
+
+.settings-menu {
+    position: absolute;
+    left: 60px;
+    background: var(--card-bg);
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px var(--shadow-color);
+    padding: 1rem;
+    z-index: 100;
+    flex-direction: row;
+    gap: 1rem;
+    min-width: 60px;
+    opacity: 0;
+    transform: translateX(-30px);
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    animation: none !important;
+    display: flex; /* Always flex for transition to work */
+}
+
+.settings-menu.open {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#settingsButton {
+    z-index: 101;
+}
+
+.settings-menu .btn,
+.settings-menu .color-picker {
+    margin-bottom: 0; /* Remove bottom margin for horizontal layout */
+}
+
+.settings-menu .color-picker {
+    margin-bottom: 0;
+}
+
+#location-dot {
+    color: var(--accent-color);
+}
+
+/* Enhanced Mobile Responsiveness */
+@media (max-width: 500px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #classSelector {
+        width: 100%;
+        margin: 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    .big-container {
+        gap: 1rem;
+        padding: 0;
+        flex-direction: column;
+    }
+
+    .info-panel,
+    .weather-container,
+    .time-display {
+        width: 100%;
+    }
+
+    .footer-content,
+    .todo-card {
+        max-width: 100%;
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .todo-container {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+
+    .boss-container {
+        width: 100%;
+        padding: 1rem;
+        height: auto;
+        overflow-y: visible;
+        flex-direction: column;
+    }
+
+    .container {
+        width: 90% !important;
+        margin: 1rem auto;
+    }
+
+    .title {
+        font-size: 1.25rem;
+    }
+
+    .timetable-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .socials div {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .socials h3 {
+        font-size: 1.25rem;
+    }
+
+    .socials a {
+        font-size: 2rem;
+    }
+}
+
+/* Horizontal scroll helper for big tables */
+.timetable-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Date */
+
+#dateOfTheDay {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Canvas */
+
+canvas {
+    z-index: -1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 250px;
+    height: 100%;
+    background: var(--card-bg);
+    box-shadow: 4px 0 16px var(--shadow-color);
+    border-radius: 0 1rem 1rem 0;
+    padding: 1rem;
+    transition: left 0.3s ease;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.side-menu.open {
+    left: 0;
+}
+
+.menu-toggle {
+    position: absolute;
+    top: 0; /* flush sus */
+    right: -2.5rem; /* iese din cutie */
+    width: 2.5rem;
+    height: 100%; /* cât toată înălțimea meniului dacă vrei coloană întreagă */
+    max-height: 3rem; /* sau doar 3rem, dacă vrei doar un buton mic */
+    border-radius: 0 0.75rem 0.75rem 0;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+    border: 1px solid var(--border-color); /* opțional, pt delimitare clean */
+    box-shadow: none; /* scos umbrele */
+}
+
+.menu-toggle:hover {
+    background: var(--highlight-color);
+}
+
+.menu-toggle i {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+    transition: transform 0.3s ease;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    width: 250px;
+    height: 100%;
+    background: var(--card-bg);
+    box-shadow: 4px 0 16px var(--shadow-color);
+    border-radius: 0 0 1rem 0;
+    padding: 1rem;
+    transition: left 0.3s ease;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.side-menu.open {
+    left: 0;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+#overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+#menuButton {
+    z-index: 2100;
+}
+#menuButton {
+    position: fixed;
+    top: 1rem;
+    left: 0.5rem; /* lipit de margine */
+    border-radius: 50%;
+    z-index: 2100;
+}
+
+#menuButton i {
+    transition: transform 0.3s ease;
+}
+
+/* când meniul e deschis, săgeata se întoarce */
+.side-menu.open ~ #menuButton i {
+    transform: rotate(180deg);
+}
+
+.menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.menu-btn i {
+    font-size: 1.25rem;
+    color: var(--accent-color);
+}
+
+.menu-btn span {
+    flex: 1; /* ocupă restul spațiului */
+    text-align: left; /* textul aliniat la stânga */
+}
+
+.menu-btn:hover {
+    background: var(--highlight-color);
+    transform: translateX(3px);
+}
+
+/* Color picker fix */
+.color-picker {
+    position: relative;
+    cursor: pointer;
+}
+
+.color-picker input[type="color"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.menu-title {
+    font-size: 2rem;
+    color: var(--accent-color);
+    text-align: center;
+    margin: 2rem 1rem;
+    font-weight: 700;
+    animation: fadeInDown 900ms ease;
+    animation-fill-mode: both;
+    filter: none;
+}

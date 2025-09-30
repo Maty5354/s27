@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ro">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Orar 8D</title>
+        <link rel="stylesheet" href="style.css">
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    </head>
+    <body>
+        <h1 class="title">Orar 8D</h1>
+        <canvas id="canvas"></canvas>
+        <div id="scroll-indicator-bg">
+            <div id="scroll-indicator"></div>
+        </div>
+        <div class="biggest-container">
+            <div class="header">
+               <div id="sideMenu" class="side-menu">
+                    <h1 class="menu-title">Menu</h1>
+                    <button id="menuToggle" class="menu-toggle">
+                        <i id="menuIcon" class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button id="switchTheme" class="menu-btn">
+                        <i id="themeIcon" class="fa-regular fa-sun"></i>
+                        <span>Theme</span>
+                    </button>
+                    <button id="colorPickerButton" class="menu-btn color-picker">
+                        <i class="fa-solid fa-paintbrush"></i>
+                        <span>Accent</span>
+                        <input type="color" id="accentColorPicker" value="#6196ff" />
+                    </button>
+                </div>
+            </div>
+            <div id="overlay"></div>
+
+            </div>
+            <div class="big-container">
+                <div class="timetable-wrapper">
+                    <table class="timetable" id="timetable">
+    <thead>
+        <tr>
+            <th></th>
+            <th style="text-transform: uppercase;">Luni</th>
+            <th style="text-transform: uppercase;">Marți</th>
+            <th style="text-transform: uppercase;">Miercuri</th>
+            <th style="text-transform: uppercase;">Joi</th>
+            <th style="text-transform: uppercase;">Vineri</th>
+        </tr>
+        <tr>
+            <th>12:00</th>
+            <th>Religie ☦️</th>
+            <th></th>
+            <th>Mate 📏</th>
+            <th>Fizică 💡</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>13:00</th>
+            <th>Biologie 🧬</th>
+            <th>Dirigenție 📰</th>
+            <th>Chimie 🧪</th>
+            <th>Opț Mate 📐</th>
+            <th>Mate 📏</th>
+        </tr>
+        <tr>
+            <th>14:00</th>
+            <th>Mate 📏</th>
+            <th>Fizică 💡</th>
+            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+        </tr>
+        <tr>
+            <th>15:00</th>
+            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th>Geografie 🌍</th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th>Mate 📏</th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+        </tr>
+        <tr>
+            <th>16:00</th>
+            <th>Istorie 📜</th>
+            <th>Sport ⚽</th>
+            <th>Geografie 🌍</th>
+            <th>Arte Plastice 🎨</th>
+            <th>Tehnologică ⚙️</th>
+        </tr>
+        <tr>
+            <th>17:00</th>
+            <th>Sport ⚽</th>
+            <th>Civică 🏛️</th>
+            <th>Istorie 📜</th>
+            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th>Chimie 🧪</th>
+        </tr>
+        <tr>
+            <th>18:00</th>
+            <th></th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height: 1.4rem;transform: translateY(0.25rem);"></th>
+            <th></th>
+            <th>Muzică 🎵</th>
+            <th>Informatică 💻</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+                </div>
+                <div class="info-panel">
+                    <div class="weather-container" id="weather">
+                        <div class="weather-emoji" id="weather-emoji">🌤️</div>
+                        <div class="weather-temp" id="weather-temp">--°C</div>
+                        <div class="weather-desc" id="weather-desc">Loading...</div>
+                        <div class="weather-location" id="weather-location">
+                            <i id="location-dot" class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="weather-sun">
+                            <p>
+                                Sunrise
+                                <i class="fa-solid fa-arrow-up"></i>
+                                <span id="sunrise">--:--</span>
+                            </p>
+                            <p>
+                                Sunset
+                                <i class="fa-solid fa-arrow-down"></i>
+                                <span id="sunset">--:--</span>
+                            </p>
+                        </div>
+                        <div class="time-display" id="hourOfTheDay"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="todo-container">
+                <div class="todo-card">
+                    <h2>To-Do List</h2>
+                    <ul class="todo-list"></ul>
+                    <div class="add-task">
+                        <input type="text" placeholder="Add a new task..." />
+                        <button>Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="boss-container" id="manuals">
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1899.png" alt="Educatie plastica"
+        /></a>
+        <h2>Arte Plastice</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Biologie/Q29yaW50IExvZ2lzdGlj/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1857.png" alt="Biologie"
+        /></a>
+        <h2>Biologie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Chimie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1877.png" alt="Chimie"
+        /></a>
+        <h2>Chimie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20sociala/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1902.png" alt="Educatie sociala"
+        /></a>
+        <h2>Civică</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Engleză/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1942.png" alt="Limba moderna 1 - limba engleza"
+        /></a>
+        <h2>Engleză</h2>
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Franceza/Uy5DLiBCb29rbGV0IFMu/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1958.png" alt="Limba moderna 2 franceza"
+        /></a>
+        <h2>Franceză</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Fizica/QXJ0IEtsZXR0IFMuUi5M/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1915.png" alt="Fizica"
+        /></a>
+        <h2>Fizica</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Geografie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1920.png" alt="Geografie"
+        /></a>
+        <h2>Geografie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Informatica%20si%20TIC/Uy5DLiBMaXRlcmEgRWR1/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1969.png" alt="Informatica si TIC"
+        /></a>
+        <h2>Informatică și TIC</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Istorie/QWthZGVtb3MgQXJ0IFMu/interior.html"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1940.png" alt="Istorie"
+        /></a>
+        <h2>Istorie</h2> 
+    </div>
+    <div class="container">
+        <a href="https://app.asq.ro/" target="_blank"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fplay-lh.googleusercontent.com%2FB_xhOxjZahDaNvf7NYDBa8uCj1bmmUpQAdsxeG8_n7HErkfqHnFQS3HCZWLua6tj7w&f=1&nofb=1&ipt=e0719d2a65e76c03a8158e5fbf69d6f994c312763d96851f8383d094269c73dc" alt="Mate"></a>
+        <h2>Mate</h2>
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20muzicala/QXJ0IEtsZXR0IFMuUi5M/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1893.png" alt="Educatie muzicala"
+        /></a>
+        <h2>Muzică</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20si%20literatura%20romana/QXJ0IEtsZXR0IFMuUi5M/A1948.pdf"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1948.png" alt="Limba si literatura romana"
+        /></a>
+        <h2>Româna</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20tehnologica%20si%20aplicatii%20practice/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1911.png" alt="Educatie tehnologica si aplicatii practice"
+        /></a>
+        <h2>Tehnologică</h2>
+    </div>
+</div>
+
+            <footer>
+                <div class="footer-content">
+                    <h2>Orare - Școala Gimnazială nr. 27</h2>
+                    <h2>2025-2026</h2>
+                    <h3></h3>
+                    <p>
+                        Aici găsești rapid și ușor orarul complet al unor clase din Școala
+                        Gimnazială nr. 27, mereu la un click distanță. Am inclus o temă luminoasă și
+                        una întunecată, ca să alegi ce-ți place mai mult, plus un selector de
+                        culoare pentru personalizare. E gândit simplu, util și elegant – ca să nu
+                        pierzi vremea căutând poze sau foi mototolite prin ghiozdan.
+                    </p>
+                    <p>
+                        Ține cont că acest website nu este tocmai optimizat pentru a funcționa
+                        perfect pe telefon.
+                    </p>
+                    <p>Controale:</p>
+                    <ul>
+                        <li>click pe o materie = evidențiere</li>
+                        <li>
+                            To-Do List
+                            <ul>
+                                <li>dublu click pe task = editează conținutul</li>
+                                <li>
+                                    drag and drop pentru task-uri = mută poziția (trebuie să existe
+                                    cel puțin 2 task-uri)
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <h3><a href="https://s27.ro/8d" target="_blank">Website Orar Original 8D</a></h3>
+                    <h3><a href="https://manuale.edu.ro/" target="_blank">Mai multe manuale</a></h3>
+                </div>
+                <div class="socials">
+                    <div id="mocanu-socials">
+                        <h3>Mocanu Andrei Cristian</h3>
+                        <a
+                            href="https://www.instagram.com/cristi_mocanu_ro/"
+                            target="_blank"
+                            class="ig"
+                            ><i class="fa-brands fa-instagram"></i
+                        ></a>
+                        <a
+                            href="https://discordapp.com/users/796067598835515422"
+                            target="_blank"
+                            class="dc"
+                            ><i class="fa-brands fa-discord"></i
+                        ></a>
+                        <a href="https://github.com/mocanuAndreiCristian" target="_blank" class="gh"
+                            ><i class="fa-brands fa-github"></i
+                        ></a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </body>
+    <script src="index.js"></script>
+</html>
