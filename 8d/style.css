@@ -1251,7 +1251,6 @@ canvas {
 
 .menu-btn:hover {
     background: var(--highlight-color);
-    transform: translateX(3px);
 }
 
 /* Color picker fix */
