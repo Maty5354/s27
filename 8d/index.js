@@ -1,4 +1,4 @@
-/* --- HIGHLIGHT, THEME, WEATHER, TODO, SETTINGS, FAVICON, SIDE MENU --- */
+        /* --- HIGHLIGHT, THEME, WEATHER, TODO, SETTINGS, FAVICON, SIDE MENU --- */
 
 /* --- HIGHLIGHT LOGIC (structure-aware) --- */
 function highlightCurrent() {
@@ -386,6 +386,7 @@ setInterval(getWeather, 300000);
         draggableElements.forEach((child) => {
             const box = child.getBoundingClientRect();
             const offset = y - box.top - box.height / 2;
+
             if (offset < 0 && offset > closest.offset) {
                 closest = { offset: offset, element: child };
             }
@@ -464,6 +465,7 @@ function updateFavicon(accentColor) {
 // Initial set
 updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim());
 
+
 // Update when accent color changes
 const accentColorPicker = document.getElementById("accentColorPicker");
 if (accentColorPicker) {
@@ -478,24 +480,296 @@ const menuToggle = document.getElementById("menuToggle");
 const menuIcon = document.getElementById("menuIcon");
 const overlay = document.getElementById("overlay");
 
-menuToggle &&
-    menuToggle.addEventListener("click", () => {
-        const isOpen = sideMenu.classList.toggle("open");
-        overlay.classList.toggle("active");
+/* --- ALL MANUALS POPUP --- */
+const allManualsBtn = document.getElementById("allManualsBtn");
+const manualsPopup = document.getElementById("manualsPopup");
+const closeManualsPopup = document.getElementById("closeManualsPopup");
+const manualsPopupContent = document.getElementById("manualsPopupContent");
 
-        if (isOpen) {
-            menuIcon.classList.remove("fa-arrow-right");
-            menuIcon.classList.add("fa-arrow-left");
-        } else {
-            menuIcon.classList.remove("fa-arrow-left");
-            menuIcon.classList.add("fa-arrow-right");
-        }
-    });
+/* clonează manualele din secțiunea originală */
+if (manualsPopupContent) {
+  const manualsOriginal = document.getElementById("manuals");
+  if (manualsOriginal) {
+    manualsPopupContent.innerHTML = manualsOriginal.innerHTML;
+  }
+}
 
-overlay &&
-    overlay.addEventListener("click", () => {
-        sideMenu && sideMenu.classList.remove("open");
-        overlay.classList.remove("active");
-        menuIcon.classList.remove("fa-arrow-left");
-        menuIcon.classList.add("fa-arrow-right");
+allManualsBtn &&
+  allManualsBtn.addEventListener("click", () => {
+    manualsPopup.classList.add("active");
+    overlay.classList.add("active");
+  });
+
+closeManualsPopup &&
+  closeManualsPopup.addEventListener("click", () => {
+    manualsPopup.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+
+
+// --- RECOMMENDED MANUAL (reworked) ---
+function normalizeText(s = "") {
+	// remove HTML tags, remove emojis / non-letters (keep letters and spaces), remove diacritics, lowercase
+	const stripped = s.replace(/<[^>]*>/g, "");
+	// keep letters and spaces (Unicode letters), remove other symbols/emojis
+	const lettersOnly = stripped.replace(/[^\p{L}\s]/gu, " ");
+	// remove diacritics
+	const noDiacritics = lettersOnly.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+	return noDiacritics.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function findBestManualForSubject(subjectText) {
+	const subjectNorm = normalizeText(subjectText);
+	// search in several possible locations (popup content, a global #manuals list, fallback)
+	const containers = [
+		...document.querySelectorAll("#manualsPopupContent .container"),
+		...document.querySelectorAll("#manuals .container"),
+		...document.querySelectorAll(".manuals-popup .container"),
+	];
+
+	let best = null;
+	let bestScore = 0;
+
+	containers.forEach((cont) => {
+		const titleEl = cont.querySelector("h2");
+		const aEl = cont.querySelector("a");
+		if (!titleEl) return;
+		const titleNorm = normalizeText(titleEl.textContent || "");
+		// quick checks
+		if (!titleNorm) return;
+		// scoring: shared tokens
+		const titleTokens = titleNorm.split(" ").filter(Boolean);
+		const subjTokens = subjectNorm.split(" ").filter(Boolean);
+		let score = 0;
+		titleTokens.forEach((t) => {
+			if (subjTokens.includes(t)) score += 2;
+			else if (subjectNorm.includes(t)) score += 1;
+		});
+		// also boost if title contains most of subject or vice-versa
+		if (titleNorm === subjectNorm) score += 5;
+		if (subjectNorm.includes(titleNorm) || titleNorm.includes(subjectNorm)) score += 3;
+
+		if (score > bestScore) {
+			bestScore = score;
+			best = { container: cont, title: titleEl.textContent || "", link: aEl ? aEl.href : null, img: cont.querySelector("img") };
+		}
+	});
+
+	return best;
+}
+
+function parseTimeCellToDate(timeText, baseDate) {
+	// expects formats like "14:00" or "14:00 " etc.
+	const m = timeText.trim().match(/(\d{1,2}):(\d{2})/);
+	if (!m) return null;
+	const h = parseInt(m[1], 10);
+	const min = parseInt(m[2], 10);
+	const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), h, min, 0, 0);
+	return d;
+}
+
+function updateRecommendedManual() {
+	const now = new Date();
+	let day = now.getDay(); // 0..6 (0=Sun)
+	// our table columns are Mon..Fri at indices 1..5; if weekend -> no recommended manual
+	if (day === 0 || day === 6) {
+		// show none
+		const rec = document.querySelector("#recommendedManual .manual-card");
+		if (rec) rec.innerHTML = "<p>Niciun manual acum</p>";
+		return;
+	}
+	// find timetable rows
+	const timetable = document.getElementById("timetable");
+	if (!timetable) return;
+	const rows = [...timetable.querySelectorAll("tr")].slice(1); // skip header row
+	const colIndex = day; // 1..5 -> matches children index in row
+
+	// find any class whose window contains "now"
+	let matchedSubject = null;
+	for (const row of rows) {
+		const timeCell = row.children[0];
+		if (!timeCell) continue;
+		const classStart = parseTimeCellToDate(timeCell.textContent || "", now);
+		if (!classStart) continue;
+		// window: start -10min .. start + 60min
+		const windowStart = new Date(classStart.getTime() - 10 * 60 * 1000);
+		const windowEnd = new Date(classStart.getTime() + 60 * 60 * 1000);
+		if (now >= windowStart && now < windowEnd) {
+			const subjectCell = row.children[colIndex];
+			if (subjectCell) {
+				matchedSubject = subjectCell.textContent || subjectCell.innerText || "";
+				break;
+			}
+		}
+	}
+
+	const recManualEl = document.querySelector("#recommendedManual .manual-card");
+	if (!recManualEl) return;
+
+	// Clear previous
+	recManualEl.innerHTML = "";
+	recManualEl.onclick = null;
+
+	if (!matchedSubject) {
+		recManualEl.innerHTML = "<p>Niciun manual acum</p>";
+		return;
+	}
+
+	// find best manual
+	const best = findBestManualForSubject(matchedSubject);
+	if (!best) {
+		// fallback: show subject text
+		const p = document.createElement("p");
+		p.textContent = matchedSubject.trim() || "Niciun manual acum";
+		recManualEl.appendChild(p);
+		return;
+	}
+
+	// populate recManualEl with image + title and click opens manual
+	if (best.img) {
+		const cloned = best.img.cloneNode(true);
+		cloned.style.width = "100%";
+		cloned.style.borderRadius = "0.5rem";
+		recManualEl.appendChild(cloned);
+	}
+	const p = document.createElement("p");
+	p.textContent = best.title;
+	recManualEl.appendChild(p);
+
+	if (best.link) {
+		recManualEl.style.cursor = "pointer";
+		recManualEl.onclick = () => window.open(best.link, "_blank");
+	} else {
+		recManualEl.onclick = null;
+	}
+}
+
+// run immediately and more often (every 15s) to catch the -10min window precisely
+updateRecommendedManual();
+setInterval(updateRecommendedManual, 15000);
+
+
+// All manuals popup
+allManualsBtn &&
+  allManualsBtn.addEventListener("click", () => {
+    manualsPopup.classList.add("active");
+    overlay.classList.add("active");
+    document.body.style.overflow = "hidden";
+
+    // închide meniul lateral dacă e deschis
+    if (sideMenu.classList.contains("open")) {
+      sideMenu.classList.remove("open");
+      menuIcon.classList.remove("fa-arrow-left");
+      menuIcon.classList.add("fa-arrow-right");
+    }
+  });
+
+closeManualsPopup &&
+  closeManualsPopup.addEventListener("click", () => {
+    manualsPopup.classList.remove("active");
+    overlay.classList.remove("active");
+    document.body.style.overflow = "";
+  });
+
+// Search bar logic
+const manualSearch = document.getElementById("manualSearch");
+manualSearch &&
+  manualSearch.addEventListener("input", () => {
+    const term = manualSearch.value.toLowerCase();
+    const manuals = manualsPopupContent.querySelectorAll(".container");
+    manuals.forEach((container) => {
+      const title = container.querySelector("h2").textContent.toLowerCase();
+      if (title.includes(term)) {
+        container.style.display = "";
+      } else {
+        container.style.display = "none";
+      }
     });
+  });
+// --- Overlay manager: păstrează overlay activ dacă meniul sau popup-ul de manuale sunt deschise ---
+function updateOverlay() {
+  const isSideOpen = sideMenu && sideMenu.classList.contains("open");
+  const isManualsOpen = manualsPopup && manualsPopup.classList.contains("active");
+  if (isSideOpen || isManualsOpen) overlay.classList.add("active");
+  else overlay.classList.remove("active");
+}
+
+// MENU TOGGLE (folosește updateOverlay în loc de toggle direct)
+if (menuToggle) {
+  menuToggle.addEventListener("click", () => {
+    // Prevent opening the side menu while the manuals popup is open
+    if (manualsPopup && manualsPopup.classList.contains("active")) return;
+
+    const isOpen = sideMenu.classList.toggle("open");
+    // Asigurăm overlay-ul când se deschide meniul; la închidere, updateOverlay decide
+    updateOverlay();
+
+    if (isOpen) {
+      menuIcon.classList.remove("fa-arrow-right");
+      menuIcon.classList.add("fa-arrow-left");
+    } else {
+      menuIcon.classList.remove("fa-arrow-left");
+      menuIcon.classList.add("fa-arrow-right");
+    }
+  });
+}
+
+// OVERLAY click: închide top-most element (popup manuale prioritar), altfel meniul
+if (overlay) {
+  overlay.addEventListener("click", () => {
+    // Dacă popup manuale e deschis -> închidem întâi popup-ul (comportament tipic)
+    if (manualsPopup && manualsPopup.classList.contains("active")) {
+      manualsPopup.classList.remove("active");
+      document.body.style.overflow = ""; // readucem scrollul
+    } else if (sideMenu && sideMenu.classList.contains("open")) {
+      // Altfel închidem meniul lateral
+      sideMenu.classList.remove("open");
+      menuIcon.classList.remove("fa-arrow-left");
+      menuIcon.classList.add("fa-arrow-right");
+    }
+    // Actualizăm starea overlay-ului după modificări
+    updateOverlay();
+  });
+}
+
+// ALL MANUALS button: deschide popup și folosește updateOverlay
+if (allManualsBtn) {
+  allManualsBtn.addEventListener("click", () => {
+    // deschidem popup-ul
+    manualsPopup.classList.add("active");
+    document.body.style.overflow = "hidden"; // blocăm scroll-ul în fundal
+
+    // dacă meniul lateral era deschis, îl închidem pentru claritate
+    if (sideMenu && sideMenu.classList.contains("open")) {
+      sideMenu.classList.remove("open");
+      menuIcon.classList.remove("fa-arrow-left");
+      menuIcon.classList.add("fa-arrow-right");
+    }
+
+    updateOverlay();
+  });
+}
+
+// Close button din popup: închide popup și actualizează overlay
+if (closeManualsPopup) {
+  closeManualsPopup.addEventListener("click", () => {
+    manualsPopup.classList.remove("active");
+    document.body.style.overflow = "";
+    updateOverlay();
+  });
+}
+// Preseturi de culoare
+const colorPresets = document.querySelectorAll("#colorPresets .preset");
+colorPresets.forEach((preset) => {
+  preset.addEventListener("click", () => {
+    const newColor = preset.getAttribute("data-color");
+    document.documentElement.style.setProperty("--accent-color", newColor);
+    localStorage.setItem("accentColor", newColor);
+
+    // update și favicon-ul
+    updateFavicon(newColor);
+
+    // actualizează și inputul de tip color
+    if (colorPicker) colorPicker.value = newColor;
+  });
+});
