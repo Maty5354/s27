@@ -1,3 +1,4 @@
+
 :root {
     --accent-color: #6196ff;
     --text-color: #333333;
@@ -1276,3 +1277,161 @@ canvas {
     animation-fill-mode: both;
     filter: none;
 }
+
+.manuals-popup {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  height: 85%;
+  background: var(--bg-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.manuals-popup.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.manuals-popup h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: var(--accent-color);
+  font-size: 2rem;
+}
+
+.manuals-popup .close-btn {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  border: none;
+  background: transparent;
+  font-size: 1.75rem;
+  cursor: pointer;
+  color: var(--accent-color);
+  transition: transform 0.2s;
+}
+.manuals-popup .close-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Search bar */
+#manualSearch {
+  margin: 0 auto 1.5rem auto;
+  width: 60%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  outline: none;
+  background: var(--card-bg);
+  color: var(--text-color);
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+#manualSearch:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Grid layout: 4 pe rând */
+.manuals-popup .boss-container {
+  width: 100%;
+  border: none;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  justify-items: center;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Container individual */
+.manuals-popup .container {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 100%;
+  box-shadow: 0 0 15px var(--accent-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-align: center;
+}
+.manuals-popup .container:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 25px var(--accent-color);
+}
+.manuals-popup .container img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  max-height: 300px; /* poze mari */
+  object-fit: contain;
+}
+
+.recommended-manual {
+  margin-top: auto; /* împinge secțiunea jos în meniu */
+  padding: 1rem;
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.recommended-manual h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: var(--accent-color);
+}
+
+.recommended-manual .manual-card {
+  cursor: pointer;
+  background: var(--highlight-color);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.recommended-manual .manual-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px var(--accent-color);
+}
+
+.recommended-manual img {
+  width: 100%;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.recommended-manual p {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.color-presets {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.color-presets .preset {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid var(--border-color);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-presets .preset:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+
