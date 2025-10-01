@@ -9,6 +9,7 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     </head>
+
     <body>
         <h1 class="title">Orar 8D</h1>
         <canvas id="canvas"></canvas>
@@ -31,9 +32,150 @@
                         <span>Accent</span>
                         <input type="color" id="accentColorPicker" value="#6196ff" />
                     </button>
+                    <button class="menu-btn">
+                        <div id="colorPresets" class="color-presets">
+                            <div class="preset" data-color="#6196ff" style="background:#6196ff;"></div>
+                            <div class="preset" data-color="#ff6b6b" style="background:#ff6b6b;"></div>
+                            <div class="preset" data-color="#51d88a" style="background:#51d88a;"></div>
+                            <div class="preset" data-color="#f59e0b" style="background:#f59e0b;"></div>
+                            <div class="preset" data-color="#a855f7" style="background:#a855f7;"></div>
+                            <div class="preset" data-color="#06b6d4" style="background:#06b6d4;"></div> 
+                            <div class="preset" data-color="#0ea5a4" style="background:#0ea5a4;"></div> 
+                            <div class="preset" data-color="#f472b6" style="background:#f472b6;"></div> 
+                            <!-- Add more presets as needed -->
+                        </div>
+                    </button>
+                    <button id="allManualsBtn" class="menu-btn">
+                        <i class="fa-solid fa-book"></i>
+                        <span>All Manuals</span>
+                    </button>
+
+                    <div id="recommendedManual" class="recommended-manual">
+                        <h3>Recommended Manual</h3>
+                            <div class="manual-card">
+                                <p>Niciun manual acum</p>
+                            </div>
+                    </div>
                 </div>
             </div>
             <div id="overlay"></div>
+            <div id="manualsPopup" class="manuals-popup">
+                <button id="closeManualsPopup" class="close-btn">✖</button>
+                <h2>All Manuals</h2>
+                <input type="text" id="manualSearch" placeholder="Caută un manual...">
+            <div class="boss-container" id="manualsPopupContent">
+                <div class="container">
+                    <a
+                    href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/"
+                    target="_blank"
+                    ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1899.png" alt="Educatie plastica"
+                    /></a>
+                    <h2>Arte Plastice</h2> 
+                </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Biologie/Q29yaW50IExvZ2lzdGlj/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1857.png" alt="Biologie"
+        /></a>
+        <h2>Biologie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Chimie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1877.png" alt="Chimie"
+        /></a>
+        <h2>Chimie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20sociala/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1902.png" alt="Educatie sociala"
+        /></a>
+        <h2>Civică</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20moderna%201-limba%20engleza/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1942.png" alt="Limba moderna 1 - limba engleza"
+        /></a>
+        <h2>Engleză</h2>
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20moderna%202%20franceza/Uy5DLiBCb29rbGV0IFMu/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1958.png" alt="Limba moderna 2 franceza"
+        /></a>
+        <h2>Franceză</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Fizica/QXJ0IEtsZXR0IFMuUi5M/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1915.png" alt="Fizica"
+        /></a>
+        <h2>Fizica</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Geografie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1920.png" alt="Geografie"
+        /></a>
+        <h2>Geografie</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Informatica%20si%20TIC/Uy5DLiBMaXRlcmEgRWR1/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1969.png" alt="Informatica si TIC"
+        /></a>
+        <h2>Informatică și TIC</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Istorie/QWthZGVtb3MgQXJ0IFMu/interior.html"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1940.png" alt="Istorie"
+        /></a>
+        <h2>Istorie</h2> 
+    </div>
+    <div class="container">
+        <a href="https://app.asq.ro/" target="_blank"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fplay-lh.googleusercontent.com%2FB_xhOxjZahDaNvf7NYDBa8uCj1bmmUpQAdsxeG8_n7HErkfqHnFQS3HCZWLua6tj7w&f=1&nofb=1&ipt=e0719d2a65e76c03a8158e5fbf69d6f994c312763d96851f8383d094269c73dc" alt="Mate"></a>
+        <h2>Mate</h2>
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20muzicala/QXJ0IEtsZXR0IFMuUi5M/"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1893.png" alt="Educatie muzicala"
+        /></a>
+        <h2>Muzică</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20si%20literatura%20romana/QXJ0IEtsZXR0IFMuUi5M/A1948.pdf"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1948.png" alt="Limba si literatura romana"
+        /></a>
+        <h2>Româna</h2> 
+    </div>
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20tehnologica%20si%20aplicatii%20practice/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
+            target="_blank"
+            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1911.png" alt="Educatie tehnologica si aplicatii practice"
+        /></a>
+        <h2>Tehnologică</h2>
+    </div>
+            </div>
+        </div>
+
+
 
             </div>
             <div class="big-container">
@@ -143,116 +285,8 @@
                     </div>
                 </div>
             </div>
-            <div class="boss-container" id="manuals">
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1899.png" alt="Educatie plastica"
-        /></a>
-        <h2>Arte Plastice</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Biologie/Q29yaW50IExvZ2lzdGlj/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1857.png" alt="Biologie"
-        /></a>
-        <h2>Biologie</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Chimie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1877.png" alt="Chimie"
-        /></a>
-        <h2>Chimie</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20sociala/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1902.png" alt="Educatie sociala"
-        /></a>
-        <h2>Civică</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Engleză/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1942.png" alt="Limba moderna 1 - limba engleza"
-        /></a>
-        <h2>Engleză</h2>
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Franceza/Uy5DLiBCb29rbGV0IFMu/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1958.png" alt="Limba moderna 2 franceza"
-        /></a>
-        <h2>Franceză</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Fizica/QXJ0IEtsZXR0IFMuUi5M/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1915.png" alt="Fizica"
-        /></a>
-        <h2>Fizica</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Geografie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1920.png" alt="Geografie"
-        /></a>
-        <h2>Geografie</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Informatica%20si%20TIC/Uy5DLiBMaXRlcmEgRWR1/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1969.png" alt="Informatica si TIC"
-        /></a>
-        <h2>Informatică și TIC</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Istorie/QWthZGVtb3MgQXJ0IFMu/interior.html"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1940.png" alt="Istorie"
-        /></a>
-        <h2>Istorie</h2> 
-    </div>
-    <div class="container">
-        <a href="https://app.asq.ro/" target="_blank"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fplay-lh.googleusercontent.com%2FB_xhOxjZahDaNvf7NYDBa8uCj1bmmUpQAdsxeG8_n7HErkfqHnFQS3HCZWLua6tj7w&f=1&nofb=1&ipt=e0719d2a65e76c03a8158e5fbf69d6f994c312763d96851f8383d094269c73dc" alt="Mate"></a>
-        <h2>Mate</h2>
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20muzicala/QXJ0IEtsZXR0IFMuUi5M/"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1893.png" alt="Educatie muzicala"
-        /></a>
-        <h2>Muzică</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20si%20literatura%20romana/QXJ0IEtsZXR0IFMuUi5M/A1948.pdf"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1948.png" alt="Limba si literatura romana"
-        /></a>
-        <h2>Româna</h2> 
-    </div>
-    <div class="container">
-        <a
-            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20tehnologica%20si%20aplicatii%20practice/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0"
-            target="_blank"
-            ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1911.png" alt="Educatie tehnologica si aplicatii practice"
-        /></a>
-        <h2>Tehnologică</h2>
-    </div>
-</div>
+
+
 
             <footer>
                 <div class="footer-content">
