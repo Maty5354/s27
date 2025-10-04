@@ -602,9 +602,9 @@ function updateRecommendedManual() {
         if (!timeCell) continue;
         const classStart = parseTimeCellToDate(timeCell.textContent || "", now);
         if (!classStart) continue;
-        // window: start -10min .. start + 60min
+        // window: start -10min .. start + 50min
         const windowStart = new Date(classStart.getTime() - 10 * 60 * 1000);
-        const windowEnd = new Date(classStart.getTime() + 60 * 60 * 1000);
+        const windowEnd = new Date(classStart.getTime() + 50 * 60 * 1000);
         if (now >= windowStart && now < windowEnd) {
             const subjectCell = row.children[colIndex];
             if (subjectCell) {
