@@ -1375,7 +1375,6 @@ canvas {
 }
 .manuals-popup .container:hover {
     transform: scale(1.03);
-    box-shadow: 0 0 25px var(--accent-color);
 }
 .manuals-popup .container img {
     width: 100%;
@@ -1409,7 +1408,6 @@ canvas {
 }
 .recommended-manual .manual-card:hover {
     transform: scale(1.03);
-    box-shadow: 0 0 20px var(--accent-color);
 }
 
 .recommended-manual img {
@@ -1433,8 +1431,8 @@ canvas {
 }
 
 .color-presets .preset {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid var(--border-color);
@@ -1443,7 +1441,7 @@ canvas {
 }
 
 .color-presets .preset:hover {
-    transform: scale(1.15);
+    transform: scale(0.9);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
