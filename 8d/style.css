@@ -233,6 +233,7 @@ a {
     align-items: center;
     gap: 0.5rem;
     animation: fadeInUp 1.5s ease;
+    text-align: center;
 }
 
 .time-display {
