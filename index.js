@@ -1,4 +1,4 @@
-/* --- HIGHLIGHT, THEME, WEATHER, TODO, SETTINGS, FAVICON, SIDE MENU --- */
+        /* --- HIGHLIGHT, THEME, WEATHER, TODO, SETTINGS, FAVICON, SIDE MENU --- */
 
 /* --- HIGHLIGHT LOGIC (structure-aware) --- */
 function highlightCurrent() {
@@ -783,3 +783,34 @@ colorPresets.forEach((preset) => {
         if (colorPicker) colorPicker.value = newColor;
     });
 });
+
+// --- CLOCK OVERLAY ---
+const clockBtn = document.getElementById('clockBtn');
+const timeOverlay = document.getElementById('timeOverlay');
+const closeOverlay = document.getElementById('closeOverlay');
+const timeEl = document.getElementById('time');
+const dateEl = document.getElementById('date');
+
+function updateClock() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+  const dateStr = now.toLocaleDateString(undefined, options);
+  timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+  dateEl.textContent = dateStr;
+}
+
+clockBtn.addEventListener('click', () => {
+  timeOverlay.classList.add('active');
+  document.body.classList.add('no-scroll');
+  updateClock();
+});
+
+closeOverlay.addEventListener('click', () => {
+  timeOverlay.classList.remove('active');
+  document.body.classList.remove('no-scroll');
+});
+
+setInterval(updateClock, 1000);
