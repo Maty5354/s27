@@ -47,6 +47,11 @@
                         <span>All Textbooks</span>
                     </button>
 
+                    <button id="clockBtn" class="menu-btn">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Clock</span>
+                    </button>
+
                     <div id="recommendedManual" class="recommended-manual">
                         <h3>Recommended Textbook</h3>
                             <div class="manual-card">
@@ -56,6 +61,15 @@
                 </div>
             </div>
             <div id="overlay"></div>
+                        <div id="timeOverlay" class="overlay">
+                <div class="overlay-content">
+                    <button id="closeOverlay" class="close-btn">&times;</button>
+                        <div id="clockDisplay">
+                            <div id="time"></div>
+                            <div id="date"></div>
+                        </div>
+                    </div>
+                </div>
             <div id="manualsPopup" class="manuals-popup">
                 <button id="closeManualsPopup" class="close-btn">✖</button>
                 <h2>All Textbooks</h2>
@@ -323,3 +337,4 @@
     </body>
     <script src="../index.js"></script>
 </html>
+
