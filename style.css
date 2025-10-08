@@ -1,4 +1,5 @@
-:root {
+
+        :root {
     --accent-color: #6196ff;
     --text-color: #333333;
     --bg-color: #f9f9f9;
@@ -1522,3 +1523,79 @@ canvas {
         grid-template-columns: 1fr !important;
     }
 }
+/* Time Overlay styling */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--theme-bg, #101010); /* uses your theme background */
+  color: var(--text-color, white);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.overlay.active {
+  display: flex;
+}
+
+/* Close button */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: var(--font-family);
+  transition: opacity 0.3s ease;
+}
+
+.overlay.active {
+  display: flex;
+  overflow: hidden;
+}
+
+body.no-scroll {
+  overflow: hidden; /* disables scrolling when overlay is active */
+}
+
+.close-btn {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  font-size: 2.5rem;
+  cursor: pointer;
+  z-index: 10000;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.close-btn:hover {
+  transform: scale(1.1);
+  color: var(--text-color);
+}
+
+#time {
+  font-size: clamp(4rem, 10vw, 10rem);
+  font-weight: 700;
+  color: var(--accent-color);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+#date {
+  font-size: clamp(1.2rem, 2vw, 2rem);
+  color: color-mix(in srgb, var(--accent-color) 60%, black 40%);
+  opacity: 0.9;
+  text-align: center;
+}
+
