@@ -20,9 +20,11 @@
             <div class="header">
                <div id="sideMenu" class="side-menu">
                     <h1 class="menu-title">Menu</h1>
+
                     <button id="menuToggle" class="menu-toggle">
                         <i id="menuIcon" class="fa-solid fa-arrow-right"></i>
                     </button>
+
                     <button id="switchTheme" class="menu-btn">
                         <i id="themeIcon" class="fa-regular fa-sun"></i>
                         <span>Theme</span>
@@ -42,9 +44,15 @@
                             <!-- Add more presets as needed -->
                         </div>
                     </button>
+                    
                     <button id="allManualsBtn" class="menu-btn">
                         <i class="fa-solid fa-book"></i>
                         <span>All Textbooks</span>
+                    </button>
+                    
+                    <button id="clockBtn" class="menu-btn">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Clock</span>
                     </button>
 
                     <div id="recommendedManual" class="recommended-manual">
@@ -56,6 +64,19 @@
                 </div>
             </div>
             <div id="overlay"></div>
+            <!-- Time Overlay -->
+            <div id="timeOverlay" class="overlay">
+                <div class="overlay-content">
+                    <button id="closeOverlay" class="close-btn">&times;</button>
+                        <div id="clockDisplay">
+                            <div id="time"></div>
+                            <div id="date"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            <!-- Manuals Popup -->
             <div id="manualsPopup" class="manuals-popup">
                 <button id="closeManualsPopup" class="close-btn">✖</button>
                 <h2>All Textbooks</h2>
@@ -321,5 +342,4 @@
             </footer>
         </div>
     </body>
-    <script src="../index.js"></script>
 </html>
