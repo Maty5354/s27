@@ -3,6 +3,10 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="theme-color" content="#6196ff">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <title>Orar 8A</title>
         <link rel="stylesheet" href="../style.css">
         <link
@@ -19,10 +23,12 @@
         <div class="biggest-container">
             <div class="header">
                <div id="sideMenu" class="side-menu">
+                
                     <h1 class="menu-title">Menu</h1>
                     <button id="menuToggle" class="menu-toggle">
                         <i id="menuIcon" class="fa-solid fa-arrow-right"></i>
                     </button>
+
                     <button id="switchTheme" class="menu-btn">
                         <i id="themeIcon" class="fa-regular fa-sun"></i>
                         <span>Theme</span>
@@ -42,26 +48,167 @@
                             <!-- Add more presets as needed -->
                         </div>
                     </button>
+                    
                     <button id="allManualsBtn" class="menu-btn">
                         <i class="fa-solid fa-book"></i>
                         <span>All Textbooks</span>
                     </button>
-
+                    
                     <button id="clockBtn" class="menu-btn">
                         <i class="fa-solid fa-clock"></i>
                         <span>Clock</span>
                     </button>
 
+                    <button id="todoBtn" class="menu-btn">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>My Tasks</span>
+                    </button>
                     <div id="recommendedManual" class="recommended-manual">
                         <h3>Recommended Textbook</h3>
                             <div class="manual-card">
-                                <p>No textbook available</p>
-                            </div>
+                            <p>No textbook available</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id="overlay"></div>
-                        <div id="timeOverlay" class="overlay">
+
+            <div class="big-container">
+                <div class="timetable-wrapper">
+<table class="timetable" id="timetable">
+    <thead>
+        <tr>
+            <th></th>
+            <th style="text-transform: uppercase;">Luni</th>
+            <th style="text-transform: uppercase;">Marți</th>
+            <th style="text-transform: uppercase;">Miercuri</th>
+            <th style="text-transform: uppercase;">Joi</th>
+            <th style="text-transform: uppercase;">Vineri</th>
+        </tr>
+        <tr>
+            <th>12:00</th>
+            <th>Religie ☦️</th>
+            <th></th>
+            <th>Mate 📏</th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>13:00</th>
+            <th>Opț Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Sport ⚽</th>
+            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Istorie 📜</th>
+        </tr>
+        <tr>
+            <th>14:00</th>
+            <th>Geografie 🌍</th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Fizică 💡</th>
+            <th>Istorie 📜</th>
+            <th>Mate 📏</th>
+        </tr>
+        <tr>
+            <th>15:00</th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Dirigenție 📰</th>
+            <th>Geografie 🌍</th>
+            <th>Fizică 💡</th>
+            <th>Informatică 💻</th>
+        </tr>
+        <tr>
+            <th>16:00</th>
+            <th>Mate 📏</th>
+            <th>Mate 📏</th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Chimie 🧪</th>
+        </tr>
+        <tr>
+            <th>17:00</th>
+            <th>Civică 🏛️</th>
+            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th>Chimie 🧪</th>
+            <th>Biologie 🧬</th>
+            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+        </tr>
+        <tr>
+            <th>18:00</th>
+            <th>Tehnologică ⚙️</th>
+            <th>Sport ⚽</th>
+            <th></th>
+            <th>Muzică 🎵</th>
+            <th>Arte Plastice 🎨</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+                </div>
+                <div class="info-panel">
+                    <div class="weather-container" id="weather">
+                        <div class="weather-emoji" id="weather-emoji">🌤️</div>
+                        <div class="weather-temp" id="weather-temp">--°C</div>
+                        <div class="weather-desc" id="weather-desc">Loading...</div>
+                        <div class="weather-location" id="weather-location">
+                            <i id="location-dot" class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div class="weather-sun">
+                            <p>
+                                Sunrise
+                                <i class="fa-solid fa-arrow-up"></i>
+                                <span id="sunrise">--:--</span>
+                            </p>
+                            <p>
+                                Sunset
+                                <i class="fa-solid fa-arrow-down"></i>
+                                <span id="sunset">--:--</span>
+                            </p>
+                        </div>
+                        <div class="time-display" id="hourOfTheDay"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <footer>
+                <div class="footer-content">
+                    <h2>Schedules - Secondary School No. 27 from Bucharest</h2>
+                    <h2>2025-2026</h2>
+                    <h3></h3>
+                    <p>
+                        Here you can quickly and easily find the complete timetable for several classes
+                        from Secondary School No. 27 - always just one click away. The site comes with both
+                        a light and a dark theme, so you can choose what you like best, plus a color picker
+                        for extra customization. It's designed to be simple, useful, and elegant - so you
+                        don't waste time looking through crumpled papers or random photos.
+                    </p>
+                    <p>
+                        Keep in mind that this website isn't fully optimized for mobile devices yet.
+                    </p>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Click on a subject = highlight it</li>
+                        <li>Click outside the subject = remove highlight</li>
+                        <li>Menu button = open/close side menu</li> 
+                        <li>Theme button = switch between light and dark mode</li>
+                        <li>Color picker = choose a custom accent color</li>
+                        <li>All Textbooks = view all textbooks for 8D</li>
+                        <li>Clock = view current time and date</li>
+                        <li>My Tasks = open the to-do list</li>
+                        
+                    </ul>
+                    <h3><a href="https://s27.ro/8a" target="_blank">Original 8A Schedule Website</a></h3>
+                    <h3><a href="https://manuale.edu.ro/" target="_blank">More Textbooks</a></h3>
+
+                    </div>
+                </div>
+            </footer>
+        </div>
+                    <!-- Time Overlay -->
+            <div id="timeOverlay" class="overlay">
                 <div class="overlay-content">
                     <button id="closeOverlay" class="close-btn">&times;</button>
                         <div id="clockDisplay">
@@ -70,19 +217,152 @@
                         </div>
                     </div>
                 </div>
+
+
+            <!--menu overlay-->
+                <div id="overlay"></div>
+                
+    <!-- To-Do List Overlay -->
+    <div id="todoOverlay" class="overlay">
+        <div class="todo-overlay-container">
+            <button id="closeTodoOverlay">✖</button>
+            
+            <div class="todo-overlay-header">
+                <h2>📝 My Tasks</h2>
+            </div>
+
+            <div class="todo-stats">
+                <div class="stat-card">
+                    <div class="number" id="totalTasks">0</div>
+                    <div class="label">Total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="completedTasks">0</div>
+                    <div class="label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="pendingTasks">0</div>
+                    <div class="label">Pending</div>
+                </div>
+            </div>
+
+            <div class="todo-controls">
+                <button class="control-btn" id="addTaskBtn">
+                    ➕ New Task
+                </button>
+                <button class="control-btn secondary" id="sortBtn">
+                    🔄 Sort
+                </button>
+                <button class="control-btn secondary" id="manageCategoriesBtn">
+                    🏷️ Categories
+                </button>
+            </div>
+
+            <div class="sort-panel" id="sortPanel">
+                <h4>📊 Sort Tasks By</h4>
+                <div class="sort-options">
+                    <div class="sort-option active" data-sort="priority">Priority</div>
+                    <div class="sort-option" data-sort="name">Name</div>
+                    <div class="sort-option" data-sort="created">Date Created</div>
+                    <div class="sort-option" data-sort="deadline">Deadline</div>
+                    <div class="sort-option" data-sort="category">Category</div>
+                </div>
+            </div>
+
+            <div class="todo-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="pending">Pending</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+                <button class="filter-btn" data-filter="high">High Priority</button>
+                <button class="filter-btn" data-filter="medium">Medium</button>
+                <button class="filter-btn" data-filter="low">Low</button>
+            </div>
+
+            <div class="todo-list-container" id="todoListContainer">
+                <div class="no-todos">No tasks yet. Click "New Task" to get started! 🚀</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Task Modal -->
+    <div class="task-modal" id="taskModal">
+        <div class="task-modal-content">
+            <h3 id="modalTitle">➕ Create New Task</h3>
+            
+            <div class="form-group">
+                <label for="taskTitle">Task Title *</label>
+                <input type="text" id="taskTitle" placeholder="What needs to be done?" maxlength="200" required>
+            </div>
+
+            <div class="form-group">
+                <label for="taskDescription">Description</label>
+                <textarea id="taskDescription" placeholder="Add more details about this task..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <div class="priority-selector">
+                    <button class="priority-btn high" data-priority="high">🔴 High</button>
+                    <button class="priority-btn medium active" data-priority="medium">🟡 Medium</button>
+                    <button class="priority-btn low" data-priority="low">🟢 Low</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="taskCategory">Category</label>
+                <select id="taskCategory">
+                    <option value="">No Category</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="taskDeadline">Deadline</label>
+                <input type="datetime-local" id="taskDeadline">
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelTaskBtn">Cancel</button>
+                <button class="modal-btn primary" id="saveTaskBtn">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Management Modal -->
+    <div class="task-modal" id="categoryModal">
+        <div class="task-modal-content">
+            <h3>🏷️ Manage Categories</h3>
+            
+            <div class="category-section">
+                <div class="category-input-group">
+                    <input type="text" id="newCategoryInput" placeholder="New category name..." maxlength="30">
+                    <button id="addCategoryBtn">Add</button>
+                </div>
+                
+                <div class="category-list" id="categoryList">
+                    <!-- Categories will be added here -->
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="closeCategoryModal">Close</button>
+            </div>
+        </div>
+    </div>
+
+            <!-- Manuals Popup -->
             <div id="manualsPopup" class="manuals-popup">
                 <button id="closeManualsPopup" class="close-btn">✖</button>
                 <h2>All Textbooks</h2>
                 <input type="text" id="manualSearch" placeholder="Search for a textbook...">
-            <div class="boss-container" id="manualsPopupContent">
-                <div class="container">
-                    <a
-                    href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/"
-                    target="_blank"
-                    ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1899.png" alt="Educatie plastica"
-                    /></a>
-                    <h2>Arte Plastice</h2> 
-                </div>
+<div class="boss-container" id="manualsPopupContent">
+    <div class="container">
+        <a
+            href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/"
+            target="_blank"
+        ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1899.png" alt="Educatie plastica"
+        /></a>
+        <h2>Arte Plastice</h2> 
+        </div>
     <div class="container">
         <a
             href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Biologie/Q29yaW50IExvZ2lzdGlj/"
@@ -185,156 +465,7 @@
     </div>
             </div>
         </div>
-
-
-
-            </div>
-            <div class="big-container">
-                <div class="timetable-wrapper">
-<table class="timetable" id="timetable">
-    <thead>
-        <tr>
-            <th></th>
-            <th style="text-transform: uppercase;">Luni</th>
-            <th style="text-transform: uppercase;">Marți</th>
-            <th style="text-transform: uppercase;">Miercuri</th>
-            <th style="text-transform: uppercase;">Joi</th>
-            <th style="text-transform: uppercase;">Vineri</th>
-        </tr>
-        <tr>
-            <th>12:00</th>
-            <th>Religie ☦️</th>
-            <th></th>
-            <th>Mate 📏</th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th>13:00</th>
-            <th>Opț Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Sport ⚽</th>
-            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Istorie 📜</th>
-        </tr>
-        <tr>
-            <th>14:00</th>
-            <th>Geografie 🌍</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Fizică 💡</th>
-            <th>Istorie 📜</th>
-            <th>Mate 📏</th>
-        </tr>
-        <tr>
-            <th>15:00</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Dirigenție 📰</th>
-            <th>Geografie 🌍</th>
-            <th>Fizică 💡</th>
-            <th>Informatică 💻</th>
-        </tr>
-        <tr>
-            <th>16:00</th>
-            <th>Mate 📏</th>
-            <th>Mate 📏</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Chimie 🧪</th>
-        </tr>
-        <tr>
-            <th>17:00</th>
-            <th>Civică 🏛️</th>
-            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Chimie 🧪</th>
-            <th>Biologie 🧬</th>
-            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-        </tr>
-        <tr>
-            <th>18:00</th>
-            <th>Tehnologică ⚙️</th>
-            <th>Sport ⚽</th>
-            <th></th>
-            <th>Muzică 🎵</th>
-            <th>Arte Plastice 🎨</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-
-                </div>
-                <div class="info-panel">
-                    <div class="weather-container" id="weather">
-                        <div class="weather-emoji" id="weather-emoji">🌤️</div>
-                        <div class="weather-temp" id="weather-temp">--°C</div>
-                        <div class="weather-desc" id="weather-desc">Loading...</div>
-                        <div class="weather-location" id="weather-location">
-                            <i id="location-dot" class="fa-solid fa-location-dot"></i>
-                        </div>
-                        <div class="weather-sun">
-                            <p>
-                                Sunrise
-                                <i class="fa-solid fa-arrow-up"></i>
-                                <span id="sunrise">--:--</span>
-                            </p>
-                            <p>
-                                Sunset
-                                <i class="fa-solid fa-arrow-down"></i>
-                                <span id="sunset">--:--</span>
-                            </p>
-                        </div>
-                        <div class="time-display" id="hourOfTheDay"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="todo-container">
-                <div class="todo-card">
-                    <h2>To-Do List</h2>
-                    <ul class="todo-list"></ul>
-                    <div class="add-task">
-                        <input type="text" placeholder="Add a new task..." />
-                        <button>Add</button>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <footer>
-                <div class="footer-content">
-                    <h2>Schedules - Secondary School No. 27 from Bucharest</h2>
-                    <h2>2025-2026</h2>
-                    <h3></h3>
-                    <p>
-                        Here you can quickly and easily find the complete timetable for several classes
-                        from Secondary School No. 27 - always just one click away. The site comes with both
-                        a light and a dark theme, so you can choose what you like best, plus a color picker
-                        for extra customization. It's designed to be simple, useful, and elegant - so you
-                        don't waste time looking through crumpled papers or random photos.
-                    </p>
-                    <p>
-                        Keep in mind that this website isn't fully optimized for mobile devices yet.
-                    </p>
-                    <p>Controls:</p>
-                    <ul>
-                        <li>Click on a subject = highlight it</li>
-                        <li>
-                            To-Do List
-                            <ul>
-                                <li>Double-click a task = edit its content</li>
-                                <li>
-                                    Drag and drop tasks = change their order (requires at least 2 tasks)
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <h3><a href="https://s27.ro/8d" target="_blank">Original 8D Schedule Website</a></h3>
-                    <h3><a href="https://manuale.edu.ro/" target="_blank">More Textbooks</a></h3>
-
-                    </div>
-                </div>
-            </footer>
-        </div>
-    </body>
-    <script src="../index.js"></script>
+    </div>
+        <script src="../index.js"></script>
+</body>
 </html>
-

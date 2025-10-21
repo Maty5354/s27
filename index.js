@@ -1,4 +1,4 @@
-        /* --- HIGHLIGHT, THEME, WEATHER, TODO, SETTINGS, FAVICON, SIDE MENU --- */
+/* --- HIGHLIGHT, THEME, WEATHER, SETTINGS, FAVICON, SIDE MENU --- */
 
 /* --- HIGHLIGHT LOGIC (structure-aware) --- */
 function highlightCurrent() {
@@ -246,157 +246,6 @@ function getWeatherDescription(code) {
 }
 getWeather();
 setInterval(getWeather, 300000);
-
-// --- TO-DO LIST WITH DRAG & DROP AND EDIT ---
-(function initTodo() {
-    const taskList = document.querySelector(".todo-list");
-    if (!taskList) return; // guard
-
-    const addTaskInput = document.querySelector(".add-task input[type='text']");
-    const addTaskButton = document.querySelector(".add-task button");
-    const TODO_KEY = "todo-tasks";
-
-    function addTask(text, checked = false) {
-        const li = document.createElement("li");
-        li.className = "todo-item";
-        li.draggable = true;
-        li.innerHTML = `
-                <input type="checkbox" ${checked ? "checked" : ""}>
-                <label>${text}</label>
-                <button class="delete-btn" title="Delete"><i class="fa fa-trash" aria-hidden="true"></i></button>
-            `;
-        taskList.appendChild(li);
-        saveTasks();
-    }
-
-    function saveTasks() {
-        const tasks = [];
-        document.querySelectorAll(".todo-item").forEach((item) => {
-            const label = item.querySelector("label").textContent;
-            const checked = !!item.querySelector('input[type="checkbox"]').checked;
-            tasks.push({ text: label, checked });
-        });
-        localStorage.setItem(TODO_KEY, JSON.stringify(tasks));
-    }
-
-    function loadTasks() {
-        taskList.innerHTML = "";
-        const data = JSON.parse(localStorage.getItem(TODO_KEY)) || [];
-        data.forEach((task) => addTask(task.text, task.checked));
-    }
-
-    // Add task on button click
-    addTaskButton &&
-        addTaskButton.addEventListener("click", () => {
-            const taskText = addTaskInput.value.trim();
-            if (taskText) {
-                addTask(taskText);
-                addTaskInput.value = "";
-                addTaskInput.focus();
-            }
-        });
-
-    // Add task on Enter key
-    addTaskInput &&
-        addTaskInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                addTaskButton && addTaskButton.click();
-            }
-        });
-
-    // Task actions: delete, checkbox
-    taskList.addEventListener("click", (e) => {
-        const target = e.target;
-        // Delete (handle clicks on icon or button)
-        if (target.classList.contains("delete-btn") || target.closest(".delete-btn")) {
-            const li = target.closest ? target.closest("li") : null;
-            if (li) {
-                li.remove();
-                saveTasks();
-            }
-            return;
-        }
-        // Checkbox toggled
-        if (target.type === "checkbox") {
-            saveTasks();
-        }
-    });
-
-    // Double click to edit label
-    taskList.addEventListener("dblclick", (e) => {
-        const label = e.target.closest("label");
-        if (!label) return;
-        const li = label.closest("li");
-        const oldText = label.textContent;
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = oldText;
-        input.className = "edit-task-input";
-        label.replaceWith(input);
-        input.focus();
-
-        function saveEdit() {
-            const newText = input.value.trim() || oldText;
-            const newLabel = document.createElement("label");
-            newLabel.textContent = newText;
-            input.replaceWith(newLabel);
-            saveTasks();
-        }
-        input.addEventListener("blur", saveEdit);
-        input.addEventListener("keypress", (event) => {
-            if (event.key === "Enter") input.blur();
-        });
-    });
-
-    // Drag & drop
-    let draggedItem = null;
-
-    taskList.addEventListener("dragstart", (e) => {
-        const target = e.target;
-        if (target && target.classList && target.classList.contains("todo-item")) {
-            draggedItem = target;
-            target.classList.add("dragging");
-        }
-    });
-
-    taskList.addEventListener("dragend", (e) => {
-        const target = e.target;
-        if (target && target.classList && target.classList.contains("todo-item")) {
-            target.classList.remove("dragging");
-            draggedItem = null;
-            saveTasks();
-        }
-    });
-
-    taskList.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        if (!draggedItem) return;
-        const afterElement = getDragAfterElement(taskList, e.clientY);
-        if (afterElement == null) {
-            taskList.appendChild(draggedItem);
-        } else {
-            taskList.insertBefore(draggedItem, afterElement);
-        }
-    });
-
-    function getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll(".todo-item:not(.dragging)")];
-        let closest = { offset: Number.NEGATIVE_INFINITY, element: null };
-        draggableElements.forEach((child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-
-            if (offset < 0 && offset > closest.offset) {
-                closest = { offset: offset, element: child };
-            }
-        });
-        return closest.element;
-    }
-
-    // initial load
-    loadTasks();
-})();
 
 // --- SETTINGS MENU LOGIC ---
 const settingsButton = document.getElementById("settingsButton");
@@ -785,32 +634,587 @@ colorPresets.forEach((preset) => {
 });
 
 // --- CLOCK OVERLAY ---
-const clockBtn = document.getElementById('clockBtn');
-const timeOverlay = document.getElementById('timeOverlay');
-const closeOverlay = document.getElementById('closeOverlay');
-const timeEl = document.getElementById('time');
-const dateEl = document.getElementById('date');
+const clockBtn = document.getElementById("clockBtn");
+const timeOverlay = document.getElementById("timeOverlay");
+const closeOverlay = document.getElementById("closeOverlay");
+const timeEl = document.getElementById("time");
+const dateEl = document.getElementById("date");
 
 function updateClock() {
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  const options = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-  const dateStr = now.toLocaleDateString(undefined, options);
-  timeEl.textContent = `${hours}:${minutes}:${seconds}`;
-  dateEl.textContent = dateStr;
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
+    const options = { weekday: "long", month: "long", day: "numeric", year: "numeric" };
+    const dateStr = now.toLocaleDateString(undefined, options);
+    timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+    dateEl.textContent = dateStr;
 }
 
-clockBtn.addEventListener('click', () => {
-  timeOverlay.classList.add('active');
-  document.body.classList.add('no-scroll');
-  updateClock();
+clockBtn.addEventListener("click", () => {
+    timeOverlay.classList.add("active");
+    document.body.classList.add("no-scroll");
+    updateClock();
 });
 
-closeOverlay.addEventListener('click', () => {
-  timeOverlay.classList.remove('active');
-  document.body.classList.remove('no-scroll');
+closeOverlay.addEventListener("click", () => {
+    timeOverlay.classList.remove("active");
+    document.body.classList.remove("no-scroll");
 });
 
 setInterval(updateClock, 1000);
+
+// Advanced To-Do List System
+(function () {
+    const STORAGE_KEY = "advanced-todo-tasks";
+    const CATEGORIES_KEY = "todo-categories";
+    const NOTIFIED_KEY = "notified-tasks";
+
+    let tasks = [];
+    let categories = [];
+    let notifiedTasks = new Set();
+    let currentFilter = "all";
+    let currentSort = "priority";
+    let editingTaskId = null;
+    let currentPriority = "medium";
+
+    // Request notification permission on desktop
+    if (
+        "Notification" in window &&
+        Notification.permission === "default" &&
+        window.innerWidth > 768
+    ) {
+        Notification.requestPermission();
+    }
+
+    // Load data
+    function loadData() {
+        const storedTasks = localStorage.getItem(STORAGE_KEY);
+        const storedCategories = localStorage.getItem(CATEGORIES_KEY);
+        const storedNotified = localStorage.getItem(NOTIFIED_KEY);
+
+        tasks = storedTasks ? JSON.parse(storedTasks) : [];
+        categories = storedCategories
+            ? JSON.parse(storedCategories)
+            : ["Work", "Personal", "Shopping"];
+        notifiedTasks = storedNotified ? new Set(JSON.parse(storedNotified)) : new Set();
+    }
+
+    // Save data
+    function saveData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+        localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+        localStorage.setItem(NOTIFIED_KEY, JSON.stringify([...notifiedTasks]));
+    }
+
+    // Generate ID
+    function generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    // Update statistics
+    function updateStats() {
+        const total = tasks.length;
+        const completed = tasks.filter((t) => t.completed).length;
+        const pending = total - completed;
+
+        document.getElementById("totalTasks").textContent = total;
+        document.getElementById("completedTasks").textContent = completed;
+        document.getElementById("pendingTasks").textContent = pending;
+    }
+
+    // Sort tasks
+    function sortTasks(tasksToSort) {
+        const sorted = [...tasksToSort];
+
+        switch (currentSort) {
+            case "priority":
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+                break;
+            case "name":
+                sorted.sort((a, b) => a.text.localeCompare(b.text));
+                break;
+            case "created":
+                sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+            case "deadline":
+                sorted.sort((a, b) => {
+                    if (!a.dueDate && !b.dueDate) return 0;
+                    if (!a.dueDate) return 1;
+                    if (!b.dueDate) return -1;
+                    return new Date(a.dueDate) - new Date(b.dueDate);
+                });
+                break;
+            case "category":
+                sorted.sort((a, b) => (a.category || "").localeCompare(b.category || ""));
+                break;
+        }
+
+        return sorted;
+    }
+
+    // Render tasks
+    function renderTasks() {
+        const container = document.getElementById("todoListContainer");
+        let filteredTasks = tasks;
+
+        // Apply filters
+        if (currentFilter === "pending") {
+            filteredTasks = tasks.filter((t) => !t.completed);
+        } else if (currentFilter === "completed") {
+            filteredTasks = tasks.filter((t) => t.completed);
+        } else if (["high", "medium", "low"].includes(currentFilter)) {
+            filteredTasks = tasks.filter((t) => t.priority === currentFilter);
+        }
+
+        // Sort tasks
+        filteredTasks = sortTasks(filteredTasks);
+
+        if (filteredTasks.length === 0) {
+            container.innerHTML =
+                '<div class="no-todos">No tasks found. Try a different filter! 🔍</div>';
+            return;
+        }
+
+        container.innerHTML = filteredTasks
+            .map((task) => {
+                const dueText = task.dueDate
+                    ? `📅 ${new Date(task.dueDate).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                      })}`
+                    : "";
+
+                const isOverdue =
+                    task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
+
+                return `
+                        <div class="todo-item-new priority-${task.priority} ${
+                    task.completed ? "completed" : ""
+                }" 
+                             data-id="${task.id}">
+                            <input type="checkbox" class="todo-checkbox" ${
+                                task.completed ? "checked" : ""
+                            }>
+                            <div class="todo-content">
+                                <div class="todo-text">${task.text}</div>
+                                ${
+                                    task.description
+                                        ? `<div class="todo-description">${task.description}</div>`
+                                        : ""
+                                }
+                                <div class="todo-meta">
+                                    <span class="todo-priority-badge ${
+                                        task.priority
+                                    }">${task.priority.toUpperCase()}</span>
+                                    ${
+                                        task.category
+                                            ? `<span class="todo-category-badge">${task.category}</span>`
+                                            : ""
+                                    }
+                                    ${
+                                        dueText
+                                            ? `<span style="color: ${
+                                                  isOverdue ? "#ef4444" : "inherit"
+                                              }">${dueText}</span>`
+                                            : ""
+                                    }
+                                    ${
+                                        isOverdue
+                                            ? '<span style="color: #ef4444; font-weight: bold;">⚠️ OVERDUE</span>'
+                                            : ""
+                                    }
+                                </div>
+                            </div>
+                            <div class="todo-actions">
+                                <button class="todo-action-btn todo-edit-btn" title="Edit">✏️</button>
+                                <button class="todo-action-btn todo-delete-btn" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+            })
+            .join("");
+
+        // Attach event listeners
+        container.querySelectorAll(".todo-item-new").forEach((item) => {
+            const id = item.dataset.id;
+            const task = tasks.find((t) => t.id === id);
+
+            // Checkbox toggle
+            item.querySelector(".todo-checkbox").addEventListener("change", (e) => {
+                e.stopPropagation();
+                task.completed = e.target.checked;
+                saveData();
+                updateStats();
+                renderTasks();
+            });
+
+            // Edit button
+            item.querySelector(".todo-edit-btn").addEventListener("click", (e) => {
+                e.stopPropagation();
+                openEditModal(task);
+            });
+
+            // Delete button
+            item.querySelector(".todo-delete-btn").addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (confirm("Delete this task?")) {
+                    tasks = tasks.filter((t) => t.id !== id);
+                    notifiedTasks.delete(id);
+                    saveData();
+                    updateStats();
+                    renderTasks();
+                }
+            });
+
+            // Double click to edit
+            item.addEventListener("dblclick", () => {
+                openEditModal(task);
+            });
+        });
+
+        updateStats();
+    }
+
+    // Open add task modal
+    function openAddModal() {
+        editingTaskId = null;
+        document.getElementById("modalTitle").textContent = "➕ Create New Task";
+        document.getElementById("taskTitle").value = "";
+        document.getElementById("taskDescription").value = "";
+        document.getElementById("taskCategory").value = "";
+        document.getElementById("taskDeadline").value = "";
+
+        document.querySelectorAll(".priority-btn").forEach((btn) => btn.classList.remove("active"));
+        document.querySelector(".priority-btn.medium").classList.add("active");
+        currentPriority = "medium";
+
+        updateCategoryDropdown();
+        document.getElementById("taskModal").classList.add("active");
+    }
+
+    // Open edit modal
+    function openEditModal(task) {
+        editingTaskId = task.id;
+        document.getElementById("modalTitle").textContent = "✏️ Edit Task";
+        document.getElementById("taskTitle").value = task.text;
+        document.getElementById("taskDescription").value = task.description || "";
+        document.getElementById("taskCategory").value = task.category || "";
+        document.getElementById("taskDeadline").value = task.dueDate || "";
+
+        document.querySelectorAll(".priority-btn").forEach((btn) => btn.classList.remove("active"));
+        document.querySelector(`.priority-btn.${task.priority}`).classList.add("active");
+        currentPriority = task.priority;
+
+        updateCategoryDropdown();
+        document.getElementById("taskModal").classList.add("active");
+    }
+
+    // Save task
+    function saveTask() {
+        const title = document.getElementById("taskTitle").value.trim();
+        const description = document.getElementById("taskDescription").value.trim();
+        const category = document.getElementById("taskCategory").value;
+        const deadline = document.getElementById("taskDeadline").value;
+
+        if (!title) {
+            alert("Please enter a task title");
+            return;
+        }
+
+        if (editingTaskId) {
+            // Edit existing task
+            const task = tasks.find((t) => t.id === editingTaskId);
+            task.text = title;
+            task.description = description;
+            task.priority = currentPriority;
+            task.category = category;
+            task.dueDate = deadline || null;
+        } else {
+            // Create new task
+            const task = {
+                id: generateId(),
+                text: title,
+                description: description,
+                completed: false,
+                priority: currentPriority,
+                category: category || null,
+                dueDate: deadline || null,
+                createdAt: new Date().toISOString(),
+            };
+            tasks.unshift(task);
+        }
+
+        saveData();
+        renderTasks();
+        document.getElementById("taskModal").classList.remove("active");
+    }
+
+    // Update category dropdown
+    function updateCategoryDropdown() {
+        const select = document.getElementById("taskCategory");
+        const currentValue = select.value;
+
+        select.innerHTML = '<option value="">No Category</option>';
+        categories.forEach((cat) => {
+            const option = document.createElement("option");
+            option.value = cat;
+            option.textContent = cat;
+            select.appendChild(option);
+        });
+
+        if (currentValue) select.value = currentValue;
+    }
+
+    // Render categories
+    function renderCategories() {
+        const container = document.getElementById("categoryList");
+        container.innerHTML = categories
+            .map(
+                (cat) => `
+                    <div class="category-tag">
+                        <span>${cat}</span>
+                        <button data-category="${cat}">✖</button>
+                    </div>
+                `
+            )
+            .join("");
+
+        // Attach delete listeners
+        container.querySelectorAll("button").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const cat = btn.dataset.category;
+                if (confirm(`Delete category "${cat}"?`)) {
+                    categories = categories.filter((c) => c !== cat);
+                    // Remove category from tasks
+                    tasks.forEach((task) => {
+                        if (task.category === cat) task.category = null;
+                    });
+                    saveData();
+                    renderCategories();
+                    updateCategoryDropdown();
+                }
+            });
+        });
+    }
+
+    // Add category
+    function addCategory() {
+        const input = document.getElementById("newCategoryInput");
+        const name = input.value.trim();
+
+        if (!name) return;
+
+        if (categories.includes(name)) {
+            alert("This category already exists!");
+            return;
+        }
+
+        categories.push(name);
+        input.value = "";
+        saveData();
+        renderCategories();
+    }
+
+    // Check notifications (desktop only)
+    function checkNotifications() {
+        if (
+            !("Notification" in window) ||
+            Notification.permission !== "granted" ||
+            window.innerWidth <= 768
+        )
+            return;
+
+        const now = new Date();
+        tasks.forEach((task) => {
+            if (task.completed || !task.dueDate || notifiedTasks.has(task.id)) return;
+
+            const dueDate = new Date(task.dueDate);
+            const timeDiff = dueDate - now;
+            const minutesDiff = Math.floor(timeDiff / 60000);
+
+            // Notify 15 minutes before
+            if (minutesDiff <= 15 && minutesDiff > 0) {
+                new Notification("📝 Task Due Soon!", {
+                    body: `"${task.text}" is due in ${minutesDiff} minutes`,
+                    icon: "📝",
+                    tag: task.id,
+                });
+                notifiedTasks.add(task.id);
+                saveData();
+            }
+            // Notify when overdue
+            else if (timeDiff < 0 && Math.abs(minutesDiff) < 5) {
+                new Notification("⚠️ Task Overdue!", {
+                    body: `"${task.text}" is now overdue!`,
+                    icon: "⚠️",
+                    tag: task.id,
+                });
+                notifiedTasks.add(task.id);
+                saveData();
+            }
+        });
+    }
+
+    // Priority selector in modal
+    document.querySelectorAll(".priority-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".priority-btn").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentPriority = btn.dataset.priority;
+        });
+    });
+
+    // Sort options
+    document.querySelectorAll(".sort-option").forEach((option) => {
+        option.addEventListener("click", () => {
+            document.querySelectorAll(".sort-option").forEach((o) => o.classList.remove("active"));
+            option.classList.add("active");
+            currentSort = option.dataset.sort;
+            renderTasks();
+        });
+    });
+
+    // Filter buttons
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentFilter = btn.dataset.filter;
+            renderTasks();
+        });
+    });
+
+    // Control buttons
+    document.getElementById("addTaskBtn").addEventListener("click", openAddModal);
+
+    document.getElementById("sortBtn").addEventListener("click", () => {
+        const panel = document.getElementById("sortPanel");
+        panel.classList.toggle("active");
+    });
+
+    document.getElementById("manageCategoriesBtn").addEventListener("click", () => {
+        renderCategories();
+        updateCategoryDropdown();
+        document.getElementById("categoryModal").classList.add("active");
+    });
+
+    // Modal buttons
+    document.getElementById("saveTaskBtn").addEventListener("click", saveTask);
+
+    document.getElementById("cancelTaskBtn").addEventListener("click", () => {
+        document.getElementById("taskModal").classList.remove("active");
+    });
+
+    document.getElementById("closeCategoryModal").addEventListener("click", () => {
+        document.getElementById("categoryModal").classList.remove("active");
+    });
+
+    document.getElementById("addCategoryBtn").addEventListener("click", addCategory);
+
+    document.getElementById("newCategoryInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addCategory();
+    });
+
+    // Overlay controls
+    const todoBtn = document.getElementById("todoBtn");
+    const todoOverlay = document.getElementById("todoOverlay");
+    const closeTodoBtn = document.getElementById("closeTodoOverlay");
+
+    if (todoBtn) {
+        todoBtn.addEventListener("click", () => {
+            todoOverlay.classList.add("active");
+            document.body.classList.add("no-scroll-todo");
+            renderTasks();
+        });
+    }
+
+    if (closeTodoBtn) {
+        closeTodoBtn.addEventListener("click", () => {
+            todoOverlay.classList.remove("active");
+            document.body.classList.remove("no-scroll-todo");
+        });
+    }
+
+    // Close modals when clicking outside
+    document.getElementById("taskModal").addEventListener("click", (e) => {
+        if (e.target.id === "taskModal") {
+            document.getElementById("taskModal").classList.remove("active");
+        }
+    });
+
+    document.getElementById("categoryModal").addEventListener("click", (e) => {
+        if (e.target.id === "categoryModal") {
+            document.getElementById("categoryModal").classList.remove("active");
+        }
+    });
+
+    // Initialize
+    loadData();
+    renderTasks();
+
+    // Check notifications every minute (desktop only)
+    if (window.innerWidth > 768) {
+        setInterval(checkNotifications, 60000);
+        checkNotifications();
+    }
+})();
+
+// Touch gesture for menu swipe
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+document.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+});
+
+function handleSwipe() {
+    const swipeThreshold = 100;
+    const swipeDistance = touchEndX - touchStartX;
+
+    // Swipe right to open (from left edge)
+    if (swipeDistance > swipeThreshold && touchStartX < 50) {
+        if (!sideMenu.classList.contains("open")) {
+            sideMenu.classList.add("open");
+            updateOverlay();
+        }
+    }
+
+    // Swipe left to close
+    if (swipeDistance < -swipeThreshold && sideMenu.classList.contains("open")) {
+        sideMenu.classList.remove("open");
+        updateOverlay();
+    }
+}
+
+// Prevent zoom on double tap (iOS)
+let lastTouchEnd = 0;
+document.addEventListener(
+    "touchend",
+    (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    },
+    { passive: false }
+);
+
+// Better viewport height for mobile browsers
+function setViewportHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty("--vh", `${vh}px`);
+}
+
+setViewportHeight();
+window.addEventListener("resize", setViewportHeight);
+window.addEventListener("orientationchange", setViewportHeight);
