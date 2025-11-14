@@ -1,67 +1,55 @@
-/* --- HIGHLIGHT, THEME, WEATHER, SETTINGS, FAVICON, SIDE MENU --- */
+/* --- HIGHLIGHT, FAVICON, SIDE MENU --- */
 
 /* --- HIGHLIGHT LOGIC (structure-aware) --- */
 function highlightCurrent() {
     const date = new Date();
-    let dayOfWeek = date.getDay(); // 0=Sun, 1=Mon...
-    if (dayOfWeek === 0) dayOfWeek = 7; // treat Sunday as 7
+    const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday...
     const currentHour = date.getHours();
-
-    // clear old highlights
-    document
-        .querySelectorAll(".current-day, .current-hour, .current-cell")
-        .forEach((el) => el.classList.remove("current-day", "current-hour", "current-cell"));
-
+    
+    // Clear previous highlights
+    document.querySelectorAll(".current-day, .current-hour, .current-cell").forEach(el => {
+        el.classList.remove("current-day", "current-hour", "current-cell");
+    });
+    
+    // Only highlight on weekdays (Mon-Fri = 1-5)
+    if (dayOfWeek < 1 || dayOfWeek > 5) return;
+    
     const table = document.getElementById("timetable");
     if (!table) return;
-
-    // Highlight day header (assumes first thead row contains day names; first column is time)
+    
+    // Highlight day header (dayOfWeek matches column index)
     const headerRow = table.querySelector("thead tr");
     if (headerRow) {
-        const headerCells = [...headerRow.children];
-        const dayIndex = dayOfWeek - 1; // Monday -> 0
-        if (dayIndex >= 0 && dayIndex < headerCells.length - 1) {
-            const dayCell = headerCells[dayIndex + 1]; // +1 because first cell is time
-            dayCell && dayCell.classList.add("current-day");
+        const headerCells = headerRow.querySelectorAll("th");
+        if (headerCells[dayOfWeek]) {
+            headerCells[dayOfWeek].classList.add("current-day");
         }
     }
-
-    // Try to find a row that matches current hour like "14:00", match first cell text
-    const hourStr = String(currentHour).padStart(2, "0") + ":00";
-    const allRows = [...table.querySelectorAll("tr")];
-    // skip first header row (day names); search the subsequent rows for the time in the first cell
-    for (let i = 1; i < allRows.length; i++) {
-        const row = allRows[i];
-        const firstCell = row.children[0];
-        if (!firstCell) continue;
-        if (firstCell.textContent.trim().startsWith(hourStr)) {
-            firstCell.classList.add("current-hour");
-            // highlight the intersection cell for today's column (first column is time)
-            const dayColIndex = dayOfWeek; // 1..5 maps to children index
-            const targetCell = row.children[dayColIndex];
-            targetCell && targetCell.classList.add("current-cell");
+    
+    // Find and highlight current hour row and cell
+    const rows = table.querySelectorAll("tbody tr, thead tr:not(:first-child)");
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const timeCell = row.cells[0];
+        if (!timeCell) continue;
+        
+        // Extract hour from "HH:00" format
+        const cellText = timeCell.textContent.trim();
+        const cellHour = parseInt(cellText.split(':')[0]);
+        
+        if (cellHour === currentHour) {
+            // Highlight time cell
+            timeCell.classList.add("current-hour");
+            
+            // Highlight today's subject cell
+            const subjectCell = row.cells[dayOfWeek];
+            if (subjectCell) {
+                subjectCell.classList.add("current-cell");
+            }
             break;
         }
     }
-
-    // update time and date display
-    const hourOfTheDay = document.getElementById("hourOfTheDay");
-    if (hourOfTheDay) {
-        const mins = date.getMinutes().toString().padStart(2, "0");
-        hourOfTheDay.textContent = `${date.getHours()}:${mins}`;
-        let dateDisplay = document.getElementById("dateOfTheDay");
-        if (!dateDisplay) {
-            dateDisplay = document.createElement("div");
-            dateDisplay.id = "dateOfTheDay";
-            hourOfTheDay.after(dateDisplay);
-        }
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-        dateDisplay.textContent = `${day}.${month}.${year}`;
-    }
 }
-
 /* Ensure subject cells (TD or TH) receive .subject and click behavior */
 function setupSubjectHighlight() {
     const table = document.getElementById("timetable");
@@ -96,237 +84,45 @@ function startHighlightLoop() {
 setupSubjectHighlight();
 startHighlightLoop();
 
-// --- THEME & COLOR PICKER ---
-const themeToggle = document.getElementById("switchTheme");
-const themeIcon = document.getElementById("themeIcon");
-let isDarkTheme = false;
-
-function changeTheme() {
-    isDarkTheme = !isDarkTheme;
-    if (isDarkTheme) {
-        document.body.setAttribute("data-theme", "dark");
-        themeIcon.classList.remove("fa-sun");
-        themeIcon.classList.add("fa-moon");
-        localStorage.setItem("theme", "dark");
-    } else {
-        document.body.removeAttribute("data-theme");
-        themeIcon.classList.remove("fa-moon");
-        themeIcon.classList.add("fa-sun");
-        localStorage.setItem("theme", "light");
-    }
-}
-
-// Guard usage: elements exist in DOM (script is at end of body)
-themeToggle && themeToggle.addEventListener("click", changeTheme);
-
-// On page load, apply saved theme
-const savedTheme = localStorage.getItem("theme");
-if (savedTheme === "dark") {
-    document.body.setAttribute("data-theme", "dark");
-    themeIcon && themeIcon.classList.remove("fa-sun");
-    themeIcon && themeIcon.classList.add("fa-moon");
-    isDarkTheme = true;
-} else {
-    document.body.removeAttribute("data-theme");
-    themeIcon && themeIcon.classList.remove("fa-moon");
-    themeIcon && themeIcon.classList.add("fa-sun");
-    isDarkTheme = false;
-}
-
-const colorPicker = document.getElementById("accentColorPicker");
-colorPicker &&
-    colorPicker.addEventListener("input", (event) => {
-        const newColor = event.target.value;
-        document.documentElement.style.setProperty("--accent-color", newColor);
-    });
-colorPicker &&
-    colorPicker.addEventListener("change", (event) => {
-        const newColor = event.target.value;
-        localStorage.setItem("accentColor", newColor);
-    });
-const savedColor = localStorage.getItem("accentColor");
-if (savedColor) {
-    document.documentElement.style.setProperty("--accent-color", savedColor);
-    if (colorPicker) colorPicker.value = savedColor;
-}
-
-// --- WEATHER ---
-function getWeather() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(fetchWeatherData, handleLocationError);
-    } else {
-        const desc = document.getElementById("weather-desc");
-        if (desc) desc.textContent = "Geolocation is not supported by this browser.";
-    }
-}
-function fetchWeatherData(position) {
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset&timezone=auto`;
-    fetch(url)
-        .then((res) => res.json())
-        .then((data) => {
-            const weather = data.current_weather;
-            const temp = `${weather.temperature}°C`;
-            const sunrise = formatTime(data.daily.sunrise[0]);
-            const sunset = formatTime(data.daily.sunset[0]);
-            const now = new Date();
-            const sunriseTime = new Date(data.daily.sunrise[0]);
-            const sunsetTime = new Date(data.daily.sunset[0]);
-            const isNight = now < sunriseTime || now > sunsetTime;
-            const emoji = isNight ? "🌙" : getWeatherEmoji(weather.weathercode);
-            document.getElementById("weather-emoji").textContent = emoji;
-            document.getElementById("weather-temp").textContent = temp;
-            document.getElementById("weather-desc").textContent = getWeatherDescription(
-                weather.weathercode
-            );
-            document.getElementById("sunrise").textContent = sunrise;
-            document.getElementById("sunset").textContent = sunset;
-            fetchLocationName(lat, lon);
-        })
-        .catch(() => {
-            const desc = document.getElementById("weather-desc");
-            if (desc) desc.textContent = "Failed to fetch weather data.";
-        });
-}
-function fetchLocationName(lat, lon) {
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
-        .then((res) => res.json())
-        .then((data) => {
-            let location = "Unknown location";
-            if (data.address) {
-                if (data.address.city) location = data.address.city;
-                else if (data.address.town) location = data.address.town;
-                else if (data.address.village) location = data.address.village;
-                else if (data.address.county) location = data.address.county;
-                if (data.address.country_code)
-                    location += ", " + data.address.country_code.toUpperCase();
-            }
-            const el = document.getElementById("weather-location");
-            if (el)
-                el.innerHTML = `<i id="location-dot" class="fa-solid fa-location-dot"></i> ${location}`;
-        })
-        .catch(() => {
-            const el = document.getElementById("weather-location");
-            if (el)
-                el.innerHTML = `<i id="location-dot" class="fa-solid fa-location-dot"></i> Unknown location`;
-        });
-}
-function handleLocationError() {
-    const desc = document.getElementById("weather-desc");
-    if (desc) desc.textContent = "Error obtaining geolocation";
-}
-function formatTime(iso) {
-    const d = new Date(iso);
-    return (
-        d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0")
-    );
-}
-function getWeatherEmoji(code) {
-    if (code === 0) return "☀️";
-    if ([1, 2].includes(code)) return "🌤️";
-    if (code === 3) return "☁️";
-    if ([45, 48].includes(code)) return "🌫️";
-    if ([51, 53, 55, 56, 57].includes(code)) return "🌦️";
-    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "🌧️";
-    if ([71, 73, 75, 77, 85, 86].includes(code)) return "❄️";
-    if ([95, 96, 99].includes(code)) return "⛈️";
-    return "❓";
-}
-function getWeatherDescription(code) {
-    if (code === 0) return "Clear";
-    if ([1, 2].includes(code)) return "Partially Cloudy";
-    if (code === 3) return "Cloudy";
-    if ([45, 48].includes(code)) return "Fog";
-    if ([51, 53, 55, 56, 57].includes(code)) return "Drizzle";
-    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Rain";
-    if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snow";
-    if ([95, 96, 99].includes(code)) return "Thunderstorm";
-    return "Unknown";
-}
-getWeather();
-setInterval(getWeather, 300000);
-
-// --- SETTINGS MENU LOGIC ---
-const settingsButton = document.getElementById("settingsButton");
-const settingsMenu = document.getElementById("settingsMenu");
-const settingsIcon = settingsButton && settingsButton.querySelector("i");
-
-function rotateSettingsIcon(direction) {
-    if (!settingsIcon) return;
-    settingsIcon.classList.remove("rotate-once-right", "rotate-once-left");
-    void settingsIcon.offsetWidth; // Force reflow to restart animation
-    if (direction === "right") {
-        settingsIcon.classList.add("rotate-once-right");
-    } else {
-        settingsIcon.classList.add("rotate-once-left");
-    }
-}
-
-settingsButton &&
-    settingsButton.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isOpening = !settingsMenu.classList.contains("open");
-        settingsMenu.classList.toggle("open");
-        rotateSettingsIcon(isOpening ? "right" : "left");
-    });
-
-document.addEventListener("click", (e) => {
-    if (
-        settingsMenu &&
-        settingsButton &&
-        !settingsMenu.contains(e.target) &&
-        !settingsButton.contains(e.target)
-    ) {
-        if (settingsMenu.classList.contains("open")) {
-            settingsMenu.classList.remove("open");
-            rotateSettingsIcon("left");
-        }
-    }
-});
-
-// Fancy horizontal scroll indicator
-const scrollIndicator = document.getElementById("scroll-indicator");
-window.addEventListener("scroll", () => {
-    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const scrolled = window.scrollY;
-    const percent = scrollable > 0 ? (scrolled / scrollable) * 100 : 0;
-    if (scrollIndicator) scrollIndicator.style.width = percent + "%";
-});
-
-// Favicon
-function updateFavicon(accentColor) {
-    const size = 16;
-    const canvas = document.createElement("canvas");
-    canvas.width = canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-    ctx.fillStyle = accentColor;
-    ctx.fill();
-    const link = document.querySelector("link[rel~='icon']") || document.createElement("link");
-    link.rel = "icon";
-    link.type = "image/png";
-    link.href = canvas.toDataURL("image/png");
-    document.head.appendChild(link);
-}
-
-// Initial set
-updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim());
-
-// Update when accent color changes
-const accentColorPicker = document.getElementById("accentColorPicker");
-if (accentColorPicker) {
-    accentColorPicker.addEventListener("input", (e) => {
-        updateFavicon(e.target.value);
-    });
-}
 
 // SIDE MENU toggles (script at end of body; elements exist)
 const sideMenu = document.getElementById("sideMenu");
 const menuToggle = document.getElementById("menuToggle");
 const menuIcon = document.getElementById("menuIcon");
 const overlay = document.getElementById("overlay");
+
+// Info overlay controls
+const infoBtn = document.getElementById("infoBtn");
+const infoOverlay = document.getElementById("infoOverlay");
+const closeInfoOverlay = document.getElementById("closeInfoOverlay");
+
+if (infoBtn) {
+    infoBtn.addEventListener("click", () => {
+        // close side menu if open for clarity
+        if (sideMenu && sideMenu.classList.contains("open")) {
+            sideMenu.classList.remove("open");
+            menuIcon.classList.remove("fa-arrow-left");
+            menuIcon.classList.add("fa-arrow-right");
+        }
+        if (manualsPopup && manualsPopup.classList.contains("active")) {
+            // prefer to close manuals popup first if it's open
+            manualsPopup.classList.remove("active");
+        }
+        if (infoOverlay) infoOverlay.classList.add("active");
+        if (overlay) overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+    });
+}
+
+if (closeInfoOverlay) {
+    closeInfoOverlay.addEventListener("click", () => {
+        if (infoOverlay) infoOverlay.classList.remove("active");
+        if (overlay) overlay.classList.remove("active");
+        document.body.style.overflow = "";
+        // update overlay state in case other elements need it
+        try { updateOverlay(); } catch (e) {}
+    });
+}
 
 /* --- ALL MANUALS POPUP --- */
 const allManualsBtn = document.getElementById("allManualsBtn");
@@ -410,22 +206,11 @@ function findBestManualForSubject(subjectText) {
     return best;
 }
 
-function parseTimeCellToDate(timeText, baseDate) {
-    // expects formats like "14:00" or "14:00 " etc.
-    const m = timeText.trim().match(/(\d{1,2}):(\d{2})/);
-    if (!m) return null;
-    const h = parseInt(m[1], 10);
-    const min = parseInt(m[2], 10);
-    const d = new Date(
-        baseDate.getFullYear(),
-        baseDate.getMonth(),
-        baseDate.getDate(),
-        h,
-        min,
-        0,
-        0
-    );
-    return d;
+function parseTimeCellToDate(timeStr, referenceDate) {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const date = new Date(referenceDate);
+  date.setHours(hours, minutes || 0, 0, 0);
+  return date;
 }
 
 function updateRecommendedManual() {
@@ -515,7 +300,7 @@ allManualsBtn &&
         overlay.classList.add("active");
         document.body.style.overflow = "hidden";
 
-        // închide meniul lateral dacă e deschis
+        // Închide meniul lateral dacă e deschis
         if (sideMenu.classList.contains("open")) {
             sideMenu.classList.remove("open");
             menuIcon.classList.remove("fa-arrow-left");
@@ -545,11 +330,12 @@ manualSearch &&
             }
         });
     });
-// --- Overlay manager: păstrează overlay activ dacă meniul sau popup-ul de manuale sunt deschise ---
+
 function updateOverlay() {
     const isSideOpen = sideMenu && sideMenu.classList.contains("open");
     const isManualsOpen = manualsPopup && manualsPopup.classList.contains("active");
-    if (isSideOpen || isManualsOpen) overlay.classList.add("active");
+    const isInfoOpen = infoOverlay && infoOverlay.classList.contains("active");
+    if (isSideOpen || isManualsOpen || isInfoOpen) overlay.classList.add("active");
     else overlay.classList.remove("active");
 }
 
@@ -560,7 +346,7 @@ if (menuToggle) {
         if (manualsPopup && manualsPopup.classList.contains("active")) return;
 
         const isOpen = sideMenu.classList.toggle("open");
-        // Asigurăm overlay-ul când se deschide meniul; la închidere, updateOverlay decide
+        // AsigurÃ„Æ’m overlay-ul cÃƒÂ¢nd se deschide meniul; la ÃƒÂ®nchidere, updateOverlay decide
         updateOverlay();
 
         if (isOpen) {
@@ -573,65 +359,29 @@ if (menuToggle) {
     });
 }
 
-// OVERLAY click: închide top-most element (popup manuale prioritar), altfel meniul
+// OVERLAY click: close top-most (info -> manuals -> side menu)
 if (overlay) {
     overlay.addEventListener("click", () => {
-        // Dacă popup manuale e deschis -> închidem întâi popup-ul (comportament tipic)
-        if (manualsPopup && manualsPopup.classList.contains("active")) {
+        // Close info overlay first if open
+        if (infoOverlay && infoOverlay.classList.contains("active")) {
+            infoOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+        // Then manuals popup
+        else if (manualsPopup && manualsPopup.classList.contains("active")) {
             manualsPopup.classList.remove("active");
-            document.body.style.overflow = ""; // readucem scrollul
-        } else if (sideMenu && sideMenu.classList.contains("open")) {
-            // Altfel închidem meniul lateral
+            document.body.style.overflow = "";
+        }
+        // Then side menu
+        else if (sideMenu && sideMenu.classList.contains("open")) {
             sideMenu.classList.remove("open");
             menuIcon.classList.remove("fa-arrow-left");
             menuIcon.classList.add("fa-arrow-right");
         }
-        // Actualizăm starea overlay-ului după modificări
+        // Update overlay state
         updateOverlay();
     });
 }
-
-// ALL MANUALS button: deschide popup și folosește updateOverlay
-if (allManualsBtn) {
-    allManualsBtn.addEventListener("click", () => {
-        // deschidem popup-ul
-        manualsPopup.classList.add("active");
-        document.body.style.overflow = "hidden"; // blocăm scroll-ul în fundal
-
-        // dacă meniul lateral era deschis, îl închidem pentru claritate
-        if (sideMenu && sideMenu.classList.contains("open")) {
-            sideMenu.classList.remove("open");
-            menuIcon.classList.remove("fa-arrow-left");
-            menuIcon.classList.add("fa-arrow-right");
-        }
-
-        updateOverlay();
-    });
-}
-
-// Close button din popup: închide popup și actualizează overlay
-if (closeManualsPopup) {
-    closeManualsPopup.addEventListener("click", () => {
-        manualsPopup.classList.remove("active");
-        document.body.style.overflow = "";
-        updateOverlay();
-    });
-}
-// Preseturi de culoare
-const colorPresets = document.querySelectorAll("#colorPresets .preset");
-colorPresets.forEach((preset) => {
-    preset.addEventListener("click", () => {
-        const newColor = preset.getAttribute("data-color");
-        document.documentElement.style.setProperty("--accent-color", newColor);
-        localStorage.setItem("accentColor", newColor);
-
-        // update și favicon-ul
-        updateFavicon(newColor);
-
-        // actualizează și inputul de tip color
-        if (colorPicker) colorPicker.value = newColor;
-    });
-});
 
 // --- CLOCK OVERLAY ---
 const clockBtn = document.getElementById("clockBtn");
@@ -664,6 +414,1017 @@ closeOverlay.addEventListener("click", () => {
 
 setInterval(updateClock, 1000);
 
+
+// Prevent zoom on double tap (iOS)
+let lastTouchEnd = 0;
+document.addEventListener(
+    "touchend",
+    (e) => {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    },
+    { passive: false }
+);
+
+
+/* ========================================
+   CUSTOMIZATION OVERLAY SYSTEM
+   ======================================== */
+
+(function() {
+    'use strict';
+    
+    // Storage keys
+    const STORAGE_KEYS = {
+        THEME: 'customization-theme',
+        ACCENT_COLOR: 'customization-accent-color',
+        FONT: 'customization-font',
+        COLOR_PRESETS: 'customization-color-presets',
+        SAVED_PRESETS: 'customization-saved-presets',
+        EMOJI_SETTINGS: 'customization-emoji-settings',
+    ICON_STYLE: 'customization-icon-style',
+    EMOJI_SIZE: 'customization-emoji-size'
+    };
+    
+    // Default color presets
+    const DEFAULT_COLOR_PRESETS = ['#6196ff', '#ff6b6b', '#f59e0b', '#51d88a', '#a855f7'];
+    
+    // State
+    let currentTheme = 'light';
+    let currentAccentColor = '#6196ff';
+    let currentFont = "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif";
+    let colorPresets = [...DEFAULT_COLOR_PRESETS];
+    let savedPresets = [];
+    
+    // Add example presets if there are no saved presets
+    if (savedPresets.length === 0) {
+        savedPresets = [
+            {
+                name: "Ocean Breeze",
+                theme: "ocean",
+                accentColor: "#4CB8FF",
+                font: "'Poppins', sans-serif",
+                timestamp: Date.now()
+            },
+            {
+                name: "Modern Dark",
+                theme: "space",
+                accentColor: "#A855F7",
+                font: "'Inter', sans-serif",
+                timestamp: Date.now()
+            },
+            {
+                name: "Forest Calm",
+                theme: "forest",
+                accentColor: "#4ADE80",
+                font: "'DM Sans', sans-serif",
+                timestamp: Date.now()
+            },
+            {
+                name: "Sunset Vibes",
+                theme: "sunset",
+                accentColor: "#FF8C65",
+                font: "'Quicksand', sans-serif",
+                timestamp: Date.now()
+            },
+            {
+                name: "Lavender Dreams",
+                theme: "lavender",
+                accentColor: "#9D85FF",
+                font: "'Raleway', sans-serif",
+                timestamp: Date.now()
+            },
+            {
+                name: "Midnight Code",
+                theme: "midnight",
+                accentColor: "#3B82F6",
+                font: "'JetBrains Mono', monospace",
+                timestamp: Date.now()
+            },
+            {
+                name: "Classic Light",
+                theme: "light",
+                accentColor: "#6196FF",
+                font: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
+                timestamp: Date.now()
+            },  
+            {
+                name: "Roseo",
+                theme: "rose",
+                accentColor: "#C486FE",
+                font: "'Space Grotesk', sans-serif",
+                timestamp: Date.now()
+            }
+        ];
+        localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
+    }
+    
+    // Google Fonts link element
+    let googleFontsLink = null;
+    
+    // Initialize
+    function init() {
+        loadSettings();
+        applySettings();
+        setupEventListeners();
+        renderColorPresets();
+        renderSavedPresets();
+        setupGoogleFonts();
+        loadSavedCustomFonts(); // NEW
+        checkColorContrast(); // NEW
+            setupEmojiIconListeners(); // Set up event listeners
+    initializeEmojiIconUI();   // Initialize UI state
+    }
+    
+    // Load settings from localStorage
+    function loadSettings() {
+        currentTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
+        currentAccentColor = localStorage.getItem(STORAGE_KEYS.ACCENT_COLOR) || '#6196ff';
+        currentFont = localStorage.getItem(STORAGE_KEYS.FONT) || "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif";
+        
+        const savedColorPresets = localStorage.getItem(STORAGE_KEYS.COLOR_PRESETS);
+        if (savedColorPresets) {
+            try {
+                colorPresets = JSON.parse(savedColorPresets);
+            } catch (e) {
+                colorPresets = [...DEFAULT_COLOR_PRESETS];
+            }
+        }
+        
+        const savedPresetsData = localStorage.getItem(STORAGE_KEYS.SAVED_PRESETS);
+        if (savedPresetsData) {
+            try {
+                savedPresets = JSON.parse(savedPresetsData);
+            } catch (e) {
+                savedPresets = [];
+            }
+        }
+    }
+    
+    // Apply settings
+    function applySettings() {
+        applyTheme(currentTheme);
+        applyAccentColor(currentAccentColor);
+        applyFont(currentFont);
+        updateUISelections();
+    }
+    
+    // Apply theme
+function applyTheme(theme) {
+    currentTheme = theme;
+    
+    if (theme === 'auto') {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        theme = prefersDark ? 'dark' : 'light';
+    }
+    
+    // Remove all theme attributes first
+    document.body.removeAttribute('data-theme');
+    
+    if (theme === 'space') {
+        document.body.setAttribute('data-theme', 'space');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#f0f0f0');
+        root.style.setProperty('--bg-color', '#000000');
+        root.style.setProperty('--card-bg', '#0a0a0a');
+        root.style.setProperty('--border-color', '#1a1a1a');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.5)');
+        root.style.setProperty('--highlight-color', '#1a1a1a');
+        root.style.setProperty('--current-hour-color', '#1a3a5a');
+        root.style.setProperty('--current-day-color', '#1a3a5a');
+    } else if (theme === 'midnight') {
+        document.body.setAttribute('data-theme', 'midnight');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#e8eaf0');
+        root.style.setProperty('--bg-color', '#0f1419');
+        root.style.setProperty('--card-bg', '#1a1f2e');
+        root.style.setProperty('--border-color', '#2a2f3e');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.4)');
+        root.style.setProperty('--highlight-color', '#252a3a');
+        root.style.setProperty('--current-hour-color', '#2a4a6a');
+        root.style.setProperty('--current-day-color', '#2a4a6a');
+    } else if (theme === 'sunset') {
+        document.body.setAttribute('data-theme', 'sunset');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#2d2d2d');
+        root.style.setProperty('--bg-color', '#fff5f0');
+        root.style.setProperty('--card-bg', '#ffe8dc');
+        root.style.setProperty('--border-color', '#ffd4c0');
+        root.style.setProperty('--shadow-color', 'rgba(255, 140, 100, 0.15)');
+        root.style.setProperty('--highlight-color', '#ffdcc8');
+        root.style.setProperty('--current-hour-color', '#ffb89d');
+        root.style.setProperty('--current-day-color', '#ffb89d');
+    } else if (theme === 'forest') {
+        document.body.setAttribute('data-theme', 'forest');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#e8f5e8');
+        root.style.setProperty('--bg-color', '#0d1f12');
+        root.style.setProperty('--card-bg', '#162820');
+        root.style.setProperty('--border-color', '#1f3628');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.4)');
+        root.style.setProperty('--highlight-color', '#1f3628');
+        root.style.setProperty('--current-hour-color', '#2d5a3d');
+        root.style.setProperty('--current-day-color', '#2d5a3d');
+    } else if (theme === 'ocean') {
+        document.body.setAttribute('data-theme', 'ocean');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#e8f4f8');
+        root.style.setProperty('--bg-color', '#0a1929');
+        root.style.setProperty('--card-bg', '#132f4c');
+        root.style.setProperty('--border-color', '#1e4976');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.4)');
+        root.style.setProperty('--highlight-color', '#1a3a5a');
+        root.style.setProperty('--current-hour-color', '#2a5a8a');
+        root.style.setProperty('--current-day-color', '#2a5a8a');
+    } else if (theme === 'lavender') {
+        document.body.setAttribute('data-theme', 'lavender');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#2d2d2d');
+        root.style.setProperty('--bg-color', '#f8f5ff');
+        root.style.setProperty('--card-bg', '#f0e8ff');
+        root.style.setProperty('--border-color', '#e0d4ff');
+        root.style.setProperty('--shadow-color', 'rgba(160, 120, 255, 0.15)');
+        root.style.setProperty('--highlight-color', '#e8dcff');
+        root.style.setProperty('--current-hour-color', '#c8b0ff');
+        root.style.setProperty('--current-day-color', '#c8b0ff');
+    } else if (theme === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#f0f0f0');
+        root.style.setProperty('--bg-color', '#1a1a1a');
+        root.style.setProperty('--card-bg', '#2d2d2d');
+        root.style.setProperty('--border-color', '#3d3d3d');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.3)');
+        root.style.setProperty('--highlight-color', '#424242');
+        root.style.setProperty('--current-hour-color', '#2a527a');
+        root.style.setProperty('--current-day-color', '#2a527a');
+    } else if (theme === 'light') {
+        document.body.setAttribute('data-theme', 'light');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#2d2d2d');
+        root.style.setProperty('--bg-color', '#ffffff');
+        root.style.setProperty('--card-bg', '#f5f5f5');
+        root.style.setProperty('--border-color', '#e0e0e0');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.1)');
+        root.style.setProperty('--highlight-color', '#e0e0e0');
+        root.style.setProperty('--current-hour-color', '#a0c4ff');
+        root.style.setProperty('--current-day-color', '#a0c4ff');
+    } else if (theme === 'rose') {
+        document.body.setAttribute('data-theme', 'rose');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#f8d3e8');
+        root.style.setProperty('--bg-color', '#3f0f1f');
+        root.style.setProperty('--card-bg', '#5c2a3e');
+        root.style.setProperty('--border-color', '#7a4b5f');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.4)');
+        root.style.setProperty('--highlight-color', '#9c6b8f');
+        root.style.setProperty('--current-hour-color', '#b58caa');
+        root.style.setProperty('--current-day-color', '#b58caa');
+    } else if (theme === 'demonic-red') {
+        document.body.setAttribute('data-theme', 'demonic-red');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#ffe5e5');
+        root.style.setProperty('--bg-color', '#330000');
+        root.style.setProperty('--card-bg', '#4d0000');
+        root.style.setProperty('--border-color', '#660000');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.4)');
+        root.style.setProperty('--highlight-color', '#800000');
+        root.style.setProperty('--current-hour-color', '#b30000');
+        root.style.setProperty('--current-day-color', '#b30000');
+    } else if (theme === 'sandy-shores') {
+        document.body.setAttribute('data-theme', 'sandy-shores');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#403000');
+        root.style.setProperty('--bg-color', '#fff8e1');
+        root.style.setProperty('--card-bg', '#ffecb3');
+        root.style.setProperty('--border-color', '#ffe082');
+        root.style.setProperty('--shadow-color', 'rgba(255, 193, 7, 0.15)');
+        root.style.setProperty('--highlight-color', '#ffda65');
+        root.style.setProperty('--current-hour-color', '#ffca28');
+        root.style.setProperty('--current-day-color', '#ffca28');
+    } else if (theme === 'burnt-charcoal') {
+        document.body.setAttribute('data-theme', 'burnt-charcoal');
+        const root = document.documentElement;
+        root.style.setProperty('--text-color', '#ffffff');
+        root.style.setProperty('--bg-color', '#2c2c2c');
+        root.style.setProperty('--card-bg', '#3d3d3d');
+        root.style.setProperty('--border-color', '#333333');
+        root.style.setProperty('--shadow-color', 'rgba(0, 0, 0, 0.3)');
+        root.style.setProperty('--highlight-color', '#444444');
+        root.style.setProperty('--current-hour-color', '#555555');
+        root.style.setProperty('--current-day-color', '#555555');
+    }
+
+    localStorage.setItem(STORAGE_KEYS.THEME, currentTheme);
+    updateFavicon(currentAccentColor);
+    checkColorContrast(); // NEW: Check contrast after theme change
+}
+
+// ============ NEW: Color contrast warning system ============
+function checkColorContrast() {
+    const warningEl = document.getElementById('contrastWarning');
+    if (!warningEl) return;
+    
+    const lightness = getColorLightness(currentAccentColor);
+    const isLightTheme = ['light', 'sunset', 'lavender'].includes(currentTheme) || 
+                         (currentTheme === 'auto' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const isDarkTheme = ['dark', 'space', 'midnight', 'forest', 'ocean'].includes(currentTheme) ||
+                        (currentTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    let showWarning = false;
+    let warningMessage = '';
+    
+    if (isLightTheme && lightness > 85) {
+        showWarning = true;
+        warningMessage = '<i class="fa-solid fa-triangle-exclamation"></i> This accent color may be too light for Light theme. Consider a darker shade for better visibility.';
+    } else if (isDarkTheme && lightness < 25) {
+        showWarning = true;
+        warningMessage = '<i class="fa-solid fa-triangle-exclamation"></i> This accent color may be too dark for Dark theme. Consider a lighter shade for better visibility.';
+    }
+    
+    if (showWarning) {
+        warningEl.innerHTML = warningMessage;
+        warningEl.style.display = 'block';
+    } else {
+        warningEl.style.display = 'none';
+    }
+}
+
+function getColorLightness(hex) {
+    // Convert hex to RGB
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    
+    // Calculate relative luminance
+    const [rs, gs, bs] = [r, g, b].map(c => {
+        c = c / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+    
+    const luminance = 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+    return luminance * 100;
+}
+
+    
+    // Apply accent color
+function applyAccentColor(color) {
+    currentAccentColor = color;
+    document.documentElement.style.setProperty('--accent-color', color);
+    localStorage.setItem(STORAGE_KEYS.ACCENT_COLOR, color);
+    updateFavicon(color);
+    
+    const colorPicker = document.getElementById('customColorPicker');
+    const hexInput = document.getElementById('colorHexInput');
+    if (colorPicker) colorPicker.value = color;
+    if (hexInput) hexInput.value = color.toUpperCase();
+    
+    const oldColorPicker = document.getElementById('accentColorPicker');
+    if (oldColorPicker) oldColorPicker.value = color;
+    
+    // NEW: Update button text color based on background
+    updateButtonTextColors();
+    checkColorContrast(); // NEW: Check contrast
+}
+
+// NEW: Update text colors for better contrast
+function updateButtonTextColors() {
+    const lightness = getColorLightness(currentAccentColor);
+    const addPresetBtn = document.getElementById('addColorPreset');
+    
+    if (addPresetBtn) {
+        if (lightness > 60) {
+            addPresetBtn.style.color = '#000000';
+        } else {
+            addPresetBtn.style.color = '#ffffff';
+        }
+    }
+
+    if (randomColorBtn) {
+        if (lightness > 60) {
+            randomColorBtn.style.color = '#000000';
+        } else {
+            randomColorBtn.style.color = '#ffffff';
+        }
+    }
+
+    // Update all preset items
+    document.querySelectorAll('.preset-item').forEach(item => {
+        const color = item.dataset.color;
+        const itemLightness = getColorLightness(color);
+        const deleteBtn = item.querySelector('.preset-delete');
+        if (deleteBtn && itemLightness > 60) {
+            deleteBtn.style.color = '#000000';
+        }
+    });
+}
+
+    // Apply font
+    function applyFont(font) {
+        currentFont = font;
+        document.documentElement.style.setProperty('--font-family', font);
+        document.body.style.fontFamily = font;
+        localStorage.setItem(STORAGE_KEYS.FONT, font);
+        
+        // Update preview
+        const preview = document.getElementById('fontPreview');
+        if (preview) preview.style.fontFamily = font;
+        
+        // Load Google Font if needed
+        loadGoogleFont(font);
+    }
+    
+    // Update UI selections
+    function updateUISelections() {
+        // Theme cards
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.classList.toggle('active', card.dataset.theme === currentTheme);
+        });
+        
+        // Font select
+        const fontSelect = document.getElementById('fontSelect');
+        if (fontSelect) fontSelect.value = currentFont;
+        
+        // Color presets
+        document.querySelectorAll('.preset-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.color === currentAccentColor);
+        });
+    }
+    
+    // Setup Google Fonts
+    function setupGoogleFonts() {
+        if (!googleFontsLink) {
+            googleFontsLink = document.createElement('link');
+            googleFontsLink.rel = 'stylesheet';
+            googleFontsLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Montserrat:wght@400;600;700&family=Poppins:wght@400;600;700&family=Raleway:wght@400;600;700&family=Ubuntu:wght@400;500;700&family=Nunito:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Outfit:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Fira+Code:wght@400;600&display=swap';
+            document.head.appendChild(googleFontsLink);
+        }
+    }
+    
+    // Load specific Google Font
+    function loadGoogleFont(fontFamily) {
+        // Extract font name
+        const match = fontFamily.match(/'([^']+)'/);
+        if (!match) return;
+        
+        const fontName = match[1];
+        const googleFonts = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 
+                            'Raleway', 'Ubuntu', 'Nunito', 'Quicksand', 'Outfit', 'DM Sans', 
+                            'Space Grotesk', 'Merriweather', 'Playfair Display', 'JetBrains Mono', 'Fira Code'];
+        
+        if (googleFonts.includes(fontName)) {
+            // Font is already loaded via setupGoogleFonts
+            return;
+        }
+    }
+    
+    // Render color presets
+    function renderColorPresets() {
+        const grid = document.getElementById('colorPresetsGrid');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        colorPresets.forEach(color => {
+            const item = document.createElement('div');
+            item.className = 'preset-item';
+            item.dataset.color = color;
+            item.style.background = color;
+            if (color === currentAccentColor) item.classList.add('active');
+            
+            const lightness = getColorLightness(color);
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'preset-delete';
+            deleteBtn.dataset.color = color;
+            deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            // NEW: Set text color based on background lightness
+            deleteBtn.style.color = lightness > 60 ? '#000000' : '#ffffff';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteColorPreset(color);
+            };
+            
+            item.appendChild(deleteBtn);
+            item.onclick = () => applyAccentColor(color);
+            
+            grid.appendChild(item);
+        });
+        
+        localStorage.setItem(STORAGE_KEYS.COLOR_PRESETS, JSON.stringify(colorPresets));
+    }
+    
+    // Add color preset
+    function addColorPreset(color) {
+        if (!color || !/^#[0-9A-F]{6}$/i.test(color)) {
+            alert('Please enter a valid hex color (e.g., #6196FF)');
+            return;
+        }
+        
+        if (colorPresets.includes(color.toLowerCase())) {
+            alert('This color is already in your presets!');
+            return;
+        }
+        
+        colorPresets.push(color.toLowerCase());
+        renderColorPresets();
+    }
+    
+    // Delete color preset
+    function deleteColorPreset(color) {
+                if (colorPresets.length <= 1) {
+            alert('You must keep at least one color preset!');
+            return;
+        }
+        
+        if (confirm('Delete this color preset?')) {
+            colorPresets = colorPresets.filter(c => c !== color);
+            renderColorPresets();
+        }
+    }
+    
+    // Render saved presets
+    function renderSavedPresets() {
+        const grid = document.getElementById('savedPresetsGrid');
+        if (!grid) return;
+        
+        if (savedPresets.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; opacity: 0.6; padding: 2rem;">No saved presets yet. Click "Save Current" to create one!</p>';
+            return;
+        }
+        
+        grid.innerHTML = '';
+        savedPresets.forEach((preset, index) => {
+            const card = document.createElement('div');
+            card.className = 'preset-card';
+            
+            const isActive = preset.theme === currentTheme && 
+                           preset.accentColor === currentAccentColor && 
+                           preset.font === currentFont;
+            if (isActive) card.classList.add('active');
+            
+            card.innerHTML = `
+                <div class="preset-card-header">
+                    <div class="preset-card-name">${preset.name}</div>
+                    <div class="preset-card-actions">
+                        <button class="preset-card-btn delete" onclick="deletePreset(${index})"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="preset-card-details">
+                    <div class="preset-detail">
+                        <span class="preset-color-dot" style="background: ${preset.accentColor};"></span>
+                        <span>${getThemeLabel(preset.theme)}</span>
+                    </div>
+                    <div class="preset-detail">
+                        <i class="fa-solid fa-font" style="width: 16px; color: var(--accent-color);"></i>
+                        <span>${getFontLabel(preset.font)}</span>
+                    </div>
+                </div>
+            `;
+            
+            card.onclick = () => applyPreset(preset);
+            grid.appendChild(card);
+        });
+        
+        localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
+    }
+    
+    // Get theme label
+    function getThemeLabel(theme) {
+        const labels = {
+            light: '☀️ Light',
+            dark: '🌙 Dark',
+            auto: '🌤️ Auto',
+            space: '🌌 Space',
+            midnight: '🌃 Midnight',
+            sunset: '🌇 Sunset',
+            forest: '🌳 Forest',
+            ocean: '🌊 Ocean',
+            lavender: '🌸 Lavender',
+            rose: '🌹 Rose',
+            amber: '🌅 Amber',
+            demonic_red: '🔥 Demonic Red',
+            cyberpunk: '🤖 Cyberpunk'
+        };
+        return labels[theme] || theme;
+    }
+    
+    // Get font label
+    function getFontLabel(font) {
+        const match = font.match(/'([^']+)'/);
+        return match ? match[1] : 'Default';
+    }
+    
+    // Save current preset
+    function saveCurrentPreset() {
+        const name = prompt('Enter a name for this preset:');
+        if (!name) return;
+        
+        const preset = {
+            name: name.trim(),
+            theme: currentTheme,
+            accentColor: currentAccentColor,
+            font: currentFont,
+            timestamp: Date.now()
+        };
+        
+        savedPresets.push(preset);
+        renderSavedPresets();
+    }
+    
+    // Apply preset
+    function applyPreset(preset) {
+        applyTheme(preset.theme);
+        applyAccentColor(preset.accentColor);
+        applyFont(preset.font);
+        updateUISelections();
+    }
+    
+    // Delete preset
+    window.deletePreset = function(index) {
+        if (confirm('Delete this preset?')) {
+            savedPresets.splice(index, 1);
+            renderSavedPresets();
+        }
+    };
+    
+    // Export presets
+    function exportPresets() {
+        const data = {
+            theme: currentTheme,
+            accentColor: currentAccentColor,
+            font: currentFont,
+            colorPresets: colorPresets,
+            savedPresets: savedPresets,
+            exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `orar-customization-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+    
+    // Import presets
+    function importPresets(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                if (data.theme) applyTheme(data.theme);
+                if (data.accentColor) applyAccentColor(data.accentColor);
+                if (data.font) applyFont(data.font);
+                if (data.colorPresets) {
+                    colorPresets = data.colorPresets;
+                    renderColorPresets();
+                }
+                if (data.savedPresets) {
+                    savedPresets = data.savedPresets;
+                    renderSavedPresets();
+                }
+                
+                updateUISelections();
+                alert('Settings imported successfully!');
+            } catch (err) {
+                alert('Error importing settings. Please check the file format.');
+            }
+        };
+        reader.readAsText(file);
+    }
+    
+    // Setup event listeners
+    function setupEventListeners() {
+        // Overlay controls
+        const customBtn = document.getElementById('customizationBtn');
+        const overlay = document.getElementById('customizationOverlay');
+        const closeBtn = document.getElementById('closeCustomization');
+        
+        if (customBtn) {
+            customBtn.addEventListener('click', () => {
+                overlay.classList.add('active');
+                document.body.classList.add('no-scroll-custom');
+            });
+        }
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                overlay.classList.remove('active');
+                document.body.classList.remove('no-scroll-custom');
+            });
+        }
+        
+        // Click outside to close
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    document.body.classList.remove('no-scroll-custom');
+                }
+            });
+        }
+        
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                
+                // Update active states
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                document.querySelectorAll('.custom-section').forEach(s => s.classList.remove('active'));
+                const targetSection = document.getElementById(section + 'Section');
+                if (targetSection) targetSection.classList.add('active');
+            });
+        });
+        
+        // Theme cards
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const theme = card.dataset.theme;
+                applyTheme(theme);
+                updateUISelections();
+            });
+        });
+        
+        // Color picker
+        const colorPicker = document.getElementById('customColorPicker');
+        if (colorPicker) {
+            colorPicker.addEventListener('input', (e) => {
+                applyAccentColor(e.target.value);
+            });
+        }
+        
+        // Add randomize button listener
+        const randomizeBtn = document.getElementById('randomColorBtn');
+        if (randomizeBtn) {
+            randomizeBtn.addEventListener('click', () => {
+                const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                applyAccentColor(randomColor);
+            });
+        }
+
+        // Hex input
+        const hexInput = document.getElementById('colorHexInput');
+        if (hexInput) {
+            hexInput.addEventListener('change', (e) => {
+                let color = e.target.value.trim();
+                if (!color.startsWith('#')) color = '#' + color;
+                if (/^#[0-9A-F]{6}$/i.test(color)) {
+                    applyAccentColor(color);
+                } else {
+                    alert('Please enter a valid hex color');
+                    e.target.value = currentAccentColor;
+                }
+            });
+        }
+        
+        // Add preset button
+        const addPresetBtn = document.getElementById('addColorPreset');
+        if (addPresetBtn) {
+            addPresetBtn.addEventListener('click', () => {
+                addColorPreset(currentAccentColor);
+            });
+        }
+        
+        // Font select
+        const fontSelect = document.getElementById('fontSelect');
+        if (fontSelect) {
+            fontSelect.addEventListener('change', (e) => {
+                applyFont(e.target.value);
+            });
+        }
+        
+        // Preset actions
+        const savePresetBtn = document.getElementById('savePresetBtn');
+        if (savePresetBtn) {
+            savePresetBtn.addEventListener('click', saveCurrentPreset);
+        }
+        
+        const exportPresetBtn = document.getElementById('exportPresetBtn');
+        if (exportPresetBtn) {
+            exportPresetBtn.addEventListener('click', exportPresets);
+        }
+        
+        const importPresetBtn = document.getElementById('importPresetBtn');
+        const importPresetFile = document.getElementById('importPresetFile');
+        if (importPresetBtn && importPresetFile) {
+            importPresetBtn.addEventListener('click', () => {
+                importPresetFile.click();
+            });
+            importPresetFile.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    importPresets(e.target.files[0]);
+                    e.target.value = '';
+                }
+            });
+        }
+        
+        // Auto theme listener
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (currentTheme === 'auto') {
+                applyTheme('auto');
+            }
+        });
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+// ============ NEW: Custom Google Font Addition ============
+function addCustomGoogleFont() {
+    const fontName = prompt('Enter the Google Font name (e.g., "Oswald", "Bebas Neue"):');
+    if (!fontName) return;
+    
+    const cleanName = fontName.trim();
+    if (!cleanName) return;
+    
+    // Check if already exists
+    const fontSelect = document.getElementById('fontSelect');
+    const fontValue = `'${cleanName}', sans-serif`;
+    
+    const exists = Array.from(fontSelect.options).some(opt => opt.value === fontValue);
+    if (exists) {
+        alert('This font is already in the list!');
+        return;
+    }
+    
+    // Load the font
+    loadCustomGoogleFont(cleanName);
+    
+    // Add to select
+    const option = document.createElement('option');
+    option.value = fontValue;
+    option.textContent = `${cleanName} (Custom)`;
+    fontSelect.appendChild(option);
+    
+    // Apply it
+    applyFont(fontValue);
+    fontSelect.value = fontValue;
+    
+    // Save custom fonts
+    const customFonts = JSON.parse(localStorage.getItem('custom-fonts') || '[]');
+    if (!customFonts.includes(cleanName)) {
+        customFonts.push(cleanName);
+        localStorage.setItem('custom-fonts', JSON.stringify(customFonts));
+    }
+}
+
+function loadCustomGoogleFont(fontName) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(/ /g, '+')}:wght@400;600;700&display=swap`;
+    document.head.appendChild(link);
+}
+
+function loadSavedCustomFonts() {
+    const customFonts = JSON.parse(localStorage.getItem('custom-fonts') || '[]');
+    const fontSelect = document.getElementById('fontSelect');
+    
+    customFonts.forEach(fontName => {
+        loadCustomGoogleFont(fontName);
+        const option = document.createElement('option');
+        option.value = `'${fontName}', sans-serif`;
+        option.textContent = `${fontName} (Custom)`;
+        fontSelect.appendChild(option);
+    });
+}
+
+// ============ UPDATE: Add these to setupEventListeners ============
+// Add after font select listener:
+const addFontBtn = document.getElementById('addCustomFont');
+if (addFontBtn) {
+    addFontBtn.addEventListener('click', addCustomGoogleFont);
+}
+
+// ============ UPDATE: Call in init function ============
+// Add to init() function:
+function init() {
+    loadSettings();
+    applySettings();
+    setupEventListeners();
+    renderColorPresets();
+    renderSavedPresets();
+    setupGoogleFonts();
+    loadSavedCustomFonts(); // NEW
+    checkColorContrast(); // NEW
+}
+
+// ============ UPDATE: renderColorPresets for text color fix ============
+function renderColorPresets() {
+    const grid = document.getElementById('colorPresetsGrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    colorPresets.forEach(color => {
+        const item = document.createElement('div');
+        item.className = 'preset-item';
+        item.dataset.color = color;
+        item.style.background = color;
+        if (color === currentAccentColor) item.classList.add('active');
+        
+        const lightness = getColorLightness(color);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'preset-delete';
+        deleteBtn.dataset.color = color;
+        deleteBtn.textContent = '✖️';
+        // NEW: Set text color based on background lightness
+        deleteBtn.style.color = lightness > 60 ? '#000000' : '#ffffff';
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteColorPreset(color);
+        };
+        
+        item.appendChild(deleteBtn);
+        item.onclick = () => applyAccentColor(color);
+        
+        grid.appendChild(item);
+    });
+    
+    localStorage.setItem(STORAGE_KEYS.COLOR_PRESETS, JSON.stringify(colorPresets));
+}
+
+
+// Collapsible Release Notes: wrap details into .release-body and toggle open/close.
+// Single-open behavior: opening one closes others. Adds keyboard support (Enter/Space).
+(function initReleaseNotesCollapsible() {
+    const notes = document.querySelectorAll('.release-note');
+    if (!notes || notes.length === 0) return;
+
+    notes.forEach(note => {
+        const header = note.querySelector('.release-header');
+        if (!header) return;
+
+        // If not already created, move everything after header into .release-body
+        if (!note.querySelector('.release-body')) {
+            const body = document.createElement('div');
+            body.className = 'release-body';
+
+            // Move subsequent siblings into body
+            let sibling = header.nextElementSibling;
+            while (sibling) {
+                const next = sibling.nextElementSibling;
+                body.appendChild(sibling);
+                sibling = next;
+            }
+            note.appendChild(body);
+        }
+
+        // Accessibility: make header focusable
+        header.setAttribute('tabindex', '0');
+        header.setAttribute('role', 'button');
+        header.setAttribute('aria-expanded', note.classList.contains('open') ? 'true' : 'false');
+
+        function closeOtherNotes() {
+            document.querySelectorAll('.release-note.open').forEach(n => {
+                if (n !== note) {
+                    n.classList.remove('open');
+                    const h = n.querySelector('.release-header');
+                    if (h) h.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        function toggleNote() {
+            const isOpen = note.classList.contains('open');
+            if (isOpen) {
+                note.classList.remove('open');
+                header.setAttribute('aria-expanded', 'false');
+            } else {
+                closeOtherNotes();
+                note.classList.add('open');
+                header.setAttribute('aria-expanded', 'true');
+            }
+        }
+
+        header.addEventListener('click', (e) => {
+            // avoid toggling when clicking action buttons inside header (if any)
+            if (e.target.closest('.preset-card-actions, .preset-card-btn, .close-btn, .fa-trash')) return;
+            toggleNote();
+        });
+
+        header.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleNote();
+            } else if (e.key === 'Escape') {
+                note.classList.remove('open');
+                header.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+})();
+
 // Advanced To-Do List System
 (function () {
     const STORAGE_KEY = "advanced-todo-tasks";
@@ -674,9 +1435,14 @@ setInterval(updateClock, 1000);
     let categories = [];
     let notifiedTasks = new Set();
     let currentFilter = "all";
-    let currentSort = "priority";
+    let currentSort = [
+        { field: "priority", order: "asc" },
+        { field: "difficulty", order: "asc" },
+        { field: "created", order: "desc" }
+    ];
     let editingTaskId = null;
     let currentPriority = "medium";
+    let currentDifficulty = "medium";
 
     // Request notification permission on desktop
     if (
@@ -723,35 +1489,88 @@ setInterval(updateClock, 1000);
         document.getElementById("pendingTasks").textContent = pending;
     }
 
-    // Sort tasks
+    // Sort tasks with multiple criteria
     function sortTasks(tasksToSort) {
         const sorted = [...tasksToSort];
 
-        switch (currentSort) {
-            case "priority":
-                const priorityOrder = { high: 0, medium: 1, low: 2 };
-                sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
-                break;
-            case "name":
-                sorted.sort((a, b) => a.text.localeCompare(b.text));
-                break;
-            case "created":
-                sorted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                break;
-            case "deadline":
-                sorted.sort((a, b) => {
-                    if (!a.dueDate && !b.dueDate) return 0;
-                    if (!a.dueDate) return 1;
-                    if (!b.dueDate) return -1;
-                    return new Date(a.dueDate) - new Date(b.dueDate);
-                });
-                break;
-            case "category":
-                sorted.sort((a, b) => (a.category || "").localeCompare(b.category || ""));
-                break;
-        }
+        const priorityOrder = { 
+            "very-high": 0, 
+            "high": 1, 
+            "medium": 2, 
+            "low": 3, 
+            "very-low": 4 
+        };
+        
+        const difficultyOrder = { 
+            "very-easy": 0, 
+            "easy": 1, 
+            "medium": 2, 
+            "hard": 3, 
+            "very-hard": 4 
+        };
+
+        sorted.sort((a, b) => {
+            for (const sortCriteria of currentSort) {
+                let comparison = 0;
+                
+                switch (sortCriteria.field) {
+                    case "priority":
+                        comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+                        break;
+                    case "difficulty":
+                        comparison = difficultyOrder[a.difficulty || "medium"] - difficultyOrder[b.difficulty || "medium"];
+                        break;
+                    case "name":
+                        comparison = a.text.localeCompare(b.text);
+                        break;
+                    case "created":
+                        comparison = new Date(b.createdAt) - new Date(a.createdAt);
+                        break;
+                    case "deadline":
+                        if (!a.dueDate && !b.dueDate) comparison = 0;
+                        else if (!a.dueDate) comparison = 1;
+                        else if (!b.dueDate) comparison = -1;
+                        else comparison = new Date(a.dueDate) - new Date(b.dueDate);
+                        break;
+                    case "category":
+                        comparison = (a.category || "").localeCompare(b.category || "");
+                        break;
+                }
+
+                if (sortCriteria.order === "desc") {
+                    comparison = -comparison;
+                }
+
+                if (comparison !== 0) {
+                    return comparison;
+                }
+            }
+            return 0;
+        });
 
         return sorted;
+    }
+
+    // Update sort display
+    function updateSortDisplay() {
+        document.querySelectorAll(".sort-criteria-item").forEach((item, index) => {
+            if (index < currentSort.length) {
+                const criteria = currentSort[index];
+                const label = item.querySelector(".sort-field-label");
+                const select = item.querySelector(".sort-field-select");
+                const orderBtn = item.querySelector(".sort-order-btn");
+                
+                label.textContent = `Sort ${index + 1}:`;
+                select.value = criteria.field;
+                orderBtn.innerHTML = criteria.order === "asc" 
+                    ? '<i class="fa-solid fa-arrow-up"></i>' 
+                    : '<i class="fa-solid fa-arrow-down"></i>';
+                orderBtn.dataset.order = criteria.order;
+                item.style.display = "flex";
+            } else {
+                item.style.display = "none";
+            }
+        });
     }
 
     // Render tasks
@@ -764,7 +1583,7 @@ setInterval(updateClock, 1000);
             filteredTasks = tasks.filter((t) => !t.completed);
         } else if (currentFilter === "completed") {
             filteredTasks = tasks.filter((t) => t.completed);
-        } else if (["high", "medium", "low"].includes(currentFilter)) {
+        } else if (["very-high", "high", "medium", "low", "very-low"].includes(currentFilter)) {
             filteredTasks = tasks.filter((t) => t.priority === currentFilter);
         }
 
@@ -773,14 +1592,14 @@ setInterval(updateClock, 1000);
 
         if (filteredTasks.length === 0) {
             container.innerHTML =
-                '<div class="no-todos">No tasks found. Try a different filter! 🔍</div>';
+                '<div class="no-todos">No tasks found. Try a different filter!</div>';
             return;
         }
 
         container.innerHTML = filteredTasks
             .map((task) => {
                 const dueText = task.dueDate
-                    ? `📅 ${new Date(task.dueDate).toLocaleString("en-US", {
+                    ? `<i class="fas fa-calendar-alt"></i> ${new Date(task.dueDate).toLocaleString("en-US", {
                           month: "short",
                           day: "numeric",
                           hour: "2-digit",
@@ -791,50 +1610,60 @@ setInterval(updateClock, 1000);
                 const isOverdue =
                     task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
 
+                const difficultyLabel = task.difficulty || "medium";
+                const difficultyIcon = {
+                    "very-easy": "🟢",
+                    "easy": "🟡",
+                    "medium": "🟠",
+                    "hard": "🔴",
+                    "very-hard": "⚫"
+                }[difficultyLabel] || "🟠";
+
                 return `
-                        <div class="todo-item-new priority-${task.priority} ${
+                    <div class="todo-item-new priority-${task.priority} difficulty-${difficultyLabel} ${
                     task.completed ? "completed" : ""
                 }" 
-                             data-id="${task.id}">
-                            <input type="checkbox" class="todo-checkbox" ${
-                                task.completed ? "checked" : ""
-                            }>
-                            <div class="todo-content">
-                                <div class="todo-text">${task.text}</div>
+                         data-id="${task.id}">
+                        <input type="checkbox" class="todo-checkbox" ${
+                            task.completed ? "checked" : ""
+                        }>
+                        <div class="todo-content">
+                            <div class="todo-text">${task.text}</div>
+                            ${
+                                task.description
+                                    ? `<div class="todo-description">${task.description}</div>`
+                                    : ""
+                            }
+                            <div class="todo-meta">
+                                <span class="todo-priority-badge ${
+                                    task.priority
+                                }">${task.priority.toUpperCase().replace("-", " ")}</span>
+                                <span class="todo-difficulty-badge ${difficultyLabel}">${difficultyIcon} ${difficultyLabel.toUpperCase().replace("-", " ")}</span>
                                 ${
-                                    task.description
-                                        ? `<div class="todo-description">${task.description}</div>`
+                                    task.category
+                                        ? `<span class="todo-category-badge">${task.category}</span>`
                                         : ""
                                 }
-                                <div class="todo-meta">
-                                    <span class="todo-priority-badge ${
-                                        task.priority
-                                    }">${task.priority.toUpperCase()}</span>
-                                    ${
-                                        task.category
-                                            ? `<span class="todo-category-badge">${task.category}</span>`
-                                            : ""
-                                    }
-                                    ${
-                                        dueText
-                                            ? `<span style="color: ${
-                                                  isOverdue ? "#ef4444" : "inherit"
-                                              }">${dueText}</span>`
-                                            : ""
-                                    }
-                                    ${
-                                        isOverdue
-                                            ? '<span style="color: #ef4444; font-weight: bold;">⚠️ OVERDUE</span>'
-                                            : ""
-                                    }
-                                </div>
-                            </div>
-                            <div class="todo-actions">
-                                <button class="todo-action-btn todo-edit-btn" title="Edit">✏️</button>
-                                <button class="todo-action-btn todo-delete-btn" title="Delete">🗑️</button>
+                                ${
+                                    dueText
+                                        ? `<span style="color: ${
+                                              isOverdue ? "#ef4444" : "inherit"
+                                          }">${dueText}</span>`
+                                        : ""
+                                }
+                                ${
+                                    isOverdue
+                                        ? '<span style="color: #ef4444; font-weight: bold;">⏰ OVERDUE</span>'
+                                        : ""
+                                }
                             </div>
                         </div>
-                    `;
+                        <div class="todo-actions">
+                            <button class="todo-action-btn todo-edit-btn" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                            <button class="todo-action-btn todo-delete-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
             })
             .join("");
 
@@ -882,7 +1711,7 @@ setInterval(updateClock, 1000);
     // Open add task modal
     function openAddModal() {
         editingTaskId = null;
-        document.getElementById("modalTitle").textContent = "➕ Create New Task";
+        document.getElementById("modalTitle").textContent = "✨ Create New Task";
         document.getElementById("taskTitle").value = "";
         document.getElementById("taskDescription").value = "";
         document.getElementById("taskCategory").value = "";
@@ -892,6 +1721,10 @@ setInterval(updateClock, 1000);
         document.querySelector(".priority-btn.medium").classList.add("active");
         currentPriority = "medium";
 
+        document.querySelectorAll(".difficulty-btn").forEach((btn) => btn.classList.remove("active"));
+        document.querySelector(".difficulty-btn.medium").classList.add("active");
+        currentDifficulty = "medium";
+
         updateCategoryDropdown();
         document.getElementById("taskModal").classList.add("active");
     }
@@ -899,7 +1732,7 @@ setInterval(updateClock, 1000);
     // Open edit modal
     function openEditModal(task) {
         editingTaskId = task.id;
-        document.getElementById("modalTitle").textContent = "✏️ Edit Task";
+        document.getElementById("modalTitle").innerHTML = "<i class='fa-solid fa-pencil'></i> Edit Task";
         document.getElementById("taskTitle").value = task.text;
         document.getElementById("taskDescription").value = task.description || "";
         document.getElementById("taskCategory").value = task.category || "";
@@ -908,6 +1741,11 @@ setInterval(updateClock, 1000);
         document.querySelectorAll(".priority-btn").forEach((btn) => btn.classList.remove("active"));
         document.querySelector(`.priority-btn.${task.priority}`).classList.add("active");
         currentPriority = task.priority;
+
+        document.querySelectorAll(".difficulty-btn").forEach((btn) => btn.classList.remove("active"));
+        const difficultyBtn = document.querySelector(`.difficulty-btn[data-difficulty="${task.difficulty || "medium"}"]`);
+        if (difficultyBtn) difficultyBtn.classList.add("active");
+        currentDifficulty = task.difficulty || "medium";
 
         updateCategoryDropdown();
         document.getElementById("taskModal").classList.add("active");
@@ -931,6 +1769,7 @@ setInterval(updateClock, 1000);
             task.text = title;
             task.description = description;
             task.priority = currentPriority;
+            task.difficulty = currentDifficulty;
             task.category = category;
             task.dueDate = deadline || null;
         } else {
@@ -941,6 +1780,7 @@ setInterval(updateClock, 1000);
                 description: description,
                 completed: false,
                 priority: currentPriority,
+                difficulty: currentDifficulty,
                 category: category || null,
                 dueDate: deadline || null,
                 createdAt: new Date().toISOString(),
@@ -977,7 +1817,7 @@ setInterval(updateClock, 1000);
                 (cat) => `
                     <div class="category-tag">
                         <span>${cat}</span>
-                        <button data-category="${cat}">✖</button>
+                        <button data-category="${cat}"><i class="fas fa-trash"></i></button>
                     </div>
                 `
             )
@@ -1038,9 +1878,9 @@ setInterval(updateClock, 1000);
 
             // Notify 15 minutes before
             if (minutesDiff <= 15 && minutesDiff > 0) {
-                new Notification("📝 Task Due Soon!", {
+                new Notification("⏰ Task Due Soon!", {
                     body: `"${task.text}" is due in ${minutesDiff} minutes`,
-                    icon: "📝",
+                    icon: "⏰",
                     tag: task.id,
                 });
                 notifiedTasks.add(task.id);
@@ -1048,9 +1888,9 @@ setInterval(updateClock, 1000);
             }
             // Notify when overdue
             else if (timeDiff < 0 && Math.abs(minutesDiff) < 5) {
-                new Notification("⚠️ Task Overdue!", {
+                new Notification("⏰ Task Overdue!", {
                     body: `"${task.text}" is now overdue!`,
-                    icon: "⚠️",
+                    icon: "⏰",
                     tag: task.id,
                 });
                 notifiedTasks.add(task.id);
@@ -1068,15 +1908,56 @@ setInterval(updateClock, 1000);
         });
     });
 
-    // Sort options
-    document.querySelectorAll(".sort-option").forEach((option) => {
-        option.addEventListener("click", () => {
-            document.querySelectorAll(".sort-option").forEach((o) => o.classList.remove("active"));
-            option.classList.add("active");
-            currentSort = option.dataset.sort;
-            renderTasks();
+    // Difficulty selector in modal
+    document.querySelectorAll(".difficulty-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".difficulty-btn").forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentDifficulty = btn.dataset.difficulty;
         });
     });
+
+    // Sort field changes
+    document.querySelectorAll(".sort-field-select").forEach((select, index) => {
+        select.addEventListener("change", (e) => {
+            if (index < currentSort.length) {
+                currentSort[index].field = e.target.value;
+                renderTasks();
+            }
+        });
+    });
+
+    // Sort order toggles
+    document.querySelectorAll(".sort-order-btn").forEach((btn, index) => {
+        btn.addEventListener("click", () => {
+            if (index < currentSort.length) {
+                const newOrder = currentSort[index].order === "asc" ? "desc" : "asc";
+                currentSort[index].order = newOrder;
+                btn.dataset.order = newOrder;
+                btn.innerHTML = newOrder === "asc" 
+                    ? '<i class="fa-solid fa-arrow-up"></i>' 
+                    : '<i class="fa-solid fa-arrow-down"></i>';
+                renderTasks();
+            }
+        });
+    });
+
+    // Toggle sort panel
+    const toggleSortBtn = document.getElementById("toggleSortPanel");
+    const sortPanel = document.getElementById("sortPanel");
+    if (toggleSortBtn) {
+        toggleSortBtn.addEventListener("click", () => {
+            sortPanel.classList.toggle("collapsed");
+            const icon = toggleSortBtn.querySelector("i");
+            if (sortPanel.classList.contains("collapsed")) {
+                icon.classList.remove("fa-chevron-up");
+                icon.classList.add("fa-chevron-down");
+            } else {
+                icon.classList.remove("fa-chevron-down");
+                icon.classList.add("fa-chevron-up");
+            }
+        });
+    }
 
     // Filter buttons
     document.querySelectorAll(".filter-btn").forEach((btn) => {
@@ -1090,11 +1971,6 @@ setInterval(updateClock, 1000);
 
     // Control buttons
     document.getElementById("addTaskBtn").addEventListener("click", openAddModal);
-
-    document.getElementById("sortBtn").addEventListener("click", () => {
-        const panel = document.getElementById("sortPanel");
-        panel.classList.toggle("active");
-    });
 
     document.getElementById("manageCategoriesBtn").addEventListener("click", () => {
         renderCategories();
@@ -1155,6 +2031,7 @@ setInterval(updateClock, 1000);
     // Initialize
     loadData();
     renderTasks();
+    updateSortDisplay();
 
     // Check notifications every minute (desktop only)
     if (window.innerWidth > 768) {
@@ -1163,58 +2040,289 @@ setInterval(updateClock, 1000);
     }
 })();
 
-// Touch gesture for menu swipe
-let touchStartX = 0;
-let touchEndX = 0;
+let lastWeatherUpdate = null;
 
-document.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-});
-
-document.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-});
-
-function handleSwipe() {
-    const swipeThreshold = 100;
-    const swipeDistance = touchEndX - touchStartX;
-
-    // Swipe right to open (from left edge)
-    if (swipeDistance > swipeThreshold && touchStartX < 50) {
-        if (!sideMenu.classList.contains("open")) {
-            sideMenu.classList.add("open");
-            updateOverlay();
-        }
+function getWeather() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(fetchWeatherData, handleLocationError);
+    } else {
+        updateWeatherError("Geolocation is not supported by this browser.");
     }
+}
 
-    // Swipe left to close
-    if (swipeDistance < -swipeThreshold && sideMenu.classList.contains("open")) {
-        sideMenu.classList.remove("open");
+function fetchWeatherData(position) {
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset&timezone=auto`;
+    
+    fetch(url)
+        .then((res) => res.json())
+        .then((data) => {
+            const weather = data.current_weather;
+            const temp = `${weather.temperature}°C`;
+            const sunrise = formatTime(data.daily.sunrise[0]);
+            const sunset = formatTime(data.daily.sunset[0]);
+            const now = new Date();
+            const sunriseTime = new Date(data.daily.sunrise[0]);
+            const sunsetTime = new Date(data.daily.sunset[0]);
+            const isNight = now < sunriseTime || now > sunsetTime;
+            const emoji = isNight ? "🌙" : getWeatherEmoji(weather.weathercode);
+            const description = getWeatherDescription(weather.weathercode);
+            
+            // Update menu button
+            document.getElementById("menuWeatherEmoji").textContent = emoji;
+            document.getElementById("menuWeatherTemp").textContent = temp;
+            
+            // Update overlay
+            document.getElementById("overlayWeatherEmoji").textContent = emoji;
+            document.getElementById("overlayWeatherTemp").textContent = temp;
+            document.getElementById("overlayWeatherDesc").textContent = description;
+            document.getElementById("overlaySunrise").textContent = sunrise;
+            document.getElementById("overlaySunset").textContent = sunset;
+            
+            // Update last update time
+            lastWeatherUpdate = new Date();
+            updateLastUpdateTime();
+            
+            fetchLocationName(lat, lon);
+        })
+        .catch(() => {
+            updateWeatherError("Failed to fetch weather data.");
+        });
+}
+
+function fetchLocationName(lat, lon) {
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+        .then((res) => res.json())
+        .then((data) => {
+            let location = "Unknown location";
+            if (data.address) {
+                if (data.address.city) location = data.address.city;
+                else if (data.address.town) location = data.address.town;
+                else if (data.address.village) location = data.address.village;
+                else if (data.address.county) location = data.address.county;
+                if (data.address.country_code)
+                    location += ", " + data.address.country_code.toUpperCase();
+            }
+            document.getElementById("overlayWeatherLocation").textContent = location;
+        })
+        .catch(() => {
+            document.getElementById("overlayWeatherLocation").textContent = "Unknown location";
+        });
+}
+
+function handleLocationError() {
+    updateWeatherError("Error obtaining geolocation");
+}
+
+function updateWeatherError(message) {
+    document.getElementById("menuWeatherEmoji").textContent = "❌";
+    document.getElementById("menuWeatherTemp").textContent = "Error";
+    document.getElementById("overlayWeatherDesc").textContent = message;
+}
+
+function formatTime(iso) {
+    const d = new Date(iso);
+    return (
+        d.getHours().toString().padStart(2, "0") + ":" + d.getMinutes().toString().padStart(2, "0")
+    );
+}
+
+function getWeatherEmoji(code) {
+    if (code === 0) return "☀️";
+    if ([1, 2].includes(code)) return "🌤️";
+    if (code === 3) return "☁️";
+    if ([45, 48].includes(code)) return "🌫️";
+    if ([51, 53, 55, 56, 57].includes(code)) return "🌦️";
+    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "🌧️";
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return "❄️";
+    if ([95, 96, 99].includes(code)) return "⛈️";
+    return "❓";
+}
+
+function getWeatherDescription(code) {
+    if (code === 0) return "Clear";
+    if ([1, 2].includes(code)) return "Partially Cloudy";
+    if (code === 3) return "Cloudy";
+    if ([45, 48].includes(code)) return "Fog";
+    if ([51, 53, 55, 56, 57].includes(code)) return "Drizzle";
+    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) return "Rain";
+    if ([71, 73, 75, 77, 85, 86].includes(code)) return "Snow";
+    if ([95, 96, 99].includes(code)) return "Thunderstorm";
+    return "Unknown";
+}
+
+function updateLastUpdateTime() {
+    if (!lastWeatherUpdate) return;
+    
+    const now = new Date();
+    const diff = Math.floor((now - lastWeatherUpdate) / 1000);
+    
+    let timeText;
+    if (diff < 60) {
+        timeText = "Just now";
+    } else if (diff < 3600) {
+        const mins = Math.floor(diff / 60);
+        timeText = `${mins} minute${mins > 1 ? 's' : ''} ago`;
+    } else {
+        const hours = Math.floor(diff / 3600);
+        timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    }
+    
+    const updateEl = document.getElementById("lastWeatherUpdate");
+    if (updateEl) updateEl.textContent = timeText;
+}
+
+function updateOverlayTime() {
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, "0") + ":" + 
+                    now.getMinutes().toString().padStart(2, "0") + ":" + 
+                    now.getSeconds().toString().padStart(2, "0");
+    const dateStr = now.getDate().toString().padStart(2, "0") + "/" + 
+                    (now.getMonth() + 1).toString().padStart(2, "0") + "/" + 
+                    now.getFullYear();
+    
+    const timeEl = document.getElementById("overlayCurrentTime");
+    const dateEl = document.getElementById("overlayCurrentDate");
+    if (timeEl) timeEl.textContent = timeStr;
+    if (dateEl) dateEl.textContent = dateStr;
+}
+
+// Initialize weather
+getWeather();
+setInterval(getWeather, 300000); // Update every 5 minutes
+setInterval(updateLastUpdateTime, 30000); // Update "last updated" every 30 seconds
+setInterval(updateOverlayTime, 1000); // Update time every second
+
+// Weather overlay controls
+const weatherBtn = document.getElementById("weatherBtn");
+const weatherOverlay = document.getElementById("weatherOverlay");
+const closeWeatherOverlay = document.getElementById("closeWeatherOverlay");
+const refreshWeatherBtn = document.getElementById("refreshWeatherBtn");
+
+if (weatherBtn) {
+    weatherBtn.addEventListener("click", () => {
+        weatherOverlay.classList.add("active");
+        document.body.classList.add("no-scroll");
+        updateOverlayTime();
+        
+        // Close side menu if open
+        if (sideMenu && sideMenu.classList.contains("open")) {
+            sideMenu.classList.remove("open");
+            if (menuIcon) {
+                menuIcon.classList.remove("fa-arrow-left");
+                menuIcon.classList.add("fa-arrow-right");
+            }
+        }
         updateOverlay();
+    });
+}
+
+if (closeWeatherOverlay) {
+    closeWeatherOverlay.addEventListener("click", () => {
+        weatherOverlay.classList.remove("active");
+        document.body.classList.remove("no-scroll");
+        updateOverlay();
+    });
+}
+
+if (refreshWeatherBtn) {
+    refreshWeatherBtn.addEventListener("click", () => {
+        refreshWeatherBtn.innerHTML = '<i class="fa-solid fa-rotate fa-spin"></i> Refreshing...';
+        refreshWeatherBtn.disabled = true;
+        
+        getWeather();
+        
+        setTimeout(() => {
+            refreshWeatherBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Refresh Weather';
+            refreshWeatherBtn.disabled = false;
+        }, 2000);
+    });
+}
+
+// Update overlay function to include weather overlay
+function updateOverlay() {
+    const isSideOpen = sideMenu && sideMenu.classList.contains("open");
+    const isManualsOpen = manualsPopup && manualsPopup.classList.contains("active");
+    const isInfoOpen = infoOverlay && infoOverlay.classList.contains("active");
+    const isWeatherOpen = weatherOverlay && weatherOverlay.classList.contains("active");
+    
+    if (isSideOpen || isManualsOpen || isInfoOpen || isWeatherOpen) {
+        overlay.classList.add("active");
+    } else {
+        overlay.classList.remove("active");
     }
 }
 
-// Prevent zoom on double tap (iOS)
-let lastTouchEnd = 0;
-document.addEventListener(
-    "touchend",
-    (e) => {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-            e.preventDefault();
+// Update OVERLAY click handler to include weather overlay
+if (overlay) {
+    overlay.addEventListener("click", () => {
+        // Close weather overlay first if open
+        if (weatherOverlay && weatherOverlay.classList.contains("active")) {
+            weatherOverlay.classList.remove("active");
+            document.body.style.overflow = "";
         }
-        lastTouchEnd = now;
-    },
-    { passive: false }
-);
-
-// Better viewport height for mobile browsers
-function setViewportHeight() {
-    const vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty("--vh", `${vh}px`);
+        // Close info overlay
+        else if (infoOverlay && infoOverlay.classList.contains("active")) {
+            infoOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+        // Then manuals popup
+        else if (manualsPopup && manualsPopup.classList.contains("active")) {
+            manualsPopup.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+        // Then side menu
+        else if (sideMenu && sideMenu.classList.contains("open")) {
+            sideMenu.classList.remove("open");
+            menuIcon.classList.remove("fa-arrow-left");
+            menuIcon.classList.add("fa-arrow-right");
+        }
+        // Update overlay state
+        updateOverlay();
+    });
 }
 
-setViewportHeight();
-window.addEventListener("resize", setViewportHeight);
-window.addEventListener("orientationchange", setViewportHeight);
+// New function to update title time
+function updateTitleTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timeEl = document.getElementById('titleTime');
+    if (timeEl) {
+        timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+}
+
+// Update every second
+setInterval(updateTitleTime, 1000);
+updateTitleTime();
+
+// Favicon
+function updateFavicon(accentColor) {
+    const size = 16;
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
+    ctx.fillStyle = accentColor;
+    ctx.fill();
+    const link = document.querySelector("link[rel~='icon']") || document.createElement("link");
+    link.rel = "icon";
+    link.type = "image/png";
+    link.href = canvas.toDataURL("image/png");
+    document.head.appendChild(link);
+}
+
+// Initial set
+updateFavicon(getComputedStyle(document.documentElement).getPropertyValue("--accent-color").trim());
+
+const accentColorPicker = document.getElementById("accentColorPicker");
+if (accentColorPicker) {
+    accentColorPicker.addEventListener("input", (e) => {
+        updateFavicon(e.target.value);
+    });
+}
+
