@@ -11,11 +11,17 @@
         <link rel="stylesheet" href="../style.css">
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    </head>
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+        <script src="https://kit.webawesome.com/45396e3eb4054c87.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css"/>
+    <base target="_blank">
+</head>
 
     <body>
-        <h1 class="title">Orar 8A</h1>
+        <div class="title-container">
+            <h1 class="main-title">Orar 8A</h1>
+            <div class="time-display" id="titleTime">00:00:00</div>
+        </div>
         <canvas id="canvas"></canvas>
         <div id="scroll-indicator-bg">
             <div id="scroll-indicator"></div>
@@ -29,23 +35,18 @@
                         <i id="menuIcon" class="fa-solid fa-arrow-right"></i>
                     </button>
 
-                    <button id="switchTheme" class="menu-btn">
-                        <i id="themeIcon" class="fa-regular fa-sun"></i>
-                        <span>Theme</span>
+                    <button id="customizationBtn" class="menu-btn">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Customization</span>
                     </button>
-                    <button id="colorPickerButton" class="menu-btn color-picker">
-                        <i class="fa-solid fa-paintbrush"></i>
-                        <span>Accent</span>
-                        <input type="color" id="accentColorPicker" value="#6196ff" />
-                    </button>
-                    <button class="menu-btn">
-                        <div id="colorPresets" class="color-presets">
-                            <div class="preset" data-color="#ff6b6b" style="background:#ff6b6b;"></div>
-                            <div class="preset" data-color="#f59e0b" style="background:#f59e0b;"></div>
-                            <div class="preset" data-color="#51d88a" style="background:#51d88a;"></div>
-                            <div class="preset" data-color="#6196ff" style="background:#6196ff;"></div>
-                            <div class="preset" data-color="#a855f7" style="background:#a855f7;"></div>
-                            <!-- Add more presets as needed -->
+
+                    <button id="weatherBtn" class="menu-btn weather-menu-btn">
+                        <div class="weather-btn-content">
+                            <span id="menuWeatherEmoji" class="menu-weather-emoji">☁️</span>
+                            <div class="weather-btn-text">
+                                <span class="weather-btn-label">Weather</span>
+                                <span id="menuWeatherTemp" class="menu-weather-temp">--°C</span>
+                            </div>
                         </div>
                     </button>
                     
@@ -62,6 +63,11 @@
                     <button id="todoBtn" class="menu-btn">
                         <i class="fa-solid fa-list-check"></i>
                         <span>My Tasks</span>
+                    </button>
+                    
+                    <button id="infoBtn" class="menu-btn">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Info</span>
                     </button>
                     <div id="recommendedManual" class="recommended-manual">
                         <h3>Recommended Textbook</h3>
@@ -145,72 +151,15 @@
 </table>
 
                 </div>
-                <div class="info-panel">
-                    <div class="weather-container" id="weather">
-                        <div class="weather-emoji" id="weather-emoji">🌤️</div>
-                        <div class="weather-temp" id="weather-temp">--°C</div>
-                        <div class="weather-desc" id="weather-desc">Loading...</div>
-                        <div class="weather-location" id="weather-location">
-                            <i id="location-dot" class="fa-solid fa-location-dot"></i>
-                        </div>
-                        <div class="weather-sun">
-                            <p>
-                                Sunrise
-                                <i class="fa-solid fa-arrow-up"></i>
-                                <span id="sunrise">--:--</span>
-                            </p>
-                            <p>
-                                Sunset
-                                <i class="fa-solid fa-arrow-down"></i>
-                                <span id="sunset">--:--</span>
-                            </p>
-                        </div>
-                        <div class="time-display" id="hourOfTheDay"></div>
-                    </div>
-                </div>
             </div>
 
 
 
-
-            <footer>
-                <div class="footer-content">
-                    <h2>Schedules - Secondary School No. 27 from Bucharest</h2>
-                    <h2>2025-2026</h2>
-                    <h3></h3>
-                    <p>
-                        Here you can quickly and easily find the complete timetable for several classes
-                        from Secondary School No. 27 - always just one click away. The site comes with both
-                        a light and a dark theme, so you can choose what you like best, plus a color picker
-                        for extra customization. It's designed to be simple, useful, and elegant - so you
-                        don't waste time looking through crumpled papers or random photos.
-                    </p>
-                    <p>
-                        Keep in mind that this website isn't fully optimized for mobile devices yet.
-                    </p>
-                    <p>Controls:</p>
-                    <ul>
-                        <li>Click on a subject = highlight it</li>
-                        <li>Click outside the subject = remove highlight</li>
-                        <li>Menu button = open/close side menu</li> 
-                        <li>Theme button = switch between light and dark mode</li>
-                        <li>Color picker = choose a custom accent color</li>
-                        <li>All Textbooks = view all textbooks for 8D</li>
-                        <li>Clock = view current time and date</li>
-                        <li>My Tasks = open the to-do list</li>
-                        
-                    </ul>
-                    <h3><a href="https://s27.ro/8a" target="_blank">Original 8A Schedule Website</a></h3>
-                    <h3><a href="https://manuale.edu.ro/" target="_blank">More Textbooks</a></h3>
-
-                    </div>
-                </div>
-            </footer>
         </div>
                     <!-- Time Overlay -->
-            <div id="timeOverlay" class="overlay">
+            <div id="timeOverlay" class="time-overlay">
                 <div class="overlay-content">
-                    <button id="closeOverlay" class="close-btn">&times;</button>
+                    <button id="closeOverlay" class="clock-close-btn"><i class="fa-solid fa-xmark"></i></button>
                         <div id="clockDisplay">
                             <div id="time"></div>
                             <div id="date"></div>
@@ -225,10 +174,10 @@
     <!-- To-Do List Overlay -->
     <div id="todoOverlay" class="overlay">
         <div class="todo-overlay-container">
-            <button id="closeTodoOverlay">✖</button>
+            <button id="closeTodoOverlay"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="todo-overlay-header">
-                <h2>📝 My Tasks</h2>
+                <h2><i class="fa-solid fa-list-check"></i> My Tasks</h2>
             </div>
 
             <div class="todo-stats">
@@ -248,24 +197,62 @@
 
             <div class="todo-controls">
                 <button class="control-btn" id="addTaskBtn">
-                    ➕ New Task
-                </button>
-                <button class="control-btn secondary" id="sortBtn">
-                    🔄 Sort
+                    <i class="fa-solid fa-plus"></i> New Task
                 </button>
                 <button class="control-btn secondary" id="manageCategoriesBtn">
-                    🏷️ Categories
+                    <i class="fa-solid fa-folder"></i> Categories
+                </button>
+                <button class="control-btn secondary" id="toggleSortPanel">
+                    <i class="fa-solid fa-chevron-up"></i> Sort
                 </button>
             </div>
 
             <div class="sort-panel" id="sortPanel">
-                <h4>📊 Sort Tasks By</h4>
-                <div class="sort-options">
-                    <div class="sort-option active" data-sort="priority">Priority</div>
-                    <div class="sort-option" data-sort="name">Name</div>
-                    <div class="sort-option" data-sort="created">Date Created</div>
-                    <div class="sort-option" data-sort="deadline">Deadline</div>
-                    <div class="sort-option" data-sort="category">Category</div>
+                <h4><i class="fa-solid fa-sort"></i> Multi-Level Sorting</h4>
+                
+                <div class="sort-criteria-item">
+                    <label class="sort-field-label">Sort 1:</label>
+                    <select class="sort-field-select">
+                        <option value="priority">Priority</option>
+                        <option value="difficulty">Difficulty</option>
+                        <option value="name">Name</option>
+                        <option value="created">Date Created</option>
+                        <option value="deadline">Deadline</option>
+                        <option value="category">Category</option>
+                    </select>
+                    <button class="sort-order-btn" data-order="asc">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                </div>
+
+                <div class="sort-criteria-item">
+                    <label class="sort-field-label">Sort 2:</label>
+                    <select class="sort-field-select">
+                        <option value="priority">Priority</option>
+                        <option value="difficulty">Difficulty</option>
+                        <option value="name">Name</option>
+                        <option value="created">Date Created</option>
+                        <option value="deadline">Deadline</option>
+                        <option value="category">Category</option>
+                    </select>
+                    <button class="sort-order-btn" data-order="asc">
+                        <i class="fa-solid fa-arrow-up"></i>
+                    </button>
+                </div>
+
+                <div class="sort-criteria-item">
+                    <label class="sort-field-label">Sort 3:</label>
+                    <select class="sort-field-select">
+                        <option value="priority">Priority</option>
+                        <option value="difficulty">Difficulty</option>
+                        <option value="name">Name</option>
+                        <option value="created">Date Created</option>
+                        <option value="deadline">Deadline</option>
+                        <option value="category">Category</option>
+                    </select>
+                    <button class="sort-order-btn" data-order="desc">
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </button>
                 </div>
             </div>
 
@@ -273,9 +260,11 @@
                 <button class="filter-btn active" data-filter="all">All</button>
                 <button class="filter-btn" data-filter="pending">Pending</button>
                 <button class="filter-btn" data-filter="completed">Completed</button>
-                <button class="filter-btn" data-filter="high">High Priority</button>
+                <button class="filter-btn" data-filter="very-high">Very High</button>
+                <button class="filter-btn" data-filter="high">High</button>
                 <button class="filter-btn" data-filter="medium">Medium</button>
                 <button class="filter-btn" data-filter="low">Low</button>
+                <button class="filter-btn" data-filter="very-low">Very Low</button>
             </div>
 
             <div class="todo-list-container" id="todoListContainer">
@@ -287,8 +276,8 @@
     <!-- Add/Edit Task Modal -->
     <div class="task-modal" id="taskModal">
         <div class="task-modal-content">
-            <h3 id="modalTitle">➕ Create New Task</h3>
-            
+            <h3 id="modalTitle">Create New Task</h3>
+
             <div class="form-group">
                 <label for="taskTitle">Task Title *</label>
                 <input type="text" id="taskTitle" placeholder="What needs to be done?" maxlength="200" required>
@@ -302,9 +291,22 @@
             <div class="form-group">
                 <label>Priority</label>
                 <div class="priority-selector">
-                    <button class="priority-btn high" data-priority="high">🔴 High</button>
+                    <button class="priority-btn very-high" data-priority="very-high">🔴 Very High</button>
+                    <button class="priority-btn high" data-priority="high">🟠 High</button>
                     <button class="priority-btn medium active" data-priority="medium">🟡 Medium</button>
                     <button class="priority-btn low" data-priority="low">🟢 Low</button>
+                    <button class="priority-btn very-low" data-priority="very-low">🔵 Very Low</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Difficulty</label>
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn very-easy" data-difficulty="very-easy">🟢 Very Easy</button>
+                    <button class="difficulty-btn easy" data-difficulty="easy">🟡 Easy</button>
+                    <button class="difficulty-btn medium active" data-difficulty="medium">🟠 Medium</button>
+                    <button class="difficulty-btn hard" data-difficulty="hard">🔴 Hard</button>
+                    <button class="difficulty-btn very-hard" data-difficulty="very-hard">⚫ Very Hard</button>
                 </div>
             </div>
 
@@ -330,7 +332,7 @@
     <!-- Category Management Modal -->
     <div class="task-modal" id="categoryModal">
         <div class="task-modal-content">
-            <h3>🏷️ Manage Categories</h3>
+            <h3><i class="fa-solid fa-folder"></i> Manage Categories</h3>
             
             <div class="category-section">
                 <div class="category-input-group">
@@ -349,9 +351,122 @@
         </div>
     </div>
 
+
+    <!-- Info Overlay -->
+    <div id="infoOverlay" class="overlay">
+        <div class="info-overlay-container">
+            
+            
+            <div class="info-overlay-header">
+                <h2><i class="fas fa-info-circle"></i> About Orar 8A</h2>
+                <button id="closeInfoOverlay" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+                        <div class="info-content">
+                <h2>Schedules - Secondary School No. 27 from Bucharest</h2>
+                <h2>2025-2026</h2>
+                <h3></h3>
+                <p>
+                    Here you can quickly and easily find the complete timetable for several classes
+                    from Secondary School No. 27 - always just one click away. The site comes with both
+                    a light and a dark theme, so you can choose what you like best, plus a color picker
+                    for extra customization. It's designed to be simple, useful, and elegant - so you
+                    don't waste time looking through crumpled papers or random photos.
+                </p>
+                <p>
+                    Keep in mind that this website isn't fully optimized for mobile devices yet.
+                </p>
+                <p>Controls:</p>
+                <ul>
+                    <li>Click on a subject = highlight it</li>
+                    <li>Click outside the subject = remove highlight</li>
+                    <li>Menu button = open/close side menu</li> 
+                    <li>Theme button = switch between light and dark mode</li>
+                    <li>Color picker = choose a custom accent color</li>
+                    <li>All Textbooks = view all textbooks for 8A</li>
+                    <li>Clock = view current time and date</li>
+                    <li>My Tasks = open the to-do list</li>
+                </ul>
+                
+                <div class="release-notes-section">
+                    <h2><i class="fa-solid fa-rocket"></i> Release Notes</h2>
+                    
+                    <div class="release-note">
+                        <div class="release-header">
+                            <span class="release-version">v2.5.0</span>
+                            <span class="release-date">November 2025</span>
+                        </div>
+                        <h4>Advanced Customization System</h4>
+                        <ul>
+                            <li>🎨 New customization overlay with sidebar navigation</li>
+                            <li>🌈 12 beautiful theme presets (Space, Midnight, Sunset, Forest, Ocean, Lavender, Rose, and more)</li>
+                            <li>🎨 Custom color presets with hex input and randomizer</li>
+                            <li>⚠️ Color contrast warnings for better accessibility</li>
+                            <li>🔤 Font customization with 18+ Google Fonts</li>
+                            <li>➕ Add custom Google Fonts feature</li>
+                            <li>💾 Save, export, and import customization presets</li>
+                            <li>✨ Smooth transitions and animations throughout</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="release-note">
+                        <div class="release-header">
+                            <span class="release-version">v2.0.0</span>
+                            <span class="release-date">October 2025</span>
+                        </div>
+                        <h4>Advanced To-Do System</h4>
+                        <ul>
+                            <li>✅ Complete task management with priorities (High, Medium, Low)</li>
+                            <li>📁 Custom categories for organization</li>
+                            <li>📅 Deadline tracking with notifications</li>
+                            <li>🔍 Filter and sort tasks by multiple criteria</li>
+                            <li>📊 Task statistics dashboard</li>
+                            <li>💾 Persistent storage across sessions</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="release-note">
+                        <div class="release-header">
+                            <span class="release-version">v1.5.0</span>
+                            <span class="release-date">September 2025</span>
+                        </div>
+                        <h4>Enhanced Features</h4>
+                        <ul>
+                            <li>📚 Recommended textbook based on current class</li>
+                            <li>🔍 Search functionality for textbooks</li>
+                            <li>⏰ Live clock overlay</li>
+                            <li>🌤️ Weather information with location</li>
+                            <li>📱 Improved mobile responsiveness</li>
+                            <li>🎯 Better timetable highlighting</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="release-note">
+                        <div class="release-header">
+                            <span class="release-version">v1.0.0</span>
+                            <span class="release-date">August 2025</span>
+                        </div>
+                        <h4>Initial Release</h4>
+                        <ul>
+                            <li>📅 Interactive timetable display</li>
+                            <li>🌓 Light and dark theme support</li>
+                            <li>🎨 Accent color customization</li>
+                            <li>📖 Quick access to textbooks</li>
+                            <li>📍 Current class highlighting</li>
+                            <li>🔄 Real-time updates</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <h3><a href="https://s27.ro/8a" target="_blank">Original 8A Schedule Website</a></h3>
+                <h3><a href="https://manuale.edu.ro/" target="_blank">More Textbooks</a></h3>
+            </div>
+        </div>
+    </div>
+
             <!-- Manuals Popup -->
             <div id="manualsPopup" class="manuals-popup">
-                <button id="closeManualsPopup" class="close-btn">✖</button>
+                <button id="closeManualsPopup" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
                 <h2>All Textbooks</h2>
                 <input type="text" id="manualSearch" placeholder="Search for a textbook...">
 <div class="boss-container" id="manualsPopupContent">
@@ -370,7 +485,7 @@
             ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1857.png" alt="Biologie"
         /></a>
         <h2>Biologie</h2> 
-    </div>
+    </div>  
     <div class="container">
         <a
             href="https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Chimie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help"
@@ -445,7 +560,7 @@
             target="_blank"
             ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1893.png" alt="Educatie muzicala"
         /></a>
-        <h2>Muzică</h2> 
+        <h2>Muzică</h2>
     </div>
     <div class="container">
         <a
@@ -453,7 +568,7 @@
             target="_blank"
             ><img src="https://www.manuale.edu.ro/assets/img/manuale/A1948.png" alt="Limba si literatura romana"
         /></a>
-        <h2>Română</h2> 
+        <h2>Română</h2>
     </div>
     <div class="container">
         <a
@@ -466,6 +581,270 @@
             </div>
         </div>
     </div>
+    <!-- Customization Overlay -->
+<div id="customizationOverlay" class="customization-overlay">
+    <div class="customization-container">
+        <button id="closeCustomization" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        
+        <!-- Sidebar -->
+        <div class="custom-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-sliders"></i> Customize</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="sidebar-item active" data-section="theme">
+                    <i class="fa-solid fa-moon"></i>
+                    <span>Theme</span>
+                </div>
+                <div class="sidebar-item" data-section="color">
+                    <i class="fa-solid fa-droplet"></i>
+                    <span>Accent Color</span>
+                </div>
+                <div class="sidebar-item" data-section="font">
+                    <i class="fa-solid fa-font"></i>
+                    <span>Font</span>
+                </div>
+                <div class="sidebar-item" data-section="presets">
+                    <i class="fa-solid fa-bookmark"></i>
+                    <span>Presets</span>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Content -->
+        <div class="custom-content">
+            <!-- Theme Section -->
+                <div class="custom-section active" id="themeSection">
+                    <h3><i class="fa-solid fa-moon"></i> Theme Settings</h3>
+                <div class="theme-options">
+                    <div class="theme-card" data-theme="light">
+                        <div class="theme-icon">☀️</div>
+                        <div class="theme-name">Light</div>
+                        <div class="theme-description">Bright & clean</div>
+                    </div>
+        <div class="theme-card" data-theme="dark">
+            <div class="theme-icon">🌙</div>
+            <div class="theme-name">Dark</div>
+            <div class="theme-description">Easy on the eyes</div>
+        </div>
+        <div class="theme-card" data-theme="auto">
+            <div class="theme-icon">🌤️</div>
+            <div class="theme-name">Auto</div>
+            <div class="theme-description">Follows system</div>
+        </div>
+        <div class="theme-card" data-theme="space">
+            <div class="theme-icon">🌌</div>
+            <div class="theme-name">Space Black</div>
+            <div class="theme-description">Pure OLED black</div>
+        </div>
+        <div class="theme-card" data-theme="midnight">
+            <div class="theme-icon">🌃</div>
+            <div class="theme-name">Midnight</div>
+            <div class="theme-description">Deep blue night</div>
+        </div>
+        <div class="theme-card" data-theme="sunset">
+            <div class="theme-icon">🌇</div>
+            <div class="theme-name">Sunset</div>
+            <div class="theme-description">Warm peachy tones</div>
+        </div>
+        <div class="theme-card" data-theme="forest">
+            <div class="theme-icon">🌳</div>
+            <div class="theme-name">Forest</div>
+            <div class="theme-description">Deep green nature</div>
+        </div>
+        <div class="theme-card" data-theme="ocean">
+            <div class="theme-icon">🌊</div>
+            <div class="theme-name">Ocean</div>
+            <div class="theme-description">Cool blue depths</div>
+        </div>
+        <div class="theme-card" data-theme="lavender">
+            <div class="theme-icon">🌸</div>
+            <div class="theme-name">Lavender</div>
+            <div class="theme-description">Soft purple dream</div>
+        </div>
+        <div class="theme-card" data-theme="rose">
+            <div class="theme-icon">🌹</div>
+            <div class="theme-name">Rose</div>
+            <div class="theme-description">Soft pink hues</div>
+        </div>
+        <div class="theme-card" data-theme="demonic-red">
+            <div class="theme-icon">🔥</div>
+            <div class="theme-name">Demonic Red</div>
+            <div class="theme-description">Dark and intense red</div>
+        </div>
+        <div class="theme-card" data-theme="burnt-charcoal">
+            <div class="theme-icon">⚫</div>
+            <div class="theme-name">Burnt Charcoal</div>
+            <div class="theme-description">Deep dark gray</div>
+        </div>     
+    </div>
+</div>
+            <!-- Color Section -->
+    <div class="custom-section" id="colorSection">
+    <h3><i class="fa-solid fa-droplet"></i> Accent Color</h3>
+    
+    <!-- NEW: Contrast Warning -->
+    <div id="contrastWarning" class="contrast-warning" style="display: none;">
+        Warning message will appear here
+    </div>
+    
+    <div class="color-section-content">
+        <div class="custom-color-picker-area">
+            <h4>Custom Color</h4>
+            <div class="color-picker-wrapper">
+                <div class="color-input-box">
+                    <input type="color" id="customColorPicker" value="#6196ff">
+                </div>
+                <input type="text" id="colorHexInput" class="color-hex-input" placeholder="#6196FF" maxlength="7">
+                <button class="add-preset-btn" id="addColorPreset">
+                    <i class="fa-solid fa-plus"></i>
+                    Add as Preset
+                </button>
+
+                <!-- Randomize accent color -->
+                <button class="add-preset-btn randomize-btn" id="randomColorBtn" title="Randomize accent color">
+                    <i class="fa-solid fa-dice"></i> Randomize
+                </button>
+            </div>
+        </div>
+        
+        <div class="color-presets-area">
+            <h4>Color Presets</h4>
+            <div class="color-presets-grid" id="colorPresetsGrid">
+                <!-- Presets will be rendered here -->
+            </div>
+        </div>
+    </div>
+</div>
+            
+            <!-- Font Section -->
+<div class="custom-section" id="fontSection">
+    <h3><i class="fa-solid fa-font"></i> Font Settings</h3>
+    <div class="font-options">
+        <div class="font-group">
+            <label for="fontSelect">Choose Font Family</label>
+            <div class="custom-select-wrapper">
+                <select id="fontSelect" class="font-select">
+                    <option value="'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif">Default (Segoe UI)</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Roboto', sans-serif">Roboto</option>
+                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                    <option value="'Lato', sans-serif">Lato</option>
+                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                    <option value="'Poppins', sans-serif">Poppins</option>
+                    <option value="'Raleway', sans-serif">Raleway</option>
+                    <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                    <option value="'Nunito', sans-serif">Nunito</option>
+                    <option value="'Quicksand', sans-serif">Quicksand</option>
+                    <option value="'Outfit', sans-serif">Outfit</option>
+                    <option value="'DM Sans', sans-serif">DM Sans</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                    <option value="'Merriweather', serif">Merriweather</option>
+                    <option value="'Playfair Display', serif">Playfair Display</option>
+                    <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+                    <option value="'Fira Code', monospace">Fira Code</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+        </div>
+        
+        <!-- NEW: Add Custom Font Button -->
+        <button class="add-custom-font-btn" id="addCustomFont">
+            <i class="fa-solid fa-plus"></i>
+            Add Google Font
+        </button>
+        
+        <div class="font-preview" id="fontPreview">
+            <p style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">The Quick Brown Fox</p>
+            <p style="font-size: 1rem;">Jumps over the lazy dog. 0123456789</p>
+            <p style="font-size: 0.9rem; opacity: 0.8;">AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz</p>
+        </div>
+    </div>
+</div>
+    
+            <!-- Presets Section -->
+            <div class="custom-section" id="presetsSection">
+                <h3><i class="fa-solid fa-bookmark"></i> Customization Presets</h3>
+                <div class="presets-actions">
+                    <button class="preset-action-btn" id="savePresetBtn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Current
+                    </button>
+                    <button class="preset-action-btn secondary" id="exportPresetBtn">
+                        <i class="fa-solid fa-download"></i>
+                        Export
+                    </button>
+                    <button class="preset-action-btn secondary" id="importPresetBtn">
+                        <i class="fa-solid fa-upload"></i>
+                        Import
+                    </button>
+                    <input type="file" id="importPresetFile" accept=".json" style="display: none;">
+                </div>
+                
+                <div class="saved-presets" id="savedPresetsGrid">
+                    <!-- Saved presets will appear here -->
+                </div>
+            </div>
+    </div>
+</div>
+</div>
+
+<!-- Weather Overlay -->
+<div id="weatherOverlay" class="overlay">
+    <div class="weather-overlay-container">
+        <button id="closeWeatherOverlay" class="weather-close-btn"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="weather-overlay-header">
+            <h2><i class="fas fa-cloud-sun"></i> Weather Information</h2>
+        </div>
+
+        <div class="weather-overlay-content">
+            <div class="weather-main-info">
+                <div class="weather-large-emoji" id="overlayWeatherEmoji">☁️</div>
+                <div class="weather-large-temp" id="overlayWeatherTemp">--°C</div>
+                <div class="weather-large-desc" id="overlayWeatherDesc">Loading...</div>
+            </div>
+
+            <div class="weather-location-info">
+                <i class="fa-solid fa-location-dot"></i>
+                <span id="overlayWeatherLocation">Detecting location...</span>
+            </div>
+
+            <div class="weather-details-grid">
+                <div class="weather-detail-card">
+                    <i class="fa-solid fa-sun"></i>
+                    <div class="weather-detail-label">Sunrise</div>
+                    <div class="weather-detail-value" id="overlaySunrise">--:--</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fa-solid fa-moon"></i>
+                    <div class="weather-detail-label">Sunset</div>
+                    <div class="weather-detail-value" id="overlaySunset">--:--</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fa-solid fa-clock"></i>
+                    <div class="weather-detail-label">Current Time</div>
+                    <div class="weather-detail-value" id="overlayCurrentTime">--:--</div>
+                </div>
+                <div class="weather-detail-card">
+                    <i class="fa-solid fa-calendar"></i>
+                    <div class="weather-detail-label">Date</div>
+                    <div class="weather-detail-value" id="overlayCurrentDate">--/--/----</div>
+                </div>
+            </div>
+
+            <div class="weather-refresh">
+                <button id="refreshWeatherBtn" class="refresh-weather-btn">
+                    <i class="fa-solid fa-rotate"></i> Refresh Weather
+                </button>
+                <div class="weather-last-update">
+                    Last updated: <span id="lastWeatherUpdate">Never</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
         <script src="../index.js"></script>
-</body>
+
+    </body>
 </html>
