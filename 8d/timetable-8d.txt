@@ -1,68 +1,68 @@
 <table class="timetable" id="timetable">
     <thead>
         <tr>
-            <th></th>
-            <th style="text-transform: uppercase;">Luni</th>
-            <th style="text-transform: uppercase;">Marți</th>
-            <th style="text-transform: uppercase;">Miercuri</th>
-            <th style="text-transform: uppercase;">Joi</th>
-            <th style="text-transform: uppercase;">Vineri</th>
+            <th style="width: 10rem !important; height: 3rem !important;"></th>
+            <th style="text-transform: uppercase; height: 3rem !important;">Luni</th>
+            <th style="text-transform: uppercase; height: 3rem !important;">Marți</th>
+            <th style="text-transform: uppercase; height: 3rem !important;">Miercuri</th>
+            <th style="text-transform: uppercase; height: 3rem !important;">Joi</th>
+            <th style="text-transform: uppercase; height: 3rem !important;">Vineri</th>
         </tr>
         <tr>
-            <th>12:00</th>
-            <th>Fizică 💡</th>
-            <th>Fizică 💡</th>
-            <th>Mate 📏</th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th>13:00</th>
-            <th>Istorie 📜</th>
-            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Chimie 🧪</th>
-            <th>Geografie 🌍</th>
-            <th>Geografie 🌍</th>
-        </tr>
-        <tr>
-            <th>14:00</th>
-            <th>Biologie 🧬</th>
-            <th>Mate 📏</th>
-            <th>Franceză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1eb-1f1f7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Muzică 🎵</th>
-            <th>Arte Plastice 🎨</th>
-        </tr>
-        <tr>
-            <th>15:00</th>
-            <th>Mate 📏</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Opț Mate 📐</th>
-            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Mate 📏</th>
-        </tr>
-        <tr>
-            <th>16:00</th>
-            <th>Sport ⚽</th>
-            <th>Informatică 💻</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-            <th>Religie ☦️</th>
-            <th>Engleză <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1ec-1f1e7.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-        </tr>
-        <tr>
-            <th>17:00</th>
-            <th>Tehnologică ⚙️</th>
-            <th>Sport ⚽</th>
-            <th>Istorie 📜</th>
-            <th>Chimie 🧪</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
-        </tr>
-        <tr>
-            <th>18:00</th>
-            <th>Română <img src="https://images.emojiterra.com/google/noto-emoji/unicode-16.0/color/svg/1f1f7-1f1f4.svg" style="height:1.4rem;transform:translateY(0.25rem);"></th>
+            <th style="width: 10rem !important">12:00</th>
+            <th>Fizică <span id="TTemojis">💡</span></th>
+            <th>Fizică <span id="TTemojis">💡</span></th>
+            <th>Mate <span id="TTemojis">📏</span></th>
             <th></th>
             <th></th>
-            <th>Civică 🏛️</th>
-            <th>Dirigenție 📰</th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">13:00</th>
+            <th>Istorie <span id="TTemojis">📜</span></th>
+            <th>Franceză <span class="fi fi-fr" id="TTemojis"></span></th>
+            <th>Chimie <span id="TTemojis">🧪</span></th>
+            <th>Geografie <span id="TTemojis">🌍</span></th>
+            <th>Geografie <span id="TTemojis">🌍</span></th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">14:00</th>
+            <th>Biologie <span id="TTemojis">🧬</span></th>
+            <th>Mate <span id="TTemojis">📏</span></th>
+            <th>Franceză <span class="fi fi-fr" id="TTemojis"></span></th>
+            <th>Muzică <span id="TTemojis">🎵</span></th>
+            <th>Arte <span id="TTemojis">🎨</span></th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">15:00</th>
+            <th>Mate <span id="TTemojis">📏</span></th>
+            <th>Română <span class="fi fi-ro" id="TTemojis"></span></th>
+            <th>Opț Mate <span id="TTemojis">📐</span></th>
+            <th>Engleză <span class="fi fi-gb" id="TTemojis"></span></th>
+            <th>Mate <span id="TTemojis">📏</span></th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">16:00</th>
+            <th>Sport <span id="TTemojis">⚽</span></th>
+            <th>Informatică <span id="TTemojis">💻</th>
+            <th>Română <span class="fi fi-ro" id="TTemojis"></span></th>
+            <th>Religie <span id="TTemojis">☦️</span></th>
+            <th>Engleză <span class="fi fi-gb" id="TTemojis" ></span></th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">17:00</th>
+            <th>Tehnologică <span id="TTemojis">🛠️</span></th>
+            <th>Sport <span id="TTemojis">⚽</span></th>
+            <th>Istorie <span id="TTemojis">📜</span></th>
+            <th>Chimie <span id="TTemojis">🧪</span></th>
+            <th>Română <span class="fi fi-ro" id="TTemojis"></span></th>
+        </tr>
+        <tr>
+            <th style="width: 10rem !important">18:00</th>
+            <th>Română <span class="fi fi-ro" id="TTemojis"></span></th>
+            <th></th>
+            <th></th>
+            <th>Civică <span id="TTemojis">🏛️</span></th>
+            <th>Dirigenție <span id="TTemojis">📰</span></th>
         </tr>
     </thead>
     <tbody></tbody>
