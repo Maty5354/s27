@@ -61,16 +61,7 @@ function setupSubjectHighlight() {
         // skip time column (first)
         cells.slice(1).forEach((cell) => {
             cell.classList.add("subject");
-            cell.onclick = () => {
-                const marked = cell.getAttribute("data-marked") === "true";
-                if (!marked) {
-                    cell.innerHTML = "<mark>" + cell.innerHTML + "</mark>";
-                    cell.setAttribute("data-marked", "true");
-                } else {
-                    cell.innerHTML = cell.innerHTML.replace(/<\/?mark>/g, "");
-                    cell.setAttribute("data-marked", "false");
-                }
-            };
+            // Don't add click handler here - the keyboard navigation handles highlighting
         });
     });
 }
@@ -336,7 +327,9 @@ function updateOverlay() {
     const isSideOpen = sideMenu && sideMenu.classList.contains("open");
     const isManualsOpen = manualsPopup && manualsPopup.classList.contains("active");
     const isInfoOpen = infoOverlay && infoOverlay.classList.contains("active");
-    if (isSideOpen || isManualsOpen || isInfoOpen) overlay.classList.add("active");
+    const isWeatherOpen = weatherOverlay && weatherOverlay.classList.contains("active");
+
+    if (isSideOpen || isManualsOpen || isInfoOpen || isWeatherOpen) overlay.classList.add("active");
     else overlay.classList.remove("active");
 }
 
@@ -363,8 +356,13 @@ if (menuToggle) {
 // OVERLAY click: close top-most (info -> manuals -> side menu)
 if (overlay) {
     overlay.addEventListener("click", () => {
-        // Close info overlay first if open
-        if (infoOverlay && infoOverlay.classList.contains("active")) {
+        // Close weather overlay first if open
+        if (weatherOverlay && weatherOverlay.classList.contains("active")) {
+            weatherOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+        }
+        // Close info overlay
+        else if (infoOverlay && infoOverlay.classList.contains("active")) {
             infoOverlay.classList.remove("active");
             document.body.style.overflow = "";
         }
@@ -919,7 +917,7 @@ document.addEventListener(
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "preset-delete";
             deleteBtn.dataset.color = color;
-            deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            deleteBtn.textContent = "✖️";
             // NEW: Set text color based on background lightness
             deleteBtn.style.color = lightness > 60 ? "#000000" : "#ffffff";
             deleteBtn.onclick = (e) => {
@@ -2344,7 +2342,7 @@ if (overlay) {
     });
 }
 
-// New function to update title time
+// --- TITLE TIME DISPLAY ---
 function updateTitleTime() {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, "0");
@@ -2491,23 +2489,44 @@ document.getElementById("titleTime")?.addEventListener("click", function () {
         }
     }
 
-    // click: select only (do NOT open)
-    table.addEventListener("click", function (ev) {
-        const cell = ev.target.closest("th, td");
-        if (!cell || !table.contains(cell)) return;
-        // skip first column and header row
-        const tr = cell.parentElement;
-        if (!tr) return;
-        const rowIndex = allRows.indexOf(tr);
-        if (rowIndex <= 0) return; // header row or above
-        const cellIndex = Array.from(tr.children).indexOf(cell);
-        if (cellIndex === 0) return; // time column
-        selectCell(cell);
-    });
+    // click: open textbook immediately (no highlighting)
+    table.addEventListener(
+        "click",
+        function (ev) {
+            const cell = ev.target.closest("th, td");
+            if (!cell || !table.contains(cell)) return;
+            // skip first column and header row
+            const tr = cell.parentElement;
+            if (!tr) return;
+            const rowIndex = allRows.indexOf(tr);
+            if (rowIndex <= 0) return; // header row or above
+            const cellIndex = Array.from(tr.children).indexOf(cell);
+            if (cellIndex === 0) return; // time column
 
-    // keyboard navigation + Enter to open
+            // Don't highlight on click, just open the textbook
+            // 1) data-manual attribute precedence
+            const dataManual = cell.dataset.manual;
+            if (dataManual) {
+                openManual(dataManual);
+                return;
+            }
+            // 2) lookup by subject text
+            const subjText = cell.innerText || cell.textContent;
+            const subject = normalizeSubject(subjText);
+            if (!subject) return;
+            const found = manualMap[subject];
+            if (found) {
+                openManual(found);
+                return;
+            }
+            // 3) fallback search
+            openManual("https://manuale.edu.ro/?s=" + encodeURIComponent(subject));
+        },
+        true
+    ); // use capture phase to prevent click from bubbling
+
+    // keyboard navigation + Enter to highlight only
     document.addEventListener("keydown", function (ev) {
-        const activeSelected = getCell(selected.r, selected.c);
         // Start selection if none and arrow pressed
         if (
             (ev.key === "ArrowRight" ||
@@ -2557,23 +2576,18 @@ document.getElementById("titleTime")?.addEventListener("click", function () {
                 break;
             case "Enter":
                 ev.preventDefault();
-                if (!activeSelected) return;
-                // 1) data-manual attribute precedence
-                const dataManual = activeSelected.dataset.manual;
-                if (dataManual) {
-                    openManual(dataManual);
-                    return;
+                const activeCell = getCell(selected.r, selected.c);
+                if (!activeCell) return;
+
+                // Toggle <mark> tag on the selected cell
+                const isMarked = activeCell.getAttribute("data-marked") === "true";
+                if (!isMarked) {
+                    activeCell.innerHTML = "<mark>" + activeCell.innerHTML + "</mark>";
+                    activeCell.setAttribute("data-marked", "true");
+                } else {
+                    activeCell.innerHTML = activeCell.innerHTML.replace(/<\/?mark>/g, "");
+                    activeCell.setAttribute("data-marked", "false");
                 }
-                // 2) lookup by subject text
-                const subject = normalizeSubject(activeSelected.innerText);
-                if (!subject) return;
-                const found = manualMap[subject];
-                if (found) {
-                    openManual(found);
-                    return;
-                }
-                // 3) fallback search
-                openManual("https://manuale.edu.ro/?s=" + encodeURIComponent(subject));
                 break;
             default:
                 return;
