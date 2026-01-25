@@ -1,0 +1,92 @@
+[
+    {
+        "title": "Arte Plastice",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20plastica/Uy5DLiBMaXRlcmEgRWR1/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1899.png",
+        "subject": "arte"
+    },
+    {
+        "title": "Biologie",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Biologie/Q29yaW50IExvZ2lzdGlj/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1857.png",
+        "subject": "biologie"
+    },
+    {
+        "title": "Chimie",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Chimie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1877.png",
+        "subject": "chimie"
+    },
+    {
+        "title": "Civică",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20sociala/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1902.png",
+        "subject": "civică"
+    },
+    {
+        "title": "Engleză",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20moderna%201-limba%20engleza/QXJ0IEtsZXR0IFMuUi5M/#book/0-help",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1942.png",
+        "subject": "engleză"
+    },
+    {
+        "title": "Franceză",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20moderna%202%20franceza/Uy5DLiBCb29rbGV0IFMu/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1958.png",
+        "subject": "franceză"
+    },
+    {
+        "title": "Fizică",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Fizica/QXJ0IEtsZXR0IFMuUi5M/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1915.png",
+        "subject": "fizică"
+    },
+    {
+        "title": "Geografie",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Geografie/QXJ0IEtsZXR0IFMuUi5M/#book/0-help",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1920.png",
+        "subject": "geografie"
+    },
+    {
+        "title": "Informatică",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Informatica%20si%20TIC/Uy5DLiBMaXRlcmEgRWR1/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1969.png",
+        "subject": "informatică"
+    },
+    {
+        "title": "Istorie",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Istorie/QWthZGVtb3MgQXJ0IFMu/interior.html",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1940.png",
+        "subject": "istorie"
+    },
+    {
+        "title": "Mate",
+        "link": "https://app.asq.ro/",
+        "image": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fplay-lh.googleusercontent.com%2FB_xhOxjZahDaNvf7NYDBa8uCj1bmmUpQAdsxeG8_n7HErkfqHnFQS3HCZWLua6tj7w&f=1&nofb=1&ipt=e0719d2a65e76c03a8158e5fbf69d6f994c312763d96851f8383d094269c73dc",
+        "subject": "mate"
+    },
+    {
+        "title": "Muzică",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20muzicala/QXJ0IEtsZXR0IFMuUi5M/",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1893.png",
+        "subject": "muzică"
+    },
+    {
+        "title": "Religie",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Religie%20Cultul%20Ortodox/QWthZGVtb3MgQXJ0IFMu/front-cover.html",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1978.png",
+        "subject": "religie"
+    },
+    {
+        "title": "Română",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Limba%20si%20literatura%20romana/QXJ0IEtsZXR0IFMuUi5M/A1948.pdf",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1948.png",
+        "subject": "română"
+    },
+    {
+        "title": "Tehnologică",
+        "link": "https://manuale.edu.ro/manuale/Clasa%20a%20VIII-a/Educatie%20tehnologica%20si%20aplicatii%20practice/Q0QgUHJlc3MgUy5SLkwu/book.html?book#0",
+        "image": "https://www.manuale.edu.ro/assets/img/manuale/A1911.png",
+        "subject": "tehnologică"
+    }
+]
