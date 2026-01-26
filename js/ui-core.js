@@ -4,7 +4,6 @@
 
 const sideMenu = document.getElementById("sideMenu");
 const menuToggle = document.getElementById("menuToggle");
-const menuIcon = document.getElementById("menuIcon");
 const overlay = document.getElementById("overlay");
 
 // Info overlay controls
@@ -26,36 +25,74 @@ document.addEventListener(
     { passive: false }
 );
 
-function updateOverlay() {
-    const isSideOpen = sideMenu && sideMenu.classList.contains("open");
-    const manualsPopup = document.getElementById("manualsPopup");
-    const isManualsOpen = manualsPopup && manualsPopup.classList.contains("active");
-    const isInfoOpen = infoOverlay && infoOverlay.classList.contains("active");
-    const weatherOverlay = document.getElementById("weatherOverlay");
-    const isWeatherOpen = weatherOverlay && weatherOverlay.classList.contains("active");
+// Register Overlays and Initialize Scrollbars
+window.addEventListener("DOMContentLoaded", () => {
+    // Initialize Custom Scrollbars (All Devices)
+    if (window.OverlayScrollbarsGlobal) {
+        const { OverlayScrollbars } = window.OverlayScrollbarsGlobal;
+        const defaultOptions = {
+            scrollbars: {
+                autoHide: 'leave',
+                clickScroll: true,
+                theme: 'os-theme-custom'
+            }
+        };
 
-    if (isSideOpen || isManualsOpen || isInfoOpen || isWeatherOpen) {
-        if(overlay) overlay.classList.add("active");
-    } else {
-        if(overlay) overlay.classList.remove("active");
+        // Initialize on Body
+        OverlayScrollbars(document.body, defaultOptions);
+
+        // Initialize on specific containers
+        const scrollContainers = [
+            '.todo-sidebar',
+            '.list-view',
+            '.calendar-view',
+            '.info-content',
+            '.custom-sidebar',
+            '.custom-content',
+            '#manualsPopupContent',
+            '.weather-overlay-container',
+            '.task-edit-content',
+            '.folder-edit-content',
+            '.boss-container'
+        ];
+
+        scrollContainers.forEach(selector => {
+            const el = document.querySelector(selector);
+            if (el) OverlayScrollbars(el, defaultOptions);
+        });
     }
+
+    // Register Side Menu
+    if (window.overlayManager) {
+        window.overlayManager.register("sideMenu", {
+            closeOnBackdrop: true,
+            onOpen: () => {
+                if (menuToggle) menuToggle.classList.add("open");
+            },
+            onClose: () => {
+                if (menuToggle) menuToggle.classList.remove("open");
+            }
+        });
+
+        // Register Info Overlay
+        window.overlayManager.register("infoOverlay", {
+            closeOnBackdrop: true
+        });
+    }
+});
+
+function updateOverlay() {
+    // Deprecated: Handled by OverlayManager
 }
 
-// MENU TOGGLE (folosește updateOverlay în loc de toggle direct)
+// MENU TOGGLE
 if (menuToggle) {
     menuToggle.addEventListener("click", () => {
-        // Prevent opening the side menu while the manuals popup is open
-        if (document.getElementById("manualsPopup") && document.getElementById("manualsPopup").classList.contains("active")) return;
-
-        const isOpen = sideMenu.classList.toggle("open");
-        updateOverlay();
-
-        if (isOpen) {
-            menuIcon.classList.remove("fa-arrow-right");
-            menuIcon.classList.add("fa-arrow-left");
+        const sideMenu = document.getElementById("sideMenu");
+        if (sideMenu.classList.contains("open")) {
+            if (window.overlayManager) window.overlayManager.close("sideMenu");
         } else {
-            menuIcon.classList.remove("fa-arrow-left");
-            menuIcon.classList.add("fa-arrow-right");
+            if (window.overlayManager) window.overlayManager.open("sideMenu");
         }
     });
 }
@@ -63,64 +100,22 @@ if (menuToggle) {
 // INFO OVERLAY
 if (infoBtn) {
     infoBtn.addEventListener("click", () => {
-        // close side menu if open for clarity
-        if (sideMenu && sideMenu.classList.contains("open")) {
-            sideMenu.classList.remove("open");
-            menuIcon.classList.remove("fa-arrow-left");
-            menuIcon.classList.add("fa-arrow-right");
+        if (window.overlayManager) {
+            window.overlayManager.close("sideMenu");
+            window.overlayManager.open("infoOverlay");
         }
-        if (document.getElementById("manualsPopup") && document.getElementById("manualsPopup").classList.contains("active")) {
-            // prefer to close manuals popup first if it's open
-            document.getElementById("manualsPopup").classList.remove("active");
-        }
-        if (infoOverlay) infoOverlay.classList.add("active");
-        if (overlay) overlay.classList.add("active");
-        document.body.style.overflow = "hidden";
     });
 }
 
 if (closeInfoOverlay) {
     closeInfoOverlay.addEventListener("click", () => {
-        if (infoOverlay) infoOverlay.classList.remove("active");
-        if (overlay) overlay.classList.remove("active");
-        document.body.style.overflow = "";
-        // update overlay state in case other elements need it
-        try {
-            updateOverlay();
-        } catch (e) {}
+        if (window.overlayManager) window.overlayManager.close("infoOverlay");
     });
 }
 
 // GLOBAL OVERLAY CLICK (Close top-most layer)
 if (overlay) {
-    overlay.addEventListener("click", () => {
-        const weatherOverlay = document.getElementById("weatherOverlay");
-        const manualsPopup = document.getElementById("manualsPopup");
-
-        // Close weather overlay first if open
-        if (weatherOverlay && weatherOverlay.classList.contains("active")) {
-            weatherOverlay.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-        // Close info overlay
-        else if (infoOverlay && infoOverlay.classList.contains("active")) {
-            infoOverlay.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-        // Then manuals popup
-        else if (manualsPopup && manualsPopup.classList.contains("active")) {
-            manualsPopup.classList.remove("active");
-            document.body.style.overflow = "";
-        }
-        // Then side menu
-        else if (sideMenu && sideMenu.classList.contains("open")) {
-            sideMenu.classList.remove("open");
-            menuIcon.classList.remove("fa-arrow-left");
-            menuIcon.classList.add("fa-arrow-right");
-        }
-        // Update overlay state
-        updateOverlay();
-    });
+    // Managed by OverlayManager
 }
 
 /* --- COLLAPSIBLE RELEASE NOTES --- */

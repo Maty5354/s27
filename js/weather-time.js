@@ -20,18 +20,25 @@ function updateClock() {
     if (dateEl) dateEl.textContent = dateStr;
 }
 
+if (window.overlayManager) {
+    window.overlayManager.register("timeOverlay");
+}
+
 if (clockBtn) {
     clockBtn.addEventListener("click", () => {
-        timeOverlay.classList.add("active");
-        document.body.classList.add("no-scroll");
+        if (window.overlayManager) {
+            window.overlayManager.close("sideMenu");
+            window.overlayManager.open("timeOverlay");
+        }
         updateClock();
     });
 }
 
 if (closeOverlay) {
     closeOverlay.addEventListener("click", () => {
-        timeOverlay.classList.remove("active");
-        document.body.classList.remove("no-scroll");
+        if (window.overlayManager) {
+            window.overlayManager.close("timeOverlay");
+        }
     });
 }
 
@@ -44,8 +51,15 @@ function updateTitleTime() {
     const minutes = now.getMinutes().toString().padStart(2, "0");
     const seconds = now.getSeconds().toString().padStart(2, "0");
     const timeEl = document.getElementById("titleTime");
+    const dateEl = document.getElementById("titleDate");
+    
     if (timeEl) {
         timeEl.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    
+    if (dateEl) {
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        dateEl.textContent = now.toLocaleDateString('ro-RO', options);
     }
 }
 
@@ -235,42 +249,28 @@ setInterval(updateOverlayTime, 1000); // Update time every second
 
 // Weather overlay controls
 const weatherBtn = document.getElementById("weatherBtn");
-const weatherOverlay = document.getElementById("weatherOverlay");
 const closeWeatherOverlay = document.getElementById("closeWeatherOverlay");
 const refreshWeatherBtn = document.getElementById("refreshWeatherBtn");
 
+if (window.overlayManager) {
+    window.overlayManager.register("weatherOverlay");
+}
+
 if (weatherBtn) {
     weatherBtn.addEventListener("click", () => {
-        if (weatherOverlay) weatherOverlay.classList.add("active");
-        document.body.classList.add("no-scroll");
-        updateOverlayTime();
-
-        // Close side menu if open
-        const sideMenu = document.getElementById("sideMenu");
-        const menuIcon = document.getElementById("menuIcon");
-        if (sideMenu && sideMenu.classList.contains("open")) {
-            sideMenu.classList.remove("open");
-            if (menuIcon) {
-                menuIcon.classList.remove("fa-arrow-left");
-                menuIcon.classList.add("fa-arrow-right");
-            }
+        if (window.overlayManager) {
+            window.overlayManager.close("sideMenu");
+            window.overlayManager.open("weatherOverlay");
         }
-        // Update overlay
-        try {
-            const overlay = document.getElementById("overlay");
-            if (overlay) overlay.classList.add("active");
-        } catch (e) {}
+        updateOverlayTime();
     });
 }
 
 if (closeWeatherOverlay) {
     closeWeatherOverlay.addEventListener("click", () => {
-        if (weatherOverlay) weatherOverlay.classList.remove("active");
-        document.body.classList.remove("no-scroll");
-        try {
-            const overlay = document.getElementById("overlay");
-            if (overlay) overlay.classList.remove("active");
-        } catch (e) {}
+        if (window.overlayManager) {
+            window.overlayManager.close("weatherOverlay");
+        }
     });
 }
 

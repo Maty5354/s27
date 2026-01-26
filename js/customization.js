@@ -1,3 +1,5 @@
+
+
 /* ========================================
    CUSTOMIZATION OVERLAY SYSTEM
    ======================================== */
@@ -12,123 +14,175 @@
         FONT: "customization-font",
         COLOR_PRESETS: "customization-color-presets",
         SAVED_PRESETS: "customization-saved-presets",
-        EMOJI_SETTINGS: "customization-emoji-settings",
-        ICON_STYLE: "customization-icon-style",
-        EMOJI_SIZE: "customization-emoji-size",
+        UI_SETTINGS: "customization-ui-settings",
+        A11Y_SETTINGS: "customization-a11y-settings",
+        CUSTOM_FONTS: "custom-fonts",
+        ADVANCED_SETTINGS: "advancedSettings" // Shared with other modules
     };
 
     // Default color presets
     const DEFAULT_COLOR_PRESETS = ["#6196ff", "#ff6b6b", "#f59e0b", "#51d88a", "#a855f7"];
 
+    // Default UI Settings
+    const DEFAULT_UI_SETTINGS = {
+        borderRadius: 16,
+        glassIntensity: 80,
+        compactMode: false,
+        minimalCells: false,
+        bgImage: '',
+        mobileNavScroll: false,
+        hideEmptyDays: false,
+        bgPattern: false
+    };
+
+    // Default A11y Settings
+    const DEFAULT_A11Y_SETTINGS = {
+        highContrast: false,
+        reducedMotion: false,
+        focusIndicators: false,
+        grayscale: false,
+        textScale: 1
+    };
+
+    // Default Advanced Settings
+    const DEFAULT_ADVANCED_SETTINGS = {
+        interactionMode: 'link',
+        shortcut1: 'customization',
+        shortcut2: 'weather'
+    };
+
     // State
-    let currentTheme = "light";
+    let currentTheme = "auto";
     let currentAccentColor = "#6196ff";
     let currentFont = "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif";
     let colorPresets = [...DEFAULT_COLOR_PRESETS];
     let savedPresets = [];
-
-    // Add example presets if there are no saved presets
-    if (savedPresets.length === 0) {
-        savedPresets = [
-            {
-                name: "Ocean Breeze",
-                theme: "ocean",
-                accentColor: "#4CB8FF",
-                font: "'Poppins', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Modern Dark",
-                theme: "space",
-                accentColor: "#A855F7",
-                font: "'Inter', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Forest Calm",
-                theme: "forest",
-                accentColor: "#4ADE80",
-                font: "'DM Sans', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Sunset Vibes",
-                theme: "sunset",
-                accentColor: "#FF8C65",
-                font: "'Quicksand', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Lavender Dreams",
-                theme: "lavender",
-                accentColor: "#9D85FF",
-                font: "'Raleway', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Midnight Code",
-                theme: "midnight",
-                accentColor: "#3B82F6",
-                font: "'JetBrains Mono', monospace",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Classic Light",
-                theme: "light",
-                accentColor: "#6196FF",
-                font: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
-                timestamp: Date.now(),
-            },
-            {
-                name: "Roseo",
-                theme: "rose",
-                accentColor: "#C486FE",
-                font: "'Space Grotesk', sans-serif",
-                timestamp: Date.now(),
-            },
-        ];
-    }
+    let themeDefinitions = [];
+    let uiSettings = { ...DEFAULT_UI_SETTINGS };
+    let a11ySettings = { ...DEFAULT_A11Y_SETTINGS };
+    let advancedSettings = { ...DEFAULT_ADVANCED_SETTINGS };
 
     // Google Fonts link element
     let googleFontsLink = null;
 
     // Initialize
-    function init() {
+    async function init() {
+        await loadThemesFromJSON();
         loadSettings();
-        applySettings();
+        applySettings(); // Applies everything
         setupEventListeners();
         renderColorPresets();
+        renderRecommendedColors();
         renderSavedPresets();
+        renderThemeCards();
+        renderGallery();
         setupGoogleFonts();
         loadSavedCustomFonts();
         checkColorContrast();
+        
+        // Initial input sync
+        syncInputs();
+    }
+
+    async function loadThemesFromJSON() {
+        const dataPath = window.DATA_PATH || 'data/';
+        try {
+            const response = await fetch(`${dataPath}themes.json`);
+            const data = await response.json();
+            themeDefinitions = data.themes;
+            
+            // Initialize savedPresets with defaults if empty
+            if (localStorage.getItem(STORAGE_KEYS.SAVED_PRESETS) === null) {
+                savedPresets = data.defaultPresets.map(p => ({
+                    ...p,
+                    ui: { ...DEFAULT_UI_SETTINGS },
+                    a11y: { ...DEFAULT_A11Y_SETTINGS },
+                    timestamp: Date.now()
+                }));
+                localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
+            }
+        } catch (error) {
+            console.error("Error loading themes data:", error);
+        }
     }
 
     // Load settings from localStorage
     function loadSettings() {
-        currentTheme = localStorage.getItem(STORAGE_KEYS.THEME) || "light";
+        currentTheme = localStorage.getItem(STORAGE_KEYS.THEME) || "auto";
         currentAccentColor = localStorage.getItem(STORAGE_KEYS.ACCENT_COLOR) || "#6196ff";
-        currentFont =
-            localStorage.getItem(STORAGE_KEYS.FONT) ||
-            "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif";
+        currentFont = localStorage.getItem(STORAGE_KEYS.FONT) || "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif";
 
         const savedColorPresets = localStorage.getItem(STORAGE_KEYS.COLOR_PRESETS);
         if (savedColorPresets) {
-            try {
-                colorPresets = JSON.parse(savedColorPresets);
-            } catch (e) {
-                colorPresets = [...DEFAULT_COLOR_PRESETS];
-            }
+            try { colorPresets = JSON.parse(savedColorPresets); } catch (e) { colorPresets = [...DEFAULT_COLOR_PRESETS]; }
         }
 
         const savedPresetsData = localStorage.getItem(STORAGE_KEYS.SAVED_PRESETS);
         if (savedPresetsData) {
-            try {
-                savedPresets = JSON.parse(savedPresetsData);
-            } catch (e) {
-                savedPresets = [];
-            }
+            try { savedPresets = JSON.parse(savedPresetsData); } catch (e) { savedPresets = []; }
         }
+
+        const savedUISettings = localStorage.getItem(STORAGE_KEYS.UI_SETTINGS);
+        if (savedUISettings) {
+             try { uiSettings = { ...DEFAULT_UI_SETTINGS, ...JSON.parse(savedUISettings) }; } catch (e) { uiSettings = { ...DEFAULT_UI_SETTINGS }; }
+        }
+
+        const savedA11ySettings = localStorage.getItem(STORAGE_KEYS.A11Y_SETTINGS);
+        if (savedA11ySettings) {
+             try { a11ySettings = { ...DEFAULT_A11Y_SETTINGS, ...JSON.parse(savedA11ySettings) }; } catch (e) { a11ySettings = { ...DEFAULT_A11Y_SETTINGS }; }
+        }
+
+        const savedAdvanced = localStorage.getItem(STORAGE_KEYS.ADVANCED_SETTINGS);
+        if (savedAdvanced) {
+             try { advancedSettings = { ...DEFAULT_ADVANCED_SETTINGS, ...JSON.parse(savedAdvanced) }; } catch (e) { advancedSettings = { ...DEFAULT_ADVANCED_SETTINGS }; }
+        }
+    }
+
+    function syncInputs() {
+        // Colors
+        const colorPicker = document.getElementById("customColorPicker");
+        const hexInput = document.getElementById("colorHexInput");
+        if (colorPicker) colorPicker.value = currentAccentColor;
+        if (hexInput) hexInput.value = currentAccentColor.toUpperCase();
+
+        // Font
+        const fontSelect = document.getElementById("fontSelect");
+        if (fontSelect) fontSelect.value = currentFont;
+
+        // UI
+        document.getElementById("uiBorderRadius").value = uiSettings.borderRadius;
+        document.getElementById("uiGlassIntensity").value = uiSettings.glassIntensity;
+        document.getElementById("uiCompactMode").checked = uiSettings.compactMode;
+        document.getElementById("uiMinimalCells").checked = uiSettings.minimalCells;
+        document.getElementById("uiBgImage").value = uiSettings.bgImage;
+        document.getElementById("uiMobileNavScroll").checked = uiSettings.mobileNavScroll || false;
+        document.getElementById("uiHideEmptyDays").checked = uiSettings.hideEmptyDays || false;
+        document.getElementById("uiBgPattern").checked = uiSettings.bgPattern || false;
+
+        // A11y
+        document.getElementById("a11yHighContrast").checked = a11ySettings.highContrast;
+        document.getElementById("a11yReducedMotion").checked = a11ySettings.reducedMotion;
+        document.getElementById("a11yFocusIndicators").checked = a11ySettings.focusIndicators;
+        document.getElementById("a11yGrayscale").checked = a11ySettings.grayscale;
+        document.getElementById("a11yTextScale").value = a11ySettings.textScale;
+
+        // Advanced
+        const modeLinkBtn = document.getElementById("modeLinkBtn");
+        const modeMarkBtn = document.getElementById("modeMarkBtn");
+        const modeText = document.getElementById("currentModeText");
+        
+        if (modeLinkBtn && modeMarkBtn) {
+            modeLinkBtn.classList.toggle("active", advancedSettings.interactionMode === 'link');
+            modeMarkBtn.classList.toggle("active", advancedSettings.interactionMode === 'mark');
+        }
+        if (modeText) {
+            modeText.textContent = advancedSettings.interactionMode === 'link' ? "Open Textbook" : "Mark Subject";
+        }
+
+        const sc1 = document.getElementById("shortcut1Select");
+        const sc2 = document.getElementById("shortcut2Select");
+        if (sc1) sc1.value = advancedSettings.shortcut1;
+        if (sc2) sc2.value = advancedSettings.shortcut2;
     }
 
     // Apply settings
@@ -136,178 +190,47 @@
         applyTheme(currentTheme);
         applyAccentColor(currentAccentColor);
         applyFont(currentFont);
+        applyUISettings();
+        applyA11ySettings();
         updateUISelections();
     }
 
-    // Apply theme
-    function applyTheme(theme) {
-        currentTheme = theme;
-
-        if (theme === "auto") {
+    // --- LOGIC: THEMES ---
+    function applyTheme(themeId) {
+        currentTheme = themeId;
+        let activeThemeId = themeId;
+        if (themeId === "auto") {
             const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            theme = prefersDark ? "dark" : "light";
+            activeThemeId = prefersDark ? "dark" : "light";
         }
 
-        // Remove all theme attributes first
-        document.body.removeAttribute("data-theme");
+        document.body.setAttribute("data-theme", activeThemeId);
 
-        if (theme === "space") {
-            document.body.setAttribute("data-theme", "space");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#f0f0f0");
-            root.style.setProperty("--bg-color", "#000000");
-            root.style.setProperty("--card-bg", "#0a0a0a");
-            root.style.setProperty("--border-color", "#1a1a1a");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.5)");
-            root.style.setProperty("--highlight-color", "#1a1a1a");
-            root.style.setProperty("--current-hour-color", "#1a3a5a");
-            root.style.setProperty("--current-day-color", "#1a3a5a");
-        } else if (theme === "midnight") {
-            document.body.setAttribute("data-theme", "midnight");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#e8eaf0");
-            root.style.setProperty("--bg-color", "#0f1419");
-            root.style.setProperty("--card-bg", "#1a1f2e");
-            root.style.setProperty("--border-color", "#2a2f3e");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.4)");
-            root.style.setProperty("--highlight-color", "#252a3a");
-            root.style.setProperty("--current-hour-color", "#2a4a6a");
-            root.style.setProperty("--current-day-color", "#2a4a6a");
-        } else if (theme === "sunset") {
-            document.body.setAttribute("data-theme", "sunset");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#2d2d2d");
-            root.style.setProperty("--bg-color", "#fff5f0");
-            root.style.setProperty("--card-bg", "#ffe8dc");
-            root.style.setProperty("--border-color", "#ffd4c0");
-            root.style.setProperty("--shadow-color", "rgba(255, 140, 100, 0.15)");
-            root.style.setProperty("--highlight-color", "#ffdcc8");
-            root.style.setProperty("--current-hour-color", "#ffb89d");
-            root.style.setProperty("--current-day-color", "#ffb89d");
-        } else if (theme === "forest") {
-            document.body.setAttribute("data-theme", "forest");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#e8f5e8");
-            root.style.setProperty("--bg-color", "#0d1f12");
-            root.style.setProperty("--card-bg", "#162820");
-            root.style.setProperty("--border-color", "#1f3628");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.4)");
-            root.style.setProperty("--highlight-color", "#1f3628");
-            root.style.setProperty("--current-hour-color", "#2d5a3d");
-            root.style.setProperty("--current-day-color", "#2d5a3d");
-        } else if (theme === "ocean") {
-            document.body.setAttribute("data-theme", "ocean");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#e8f4f8");
-            root.style.setProperty("--bg-color", "#0a1929");
-            root.style.setProperty("--card-bg", "#132f4c");
-            root.style.setProperty("--border-color", "#1e4976");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.4)");
-            root.style.setProperty("--highlight-color", "#1a3a5a");
-            root.style.setProperty("--current-hour-color", "#2a5a8a");
-            root.style.setProperty("--current-day-color", "#2a5a8a");
-        } else if (theme === "lavender") {
-            document.body.setAttribute("data-theme", "lavender");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#2d2d2d");
-            root.style.setProperty("--bg-color", "#f8f5ff");
-            root.style.setProperty("--card-bg", "#f0e8ff");
-            root.style.setProperty("--border-color", "#e0d4ff");
-            root.style.setProperty("--shadow-color", "rgba(160, 120, 255, 0.15)");
-            root.style.setProperty("--highlight-color", "#e8dcff");
-            root.style.setProperty("--current-hour-color", "#c8b0ff");
-            root.style.setProperty("--current-day-color", "#c8b0ff");
-        } else if (theme === "dark") {
-            document.body.setAttribute("data-theme", "dark");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#f0f0f0");
-            root.style.setProperty("--bg-color", "#1a1a1a");
-            root.style.setProperty("--card-bg", "#2d2d2d");
-            root.style.setProperty("--border-color", "#3d3d3d");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.3)");
-            root.style.setProperty("--highlight-color", "#424242");
-            root.style.setProperty("--current-hour-color", "#2a527a");
-            root.style.setProperty("--current-day-color", "#2a527a");
-        } else if (theme === "light") {
-            document.body.setAttribute("data-theme", "light");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#2d2d2d");
-            root.style.setProperty("--bg-color", "#ffffff");
-            root.style.setProperty("--card-bg", "#f5f5f5");
-            root.style.setProperty("--border-color", "#e0e0e0");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.1)");
-            root.style.setProperty("--highlight-color", "#e0e0e0");
-            root.style.setProperty("--current-hour-color", "#a0c4ff");
-            root.style.setProperty("--current-day-color", "#a0c4ff");
-        } else if (theme === "rose") {
-            document.body.setAttribute("data-theme", "rose");
-            const root = document.documentElement;
-            root.style.setProperty("--text-color", "#f8d3e8");
-            root.style.setProperty("--bg-color", "#3f0f1f");
-            root.style.setProperty("--card-bg", "#5c2a3e");
-            root.style.setProperty("--border-color", "#7a4b5f");
-            root.style.setProperty("--shadow-color", "rgba(0, 0, 0, 0.4)");
-            root.style.setProperty("--highlight-color", "#9c6b8f");
-            root.style.setProperty("--current-hour-color", "#b58caa");
-            root.style.setProperty("--current-day-color", "#b58caa");
+        const themeDef = themeDefinitions.find(t => t.id === activeThemeId);
+        const root = document.documentElement;
+        if (themeDef && themeDef.colors) {
+            Object.entries(themeDef.colors).forEach(([variable, value]) => {
+                root.style.setProperty(variable, value);
+            });
+        }
+        
+        // Re-apply background image if exists, as theme might overwrite bg properties
+        if (uiSettings.bgImage) {
+            document.body.style.backgroundImage = `url('${uiSettings.bgImage}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundAttachment = 'fixed';
+        } else if (themeDef && !themeDef.colors["--bg-image"]) {
+            // Reset to default theme bg if no custom image
+             document.body.style.backgroundImage = '';
         }
 
         localStorage.setItem(STORAGE_KEYS.THEME, currentTheme);
         updateFavicon(currentAccentColor);
         checkColorContrast();
+        renderRecommendedColors(); // Re-render recs on theme change
     }
 
-    // Color contrast warning system
-    function checkColorContrast() {
-        const warningEl = document.getElementById("contrastWarning");
-        if (!warningEl) return;
-
-        const lightness = getColorLightness(currentAccentColor);
-        const isLightTheme =
-            ["light", "sunset", "lavender"].includes(currentTheme) ||
-            (currentTheme === "auto" && !window.matchMedia("(prefers-color-scheme: dark)").matches);
-        const isDarkTheme =
-            ["dark", "space", "midnight", "forest", "ocean"].includes(currentTheme) ||
-            (currentTheme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-        let showWarning = false;
-        let warningMessage = "";
-
-        if (isLightTheme && lightness > 85) {
-            showWarning = true;
-            warningMessage =
-                '<i class="fa-solid fa-triangle-exclamation"></i> This accent color may be too light for Light theme. Consider a darker shade for better visibility.';
-        } else if (isDarkTheme && lightness < 25) {
-            showWarning = true;
-            warningMessage =
-                '<i class="fa-solid fa-triangle-exclamation"></i> This accent color may be too dark for Dark theme. Consider a lighter shade for better visibility.';
-        }
-
-        if (showWarning) {
-            warningEl.innerHTML = warningMessage;
-            warningEl.style.display = "block";
-        } else {
-            warningEl.style.display = "none";
-        }
-    }
-
-    function getColorLightness(hex) {
-        // Convert hex to RGB
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-
-        // Calculate relative luminance
-        const [rs, gs, bs] = [r, g, b].map((c) => {
-            c = c / 255;
-            return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-        });
-
-        const luminance = 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
-        return luminance * 100;
-    }
-
-    // Apply accent color
+    // --- LOGIC: ACCENT COLOR ---
     function applyAccentColor(color) {
         currentAccentColor = color;
         document.documentElement.style.setProperty("--accent-color", color);
@@ -319,584 +242,694 @@
         if (colorPicker) colorPicker.value = color;
         if (hexInput) hexInput.value = color.toUpperCase();
 
-        const oldColorPicker = document.getElementById("accentColorPicker");
-        if (oldColorPicker) oldColorPicker.value = color;
-
-        // Update button text color based on background
         updateButtonTextColors();
         checkColorContrast();
+        updateUISelections();
     }
 
-    // Update text colors for better contrast
-    function updateButtonTextColors() {
-        const lightness = getColorLightness(currentAccentColor);
-        const addPresetBtn = document.getElementById("addColorPreset");
-
-        if (addPresetBtn) {
-            if (lightness > 60) {
-                addPresetBtn.style.color = "#000000";
-            } else {
-                addPresetBtn.style.color = "#ffffff";
-            }
-        }
-
-        const randomColorBtn = document.getElementById("randomColorBtn");
-        if (randomColorBtn) {
-            if (lightness > 60) {
-                randomColorBtn.style.color = "#000000";
-            } else {
-                randomColorBtn.style.color = "#ffffff";
-            }
-        }
-
-        // Update all preset items
-        document.querySelectorAll(".preset-item").forEach((item) => {
-            const color = item.dataset.color;
-            const deleteBtn = item.querySelector(".preset-delete");
-            if (deleteBtn) {
-                const itemLightness = getColorLightness(color);
-                deleteBtn.style.color = itemLightness > 60 ? "#000000" : "#ffffff";
-            }
-        });
-    }
-
-    // Apply font
+    // --- LOGIC: FONT ---
     function applyFont(font) {
         currentFont = font;
         document.documentElement.style.setProperty("--font-family", font);
-        document.body.style.fontFamily = font;
         localStorage.setItem(STORAGE_KEYS.FONT, font);
-
-        // Update preview
+        
         const preview = document.getElementById("fontPreview");
         if (preview) preview.style.fontFamily = font;
-
-        // Load Google Font if needed
         loadGoogleFont(font);
     }
 
-    // Update UI selections
-    function updateUISelections() {
-        // Theme cards
-        document.querySelectorAll(".theme-card").forEach((card) => {
-            card.classList.toggle("active", card.dataset.theme === currentTheme);
-        });
+    // --- LOGIC: UI SETTINGS ---
+    function applyUISettings() {
+        const root = document.documentElement;
+        
+        // Border Radius
+        root.style.setProperty("--border-radius", `${uiSettings.borderRadius}px`);
+        
+        // Glass Intensity
+        const glassVal = uiSettings.glassIntensity / 100;
+        const blurVal = 20 * glassVal;
+        root.style.setProperty("--backdrop-blur", `${blurVal}px`);
+        
+        // Classes
+        document.body.classList.toggle("compact-timetable", uiSettings.compactMode);
+        document.body.classList.toggle("minimal-cells", uiSettings.minimalCells);
+        document.body.classList.toggle("hide-empty-days", uiSettings.hideEmptyDays);
+        document.body.classList.toggle("bg-pattern", uiSettings.bgPattern);
+        document.body.classList.toggle("mobile-nav-scroll", uiSettings.mobileNavScroll);
 
-        // Font select
-        const fontSelect = document.getElementById("fontSelect");
-        if (fontSelect) fontSelect.value = currentFont;
+        // Background
+        if (uiSettings.bgImage) {
+            document.body.style.backgroundImage = `url('${uiSettings.bgImage}')`;
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+        } else {
+            document.body.style.backgroundImage = '';
+        }
 
-        // Color presets
-        document.querySelectorAll(".preset-item").forEach((item) => {
-            item.classList.toggle("active", item.dataset.color === currentAccentColor);
-        });
+        localStorage.setItem(STORAGE_KEYS.UI_SETTINGS, JSON.stringify(uiSettings));
     }
 
-    // Setup Google Fonts
-    function setupGoogleFonts() {
-        if (!googleFontsLink) {
-            googleFontsLink = document.createElement("link");
-            googleFontsLink.rel = "stylesheet";
-            googleFontsLink.href =
-                "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Montserrat:wght@400;600;700&family=Poppins:wght@400;600;700&family=Raleway:wght@400;600;700&family=Ubuntu:wght@400;500;700&family=Nunito:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Outfit:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Fira+Code:wght@400;600&display=swap";
-            document.head.appendChild(googleFontsLink);
+    // --- LOGIC: ACCESSIBILITY ---
+    function applyA11ySettings() {
+        const root = document.documentElement;
+        
+        document.body.classList.toggle("high-contrast", a11ySettings.highContrast);
+        document.body.classList.toggle("reduced-motion", a11ySettings.reducedMotion);
+        document.body.classList.toggle("focus-indicators", a11ySettings.focusIndicators);
+        document.body.classList.toggle("grayscale", a11ySettings.grayscale);
+        
+        root.style.setProperty("--font-scale", a11ySettings.textScale);
+
+        localStorage.setItem(STORAGE_KEYS.A11Y_SETTINGS, JSON.stringify(a11ySettings));
+    }
+
+    // --- LOGIC: ADVANCED ---
+    function applyAdvancedSettings(newSettings) {
+        advancedSettings = { ...advancedSettings, ...newSettings };
+        localStorage.setItem(STORAGE_KEYS.ADVANCED_SETTINGS, JSON.stringify(advancedSettings));
+        syncInputs();
+        
+        // Notify Mobile Nav if shortcuts changed
+        if ((newSettings.shortcut1 || newSettings.shortcut2) && window.mobileNav && window.mobileNav.updateShortcutButtons) {
+            window.mobileNav.updateShortcutButtons();
         }
     }
 
-    // Load specific Google Font
-    function loadGoogleFont(fontFamily) {
-        // Extract font name
-        const match = fontFamily.match(/'([^']+)'/);
-        if (!match) return;
-
-        const fontName = match[1];
-        const googleFonts = [
-            "Inter",
-            "Roboto",
-            "Open Sans",
-            "Lato",
-            "Montserrat",
-            "Poppins",
-            "Raleway",
-            "Ubuntu",
-            "Nunito",
-            "Quicksand",
-            "Outfit",
-            "DM Sans",
-            "Space Grotesk",
-            "Merriweather",
-            "Playfair Display",
-            "JetBrains Mono",
-            "Fira Code",
-        ];
-
-        if (googleFonts.includes(fontName)) {
-            // Font is already loaded via setupGoogleFonts
-            return;
+    // --- ALGORITHMIC COLORS ---
+    
+    // --- COLOR UTILS ---
+    function hexToHSL(H) {
+        let r = 0, g = 0, b = 0;
+        if (H.length == 4) {
+            r = "0x" + H[1] + H[1];
+            g = "0x" + H[2] + H[2];
+            b = "0x" + H[3] + H[3];
+        } else if (H.length == 7) {
+            r = "0x" + H[1] + H[2];
+            g = "0x" + H[3] + H[4];
+            b = "0x" + H[5] + H[6];
         }
+        r /= 255; g /= 255; b /= 255;
+        let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin;
+        let h = 0, s = 0, l = 0;
+
+        if (delta == 0) h = 0;
+        else if (cmax == r) h = ((g - b) / delta) % 6;
+        else if (cmax == g) h = (b - r) / delta + 2;
+        else h = (r - g) / delta + 4;
+
+        h = Math.round(h * 60);
+        if (h < 0) h += 360;
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed(1);
+        l = +(l * 100).toFixed(1);
+
+        return {h, s, l};
     }
 
-    // Render color presets
-    function renderColorPresets() {
-        const grid = document.getElementById("colorPresetsGrid");
+    function HSLToHex(h,s,l) {
+        s /= 100;
+        l /= 100;
+        let c = (1 - Math.abs(2 * l - 1)) * s,
+            x = c * (1 - Math.abs(((h / 60) % 2) - 1)),
+            m = l - c / 2,
+            r = 0, g = 0, b = 0;
+
+        if (0 <= h && h < 60) { r = c; g = x; b = 0; }
+        else if (60 <= h && h < 120) { r = x; g = c; b = 0; }
+        else if (120 <= h && h < 180) { r = 0; g = c; b = x; }
+        else if (180 <= h && h < 240) { r = 0; g = x; b = c; }
+        else if (240 <= h && h < 300) { r = x; g = 0; b = c; }
+        else if (300 <= h && h < 360) { r = c; g = 0; b = x; }
+
+        r = Math.round((r + m) * 255).toString(16);
+        g = Math.round((g + m) * 255).toString(16);
+        b = Math.round((b + m) * 255).toString(16);
+
+        if (r.length == 1) r = "0" + r;
+        if (g.length == 1) g = "0" + g;
+        if (b.length == 1) b = "0" + b;
+
+        return "#" + r + g + b;
+    }
+
+    function getLuminance(hex) {
+        const rgb = parseInt(hex.slice(1), 16);
+        const r = (rgb >> 16) & 0xff;
+        const g = (rgb >>  8) & 0xff;
+        const b = (rgb >>  0) & 0xff;
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+    function generateDynamicColors(bgHex) {
+        if (!bgHex) return ["#ff0000", "#00ff00", "#0000ff"]; // Fallback
+        
+        const hsl = hexToHSL(bgHex);
+        const lum = getLuminance(bgHex);
+        const isDark = lum < 128;
+        
+        // 1. Complementary (High saturation, adjusted lightness)
+        // If neutral (S < 10), assume Blue as base for complement -> Orange/Gold
+        let baseH = hsl.s < 10 ? 210 : hsl.h;
+        let compH = (baseH + 180) % 360;
+        let compColor = HSLToHex(compH, 85, isDark ? 60 : 45);
+
+        // 2. Niche (Split Complementary / Shifted Hue)
+        // Shift hue by 150deg
+        let nicheH = (baseH + 150) % 360;
+        let nicheColor = HSLToHex(nicheH, 80, isDark ? 65 : 40);
+
+        // 3. Contrast
+        // If dark bg, bright contrast. If light bg, dark contrast.
+        let contrastH = (baseH + 90) % 360; 
+        let contrastColor = HSLToHex(contrastH, 90, isDark ? 80 : 30);
+
+        return [compColor, nicheColor, contrastColor];
+    }
+
+    function renderRecommendedColors() {
+        const grid = document.getElementById("recommendedColorsGrid");
         if (!grid) return;
 
+        let activeThemeId = currentTheme;
+        if (activeThemeId === "auto") {
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            activeThemeId = prefersDark ? "dark" : "light";
+        }
+        
+        const themeDef = themeDefinitions.find(t => t.id === activeThemeId);
+        if (!themeDef) return;
+
+        // 1. Curated Theme Colors
+        const curated = themeDef.recommendedColors || [];
+
+        // 2. Algorithmic Colors based on Background
+        const bgColor = themeDef.colors["--bg-color"] || "#ffffff";
+        const dynamic = generateDynamicColors(bgColor);
+
+        const allRecommendations = [...new Set([...curated, ...dynamic])]; // Deduplicate
+
         grid.innerHTML = "";
-        colorPresets.forEach((color) => {
-            const item = document.createElement("div");
-            item.className = "preset-item";
-            item.dataset.color = color;
-            item.style.background = color;
-            if (color === currentAccentColor) item.classList.add("active");
-
-            const lightness = getColorLightness(color);
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "preset-delete";
-            deleteBtn.dataset.color = color;
-            deleteBtn.textContent = "✖️";
-            deleteBtn.style.color = lightness > 60 ? "#000000" : "#ffffff";
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                deleteColorPreset(color);
-            };
-
-            item.appendChild(deleteBtn);
-            item.onclick = () => applyAccentColor(color);
-
+        allRecommendations.forEach(color => {
+            const item = createColorItem(color);
             grid.appendChild(item);
         });
-
-        localStorage.setItem(STORAGE_KEYS.COLOR_PRESETS, JSON.stringify(colorPresets));
     }
 
-    // Add color preset
-    function addColorPreset(color) {
-        if (!color || !/^#[0-9A-F]{6}$/i.test(color)) {
-            alert("Please enter a valid hex color (e.g., #6196FF)");
-            return;
-        }
-
-        if (colorPresets.includes(color.toLowerCase())) {
-            alert("This color is already in your presets!");
-            return;
-        }
-
-        colorPresets.push(color.toLowerCase());
-        renderColorPresets();
+    function createColorItem(color) {
+        const item = document.createElement("div");
+        item.className = "preset-item";
+        item.style.background = color;
+        // Check if color is active (ignoring case)
+        if (color.toLowerCase() === currentAccentColor.toLowerCase()) item.classList.add("active");
+        item.onclick = () => applyAccentColor(color);
+        return item;
     }
 
-    // Delete color preset
-    function deleteColorPreset(color) {
-        if (colorPresets.length <= 1) {
-            alert("You must keep at least one color preset!");
-            return;
-        }
-
-        if (confirm("Delete this color preset?")) {
-            colorPresets = colorPresets.filter((c) => c !== color);
-            renderColorPresets();
-        }
-    }
-
-    // Render saved presets
-    function renderSavedPresets() {
-        const grid = document.getElementById("savedPresetsGrid");
-        if (!grid) return;
-
-        if (savedPresets.length === 0) {
-            grid.innerHTML =
-                '<p style="text-align: center; opacity: 0.6; padding: 2rem;">No saved presets yet. Click "Save Current" to create one!</p>';
-            return;
-        }
-
-        grid.innerHTML = "";
-        savedPresets.forEach((preset, index) => {
-            const card = document.createElement("div");
-            card.className = "preset-card";
-
-            const isActive =
-                preset.theme === currentTheme &&
-                preset.accentColor === currentAccentColor &&
-                preset.font === currentFont;
-            if (isActive) card.classList.add("active");
-
-            card.innerHTML = `
-                <div class="preset-card-header">
-                    <div class="preset-card-name">${preset.name}</div>
-                    <div class="preset-card-actions">
-                        <button class="preset-card-btn delete" onclick="deletePreset(${index})"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-                <div class="preset-card-details">
-                    <div class="preset-detail">
-                        <span class="preset-color-dot" style="background: ${
-                            preset.accentColor
-                        };"></span>
-                        <span>${getThemeLabel(preset.theme)}</span>
-                    </div>
-                    <div class="preset-detail">
-                        <i class="fa-solid fa-font" style="width: 16px; color: var(--accent-color);"></i>
-                        <span>${getFontLabel(preset.font)}</span>
-                    </div>
-                </div>
-            `;
-
-            card.onclick = () => applyPreset(preset);
-            grid.appendChild(card);
-        });
-
-        localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
-    }
-
-    // Get theme label
-    function getThemeLabel(theme) {
-        const labels = {
-            light: "☀️ Light",
-            dark: "🌙 Dark",
-            auto: "🌤️ Auto",
-            space: "🌌 Space",
-            midnight: "🌃 Midnight",
-            sunset: "🌇 Sunset",
-            forest: "🌳 Forest",
-            ocean: "🌊 Ocean",
-            lavender: "🌸 Lavender",
-            rose: "🌹 Rose",
-            amber: "🌅 Amber",
-            demonic_red: "🔥 Demonic Red",
-            cyberpunk: "🤖 Cyberpunk",
+    // --- PRESETS LOGIC ---
+    function getCurrentPreset() {
+        return {
+            name: "Custom Preset",
+            theme: currentTheme,
+            accentColor: currentAccentColor,
+            font: currentFont,
+            ui: { ...uiSettings },
+            a11y: { ...a11ySettings },
+            timestamp: Date.now(),
         };
-        return labels[theme] || theme;
     }
 
-    // Get font label
-    function getFontLabel(font) {
-        const match = font.match(/'([^']+)'/);
-        return match ? match[1] : "Default";
-    }
-
-    // Save current preset
     function saveCurrentPreset() {
         const name = prompt("Enter a name for this preset:");
         if (!name) return;
 
         const preset = {
-            name: name.trim(),
-            theme: currentTheme,
-            accentColor: currentAccentColor,
-            font: currentFont,
-            timestamp: Date.now(),
+            ...getCurrentPreset(),
+            name: name.trim()
         };
 
         savedPresets.push(preset);
         renderSavedPresets();
+        localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
     }
 
-    // Apply preset
     function applyPreset(preset) {
-        applyTheme(preset.theme);
-        applyAccentColor(preset.accentColor);
-        applyFont(preset.font);
-        updateUISelections();
+        currentTheme = preset.theme;
+        currentAccentColor = preset.accentColor;
+        currentFont = preset.font;
+        // Merge with defaults to ensure new fields don't break old presets
+        uiSettings = { ...DEFAULT_UI_SETTINGS, ...preset.ui };
+        a11ySettings = { ...DEFAULT_A11Y_SETTINGS, ...preset.a11y };
+
+        applySettings();
+        syncInputs();
     }
 
-    // Delete preset
-    window.deletePreset = function (index) {
-        if (confirm("Delete this preset?")) {
-            savedPresets.splice(index, 1);
-            renderSavedPresets();
-        }
-    };
+    // --- GALLERY LOGIC ---
+    function renderGallery() {
+        const grid = document.getElementById("galleryGrid");
+        if (!grid) return;
 
-    // Export presets
-    function exportPresets() {
-        const data = {
-            theme: currentTheme,
-            accentColor: currentAccentColor,
-            font: currentFont,
-            colorPresets: colorPresets,
-            savedPresets: savedPresets,
-            exportDate: new Date().toISOString(),
-        };
+        // Mock Data
+        const galleryItems = [
+            { name: "Oceanic Depth", author: "DevTeam", theme: "ocean", accent: "#00aaff", font: "'Outfit', sans-serif" },
+            { name: "Neon Cyber", author: "GlitchUser", theme: "cyberpunk", accent: "#00f0ff", font: "'Space Grotesk', sans-serif" },
+            { name: "Forest Hike", author: "NatureLvr", theme: "forest", accent: "#4ade80", font: "'DM Sans', sans-serif" },
+            { name: "Royal Purple", author: "QueenBee", theme: "deep-purple", accent: "#ab47bc", font: "'Playfair Display', serif" },
+            { name: "Minimalist", author: "CleanDesk", theme: "light", accent: "#333333", font: "'Inter', sans-serif" },
+            { name: "Night Owl", author: "Coder123", theme: "midnight", accent: "#f59e0b", font: "'JetBrains Mono', monospace" }
+        ];
 
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `orar-customization-${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+        grid.innerHTML = galleryItems.map(item => `
+            <div class="gallery-item" data-theme="${item.theme}" data-accent="${item.accent}" data-font="${item.font}">
+                <div class="gallery-preview" style="--p-bg: var(--bg-color); --p-card: var(--card-bg); --p-accent: ${item.accent}">
+                    <div class="gallery-preview-circle">Aa</div>
+                </div>
+                <div class="gallery-info">
+                    <div class="gallery-name">${item.name}</div>
+                    <div class="gallery-desc">by ${item.author}</div>
+                </div>
+            </div>
+        `).join('');
 
-    // Import presets
-    function importPresets(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = JSON.parse(e.target.result);
-
-                if (data.theme) applyTheme(data.theme);
-                if (data.accentColor) applyAccentColor(data.accentColor);
-                if (data.font) applyFont(data.font);
-                if (data.colorPresets) {
-                    colorPresets = data.colorPresets;
-                    renderColorPresets();
-                }
-                if (data.savedPresets) {
-                    savedPresets = data.savedPresets;
-                    renderSavedPresets();
-                }
-
-                updateUISelections();
-                alert("Settings imported successfully!");
-            } catch (err) {
-                alert("Error importing settings. Please check the file format.");
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    // Setup event listeners
-    function setupEventListeners() {
-        // Overlay controls
-        const customBtn = document.getElementById("customizationBtn");
-        const overlay = document.getElementById("customizationOverlay");
-        const closeBtn = document.getElementById("closeCustomization");
-
-        if (customBtn) {
-            customBtn.addEventListener("click", () => {
-                overlay.classList.add("active");
-                document.body.classList.add("no-scroll-custom");
-            });
-        }
-
-        if (closeBtn) {
-            closeBtn.addEventListener("click", () => {
-                overlay.classList.remove("active");
-                document.body.classList.remove("no-scroll-custom");
-            });
-        }
-
-        // Click outside to close
-        if (overlay) {
-            overlay.addEventListener("click", (e) => {
-                if (e.target === overlay) {
-                    overlay.classList.remove("active");
-                    document.body.classList.remove("no-scroll-custom");
-                }
-            });
-        }
-
-        // Sidebar navigation
-        document.querySelectorAll(".sidebar-item").forEach((item) => {
-            item.addEventListener("click", () => {
-                const section = item.dataset.section;
-
-                // Update active states
-                document
-                    .querySelectorAll(".sidebar-item")
-                    .forEach((i) => i.classList.remove("active"));
-                item.classList.add("active");
-
-                document
-                    .querySelectorAll(".custom-section")
-                    .forEach((s) => s.classList.remove("active"));
-                const targetSection = document.getElementById(section + "Section");
-                if (targetSection) targetSection.classList.add("active");
+        grid.querySelectorAll(".gallery-item").forEach((el, idx) => {
+            el.addEventListener("click", () => {
+                const item = galleryItems[idx];
+                applyPreset({
+                    theme: item.theme,
+                    accentColor: item.accent,
+                    font: item.font,
+                    ui: DEFAULT_UI_SETTINGS,
+                    a11y: DEFAULT_A11Y_SETTINGS
+                });
             });
         });
+    }
 
-        // Theme cards
-        document.querySelectorAll(".theme-card").forEach((card) => {
+    // --- FILTER THEMES LOGIC ---
+    function filterThemes(searchTerm, tag) {
+        const container = document.querySelector(".theme-options");
+        if (!container) return;
+
+        container.innerHTML = "";
+        
+        const filtered = themeDefinitions.filter(t => {
+            const matchesSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesTag = tag === 'all' || (t.tags && t.tags.includes(tag));
+            return matchesSearch && matchesTag;
+        });
+
+        filtered.forEach(theme => {
+            const card = document.createElement("div");
+            card.className = "theme-card";
+            card.dataset.theme = theme.id;
+            if (theme.id === currentTheme) card.classList.add("active");
+
+            card.innerHTML = `
+                <div class="theme-icon">${theme.icon}</div>
+                <div class="theme-name">${theme.name}</div>
+                <div class="theme-description">${theme.description}</div>
+            `;
+
             card.addEventListener("click", () => {
-                const theme = card.dataset.theme;
-                applyTheme(theme);
+                applyTheme(theme.id);
                 updateUISelections();
             });
-        });
 
-        // Color picker
-        const colorPicker = document.getElementById("customColorPicker");
-        if (colorPicker) {
-            colorPicker.addEventListener("input", (e) => {
-                applyAccentColor(e.target.value);
-            });
-        }
-
-        // Add randomize button listener
-        const randomizeBtn = document.getElementById("randomColorBtn");
-        if (randomizeBtn) {
-            randomizeBtn.addEventListener("click", () => {
-                const randomColor =
-                    "#" +
-                    Math.floor(Math.random() * 16777215)
-                        .toString(16)
-                        .padStart(6, "0");
-                applyAccentColor(randomColor);
-            });
-        }
-
-        // Hex input
-        const hexInput = document.getElementById("colorHexInput");
-        if (hexInput) {
-            hexInput.addEventListener("change", (e) => {
-                let color = e.target.value.trim();
-                if (!color.startsWith("#")) color = "#" + color;
-                if (/^#[0-9A-F]{6}$/i.test(color)) {
-                    applyAccentColor(color);
-                } else {
-                    alert("Please enter a valid hex color");
-                    e.target.value = currentAccentColor;
-                }
-            });
-        }
-
-        // Add preset button
-        const addPresetBtn = document.getElementById("addColorPreset");
-        if (addPresetBtn) {
-            addPresetBtn.addEventListener("click", () => {
-                addColorPreset(currentAccentColor);
-            });
-        }
-
-        // Font select
-        const fontSelect = document.getElementById("fontSelect");
-        if (fontSelect) {
-            fontSelect.addEventListener("change", (e) => {
-                applyFont(e.target.value);
-            });
-        }
-
-        // Preset actions
-        const savePresetBtn = document.getElementById("savePresetBtn");
-        if (savePresetBtn) {
-            savePresetBtn.addEventListener("click", saveCurrentPreset);
-        }
-
-        const exportPresetBtn = document.getElementById("exportPresetBtn");
-        if (exportPresetBtn) {
-            exportPresetBtn.addEventListener("click", exportPresets);
-        }
-
-        const importPresetBtn = document.getElementById("importPresetBtn");
-        const importPresetFile = document.getElementById("importPresetFile");
-        if (importPresetBtn && importPresetFile) {
-            importPresetBtn.addEventListener("click", () => {
-                importPresetFile.click();
-            });
-            importPresetFile.addEventListener("change", (e) => {
-                if (e.target.files[0]) {
-                    importPresets(e.target.files[0]);
-                    e.target.value = "";
-                }
-            });
-        }
-
-        // Auto theme listener
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-            if (currentTheme === "auto") {
-                applyTheme("auto");
-            }
+            container.appendChild(card);
         });
     }
 
-    // Helper function for favicon
-    function updateFavicon(accentColor) {
-        const size = 16;
+    // --- EVENT LISTENERS ---
+    function setupEventListeners() {
+        // Overlay Controls
+        const customBtn = document.getElementById("customizationBtn");
+        const sheetBtn = document.getElementById("sheetCustomizationBtn");
+        const closeBtn = document.getElementById("closeCustomization");
+        const overlay = document.getElementById("customizationOverlay");
+
+        const openFn = () => {
+            if (window.overlayManager) {
+                window.overlayManager.close("sideMenu");
+                window.overlayManager.open("customizationOverlay");
+            }
+        };
+
+        if (customBtn) customBtn.addEventListener("click", openFn);
+        if (sheetBtn) sheetBtn.addEventListener("click", openFn);
+        if (closeBtn) closeBtn.addEventListener("click", () => window.overlayManager.close("customizationOverlay"));
+
+        // Register with Manager
+        if (window.overlayManager) window.overlayManager.register("customizationOverlay");
+
+        // Sidebar Navigation
+        document.querySelectorAll(".sidebar-item").forEach(item => {
+            item.addEventListener("click", () => {
+                document.querySelectorAll(".sidebar-item").forEach(i => i.classList.remove("active"));
+                item.classList.add("active");
+                document.querySelectorAll(".custom-section").forEach(s => s.classList.remove("active"));
+                const section = document.getElementById(item.dataset.section + "Section");
+                if (section) section.classList.add("active");
+            });
+        });
+
+        // Theme Filtering
+        const searchInput = document.getElementById("themeSearch");
+        const tags = document.querySelectorAll(".theme-tag");
+        let activeTag = "all";
+
+        if (searchInput) {
+            searchInput.addEventListener("input", (e) => filterThemes(e.target.value, activeTag));
+        }
+        
+        tags.forEach(btn => {
+            btn.addEventListener("click", () => {
+                tags.forEach(t => t.classList.remove("active"));
+                btn.classList.add("active");
+                activeTag = btn.dataset.tag;
+                filterThemes(searchInput ? searchInput.value : "", activeTag);
+            });
+        });
+
+        // Color Inputs
+        document.getElementById("customColorPicker")?.addEventListener("input", (e) => applyAccentColor(e.target.value));
+        document.getElementById("colorHexInput")?.addEventListener("change", (e) => {
+             let val = e.target.value;
+             if (!val.startsWith("#")) val = "#" + val;
+             if (/^#[0-9A-F]{6}$/i.test(val)) applyAccentColor(val);
+        });
+        document.getElementById("randomColorBtn")?.addEventListener("click", () => {
+             applyAccentColor("#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0"));
+        });
+        document.getElementById("addColorPreset")?.addEventListener("click", () => addColorPreset(currentAccentColor));
+
+        // Font Input
+        document.getElementById("fontSelect")?.addEventListener("change", (e) => applyFont(e.target.value));
+
+        // UI Inputs
+        document.getElementById("uiBorderRadius")?.addEventListener("input", (e) => {
+            uiSettings.borderRadius = parseInt(e.target.value);
+            applyUISettings();
+        });
+        document.getElementById("uiGlassIntensity")?.addEventListener("input", (e) => {
+            uiSettings.glassIntensity = parseInt(e.target.value);
+            applyUISettings();
+        });
+        document.getElementById("uiCompactMode")?.addEventListener("change", (e) => {
+            uiSettings.compactMode = e.target.checked;
+            applyUISettings();
+        });
+        document.getElementById("uiMinimalCells")?.addEventListener("change", (e) => {
+            uiSettings.minimalCells = e.target.checked;
+            applyUISettings();
+        });
+        document.getElementById("uiBgImage")?.addEventListener("change", (e) => {
+            uiSettings.bgImage = e.target.value;
+            applyUISettings();
+        });
+        document.getElementById("uiBgClear")?.addEventListener("click", () => {
+             uiSettings.bgImage = '';
+             document.getElementById("uiBgImage").value = '';
+             applyUISettings();
+        });
+        document.getElementById("uiMobileNavScroll")?.addEventListener("change", (e) => {
+            uiSettings.mobileNavScroll = e.target.checked;
+            applyUISettings();
+        });
+        document.getElementById("uiHideEmptyDays")?.addEventListener("change", (e) => {
+            uiSettings.hideEmptyDays = e.target.checked;
+            applyUISettings();
+        });
+        document.getElementById("uiBgPattern")?.addEventListener("change", (e) => {
+            uiSettings.bgPattern = e.target.checked;
+            applyUISettings();
+        });
+
+        // A11y Inputs
+        document.getElementById("a11yHighContrast")?.addEventListener("change", (e) => {
+            a11ySettings.highContrast = e.target.checked;
+            applyA11ySettings();
+        });
+        document.getElementById("a11yReducedMotion")?.addEventListener("change", (e) => {
+            a11ySettings.reducedMotion = e.target.checked;
+            applyA11ySettings();
+        });
+        document.getElementById("a11yFocusIndicators")?.addEventListener("change", (e) => {
+            a11ySettings.focusIndicators = e.target.checked;
+            applyA11ySettings();
+        });
+        document.getElementById("a11yGrayscale")?.addEventListener("change", (e) => {
+            a11ySettings.grayscale = e.target.checked;
+            applyA11ySettings();
+        });
+        document.getElementById("a11yTextScale")?.addEventListener("input", (e) => {
+            a11ySettings.textScale = parseFloat(e.target.value);
+            applyA11ySettings();
+        });
+
+        // Advanced Inputs
+        document.getElementById("modeLinkBtn")?.addEventListener("click", () => applyAdvancedSettings({ interactionMode: 'link' }));
+        document.getElementById("modeMarkBtn")?.addEventListener("click", () => applyAdvancedSettings({ interactionMode: 'mark' }));
+        
+        document.getElementById("shortcut1Select")?.addEventListener("change", (e) => applyAdvancedSettings({ shortcut1: e.target.value }));
+        document.getElementById("shortcut2Select")?.addEventListener("change", (e) => applyAdvancedSettings({ shortcut2: e.target.value }));
+
+        // Presets Tabs
+        document.querySelectorAll(".preset-tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".preset-tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".presets-content-wrapper").forEach(c => c.classList.remove("active"));
+                document.getElementById(btn.dataset.tab + "Content").classList.add("active");
+            });
+        });
+        
+        // UI Tabs (New)
+        document.querySelectorAll(".ui-tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".ui-tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".ui-content-wrapper").forEach(c => c.classList.remove("active"));
+                document.getElementById(btn.dataset.tab + "Content").classList.add("active");
+            });
+        });
+
+        document.getElementById("savePresetBtn")?.addEventListener("click", saveCurrentPreset);
+        
+        // Export / Import
+        document.getElementById("exportPresetBtn")?.addEventListener("click", () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getCurrentPreset(), null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "orar-8d-preset.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        });
+
+        document.getElementById("importPresetBtn")?.addEventListener("click", () => {
+            document.getElementById("importPresetFile").click();
+        });
+
+        document.getElementById("importPresetFile")?.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const preset = JSON.parse(ev.target.result);
+                    applyPreset(preset);
+                    e.target.value = ''; // Reset
+                } catch (err) {
+                    alert("Invalid preset file.");
+                }
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // Helper: Render Color Presets
+    function renderColorPresets() {
+        const grid = document.getElementById("colorPresetsGrid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        colorPresets.forEach(color => {
+            const item = createColorItem(color);
+            // Delete logic
+            const del = document.createElement("button");
+            del.className = "preset-delete";
+            del.innerHTML = "<i class='fa-solid fa-trash'></i>";
+            del.onclick = (e) => { e.stopPropagation(); deleteColorPreset(color); };
+            item.appendChild(del);
+            grid.appendChild(item);
+        });
+        localStorage.setItem(STORAGE_KEYS.COLOR_PRESETS, JSON.stringify(colorPresets));
+    }
+
+    function addColorPreset(color) {
+        if (!colorPresets.includes(color.toLowerCase())) {
+            colorPresets.push(color.toLowerCase());
+            renderColorPresets();
+        }
+    }
+
+    function deleteColorPreset(color) {
+        if (colorPresets.length > 1) {
+            colorPresets = colorPresets.filter(c => c !== color);
+            renderColorPresets();
+        }
+    }
+
+    // Helper: Update UI Selections (active states)
+    function updateUISelections() {
+        document.querySelectorAll(".theme-card").forEach(c => c.classList.toggle("active", c.dataset.theme === currentTheme));
+        document.querySelectorAll(".preset-item").forEach(c => c.classList.toggle("active", c.style.background === currentAccentColor || c.style.backgroundColor === currentAccentColor));
+    }
+
+    // Helper: Render Saved Presets
+    function renderSavedPresets() {
+        const grid = document.getElementById("savedPresetsGrid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        
+        savedPresets.forEach((p, idx) => {
+             const card = document.createElement("div");
+             card.className = "preset-card";
+             card.innerHTML = `
+                <div class="preset-card-header">
+                    <div class="preset-card-name">${p.name}</div>
+                    <div class="preset-card-actions">
+                        <button class="preset-card-btn delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+                <div class="preset-card-details">
+                    <div class="preset-detail"><span class="preset-color-dot" style="background:${p.accentColor}"></span><span>${p.theme}</span></div>
+                    <div class="preset-detail"><i class="fa-solid fa-font"></i><span>${p.font.split(',')[0]}</span></div>
+                </div>
+             `;
+             card.onclick = (e) => { 
+                 if(e.target.closest('.delete')) return;
+                 applyPreset(p); 
+             };
+             card.querySelector('.delete').onclick = () => {
+                 savedPresets.splice(idx, 1);
+                 renderSavedPresets();
+                 localStorage.setItem(STORAGE_KEYS.SAVED_PRESETS, JSON.stringify(savedPresets));
+             };
+             grid.appendChild(card);
+        });
+    }
+
+    // --- UTILS ---
+    function checkColorContrast() {
+        const warningEl = document.getElementById("contrastWarning");
+        if (!warningEl) return;
+        
+        const r = parseInt(currentAccentColor.slice(1, 3), 16);
+        const g = parseInt(currentAccentColor.slice(3, 5), 16);
+        const b = parseInt(currentAccentColor.slice(5, 7), 16);
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        
+        // Simple heuristic: if light theme & light color, or dark theme & dark color
+        const isDarkTheme = document.body.getAttribute('data-theme') === 'dark' || 
+                           (currentTheme === 'auto' && window.matchMedia("(prefers-color-scheme: dark)").matches) ||
+                           ['space', 'midnight', 'forest', 'ocean'].includes(currentTheme);
+
+        let warn = false;
+        if (isDarkTheme && yiq < 50) warn = true;
+        if (!isDarkTheme && yiq > 200) warn = true;
+
+        warningEl.style.display = warn ? "block" : "none";
+        warningEl.textContent = warn ? "Warning: Low contrast with background." : "";
+    }
+
+    function updateButtonTextColors() {
+        // Logic to flip text color based on accent brightness
+        const r = parseInt(currentAccentColor.slice(1, 3), 16);
+        const g = parseInt(currentAccentColor.slice(3, 5), 16);
+        const b = parseInt(currentAccentColor.slice(5, 7), 16);
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        const textColor = (yiq >= 128) ? 'black' : 'white';
+        
+        document.querySelectorAll('.add-preset-btn, .refresh-weather-btn').forEach(btn => {
+            btn.style.color = textColor;
+        });
+    }
+
+    function updateFavicon(color) {
         const canvas = document.createElement("canvas");
-        canvas.width = canvas.height = size;
+        canvas.width = 16; canvas.height = 16;
         const ctx = canvas.getContext("2d");
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-        ctx.fillStyle = accentColor;
-        ctx.fill();
+        ctx.fillStyle = color;
+        ctx.beginPath(); ctx.arc(8, 8, 8, 0, 2 * Math.PI); ctx.fill();
         const link = document.querySelector("link[rel~='icon']") || document.createElement("link");
-        link.rel = "icon";
-        link.type = "image/png";
-        link.href = canvas.toDataURL("image/png");
+        link.rel = "icon"; link.href = canvas.toDataURL();
         document.head.appendChild(link);
     }
-
-    // Initialize when DOM is ready
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
+    
+    // Theme Card Rendering
+    function renderThemeCards() {
+        filterThemes("", "all");
     }
+
+    // Google Fonts
+    function setupGoogleFonts() {
+        if (!googleFontsLink) {
+            googleFontsLink = document.createElement("link");
+            googleFontsLink.rel = "stylesheet";
+            googleFontsLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500;700&family=Open+Sans:wght@400;600;700&family=Lato:wght@400;700&family=Montserrat:wght@400;600;700&family=Poppins:wght@400;600;700&family=Raleway:wght@400;600;700&family=Ubuntu:wght@400;500;700&family=Nunito:wght@400;600;700&family=Quicksand:wght@400;600;700&family=Outfit:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&family=JetBrains+Mono:wght@400;600&family=Fira+Code:wght@400;600&display=swap";
+            document.head.appendChild(googleFontsLink);
+        }
+    }
+    
+    function loadGoogleFont(fontFamily) {
+         // Logic to lazy load if not in main bundle (mocked for this scope)
+    }
+
+    function loadSavedCustomFonts() {
+        const fonts = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_FONTS) || "[]");
+        const select = document.getElementById("fontSelect");
+        if(!select) return;
+        fonts.forEach(f => {
+            const opt = document.createElement("option");
+            opt.value = `'${f}', sans-serif`;
+            opt.textContent = f + " (Custom)";
+            select.appendChild(opt);
+        });
+    }
+
+    // Global Access
+    window.addCustomGoogleFont = function() {
+        const name = prompt("Font Name (Google Fonts):");
+        if(name) {
+            const link = document.createElement("link");
+            link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/ /g, '+')}&display=swap`;
+            link.rel = "stylesheet";
+            document.head.appendChild(link);
+            
+            const fonts = JSON.parse(localStorage.getItem(STORAGE_KEYS.CUSTOM_FONTS) || "[]");
+            if(!fonts.includes(name)) {
+                fonts.push(name);
+                localStorage.setItem(STORAGE_KEYS.CUSTOM_FONTS, JSON.stringify(fonts));
+                
+                const select = document.getElementById("fontSelect");
+                const opt = document.createElement("option");
+                opt.value = `'${name}', sans-serif`;
+                opt.textContent = name + " (Custom)";
+                select.appendChild(opt);
+                select.value = opt.value;
+                applyFont(opt.value);
+            }
+        }
+    };
+    
+    document.getElementById("addCustomFont")?.addEventListener("click", window.addCustomGoogleFont);
+
+    // Bootstrap
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+    else init();
+
 })();
-
-// ============ CUSTOM GOOGLE FONT ADDITION ============
-function addCustomGoogleFont() {
-    const fontName = prompt('Enter the Google Font name (e.g., "Oswald", "Bebas Neue"):');
-    if (!fontName) return;
-
-    const cleanName = fontName.trim();
-    if (!cleanName) return;
-
-    // Check if already exists
-    const fontSelect = document.getElementById("fontSelect");
-    const fontValue = `'${cleanName}', sans-serif`;
-
-    const exists = Array.from(fontSelect.options).some((opt) => opt.value === fontValue);
-    if (exists) {
-        alert("This font is already in the list!");
-        return;
-    }
-
-    // Load the font
-    loadCustomGoogleFont(cleanName);
-
-    // Add to select
-    const option = document.createElement("option");
-    option.value = fontValue;
-    option.textContent = `${cleanName} (Custom)`;
-    fontSelect.appendChild(option);
-
-    // Apply it
-    applyFont(fontValue);
-    fontSelect.value = fontValue;
-
-    // Save custom fonts
-    const customFonts = JSON.parse(localStorage.getItem("custom-fonts") || "[]");
-    if (!customFonts.includes(cleanName)) {
-        customFonts.push(cleanName);
-        localStorage.setItem("custom-fonts", JSON.stringify(customFonts));
-    }
-}
-
-function loadCustomGoogleFont(fontName) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = `https://fonts.googleapis.com/css2?family=${fontName.replace(
-        / /g,
-        "+"
-    )}:wght@400;600;700&display=swap`;
-    document.head.appendChild(link);
-}
-
-function loadSavedCustomFonts() {
-    const customFonts = JSON.parse(localStorage.getItem("custom-fonts") || "[]");
-    const fontSelect = document.getElementById("fontSelect");
-
-    customFonts.forEach((fontName) => {
-        loadCustomGoogleFont(fontName);
-        const option = document.createElement("option");
-        option.value = `'${fontName}', sans-serif`;
-        option.textContent = `${fontName} (Custom)`;
-        fontSelect.appendChild(option);
-    });
-}
-
-// Add event listeners for custom font button
-const addFontBtn = document.getElementById("addCustomFont");
-if (addFontBtn) {
-    addFontBtn.addEventListener("click", addCustomGoogleFont);
-}
-
-// Helper function for applyFont (exposed outside IIFE)
-window.applyFont = function (font) {
-    const fontSelect = document.getElementById("fontSelect");
-    if (fontSelect) {
-        fontSelect.value = font;
-        fontSelect.dispatchEvent(new Event("change"));
-    }
-};

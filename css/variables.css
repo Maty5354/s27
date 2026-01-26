@@ -1,0 +1,81 @@
+/* ========================================
+   VARIABLES & THEMES
+   ======================================== */
+:root {
+    /* === Core Theme Colors === */
+    --accent-color: #6196ff;
+    --accent-secondary: color-mix(in srgb, var(--accent-color) 70%, var(--text-color) 30%);
+    --text-color: #333333;
+    --text-muted: #666666;
+    --bg-color: #f9f9f9;
+
+    /* === Surface Colors === */
+    --surface-color: #ffffff;
+    --surface-alt: #fafafa;
+    --card-bg: #ffffff;
+    --input-bg: #f5f5f5;
+    --highlight-color: #f5f5f5;
+
+    /* === Border & Shadow === */
+    --border-color: #e0e0e0;
+    --divider-color: #e5e5e5;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --overlay-bg: rgba(0, 0, 0, 0.5);
+
+    /* === Current Indicators === */
+    --current-hour-color: #81ade6;
+    --current-day-color: #81ade6;
+
+    /* === Typography === */
+    --font-family: "Inter", sans-serif;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 3rem;
+    --line-height: 1.5;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --font-scale: 1; /* For accessibility scaling */
+
+    /* === Effects === */
+    --transition-speed: 0.2s;
+    --border-radius: 16px; /* Dynamic via UI settings */
+    --border-radius-sm: 8px;
+    --border-radius-xs: 4px;
+    --border-radius-pill: 9999px;
+    --backdrop-blur: 10px; /* Dynamic via UI settings */
+    --glass-opacity: 0.8; /* Dynamic via UI settings */
+    --box-shadow: 0 4px 6px var(--shadow-color);
+    --box-shadow-lg: 0 8px 32px var(--shadow-color);
+
+    /* === Z-Index Scale === */
+    --z-base: 1;
+    --z-dropdown: 50;
+    --z-overlay: 100;
+    --z-modal: 1000;
+    --z-tooltip: 10000;
+}
+
+/* Theme Background Gradients */
+[data-theme="midnight"] {
+    background-image: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.05) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(50, 160, 220, 0.05) 0%, transparent 50%);
+}
+
+[data-theme="sunset"] {
+    background-image: radial-gradient(circle at 80% 20%, rgba(255, 140, 100, 0.08) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(255, 180, 100, 0.06) 0%, transparent 50%);
+}
+
+[data-theme="forest"] {
+    background-image: radial-gradient(circle at 30% 40%, rgba(45, 140, 70, 0.05) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(30, 100, 50, 0.04) 0%, transparent 50%);
+}
+
+[data-theme="ocean"] {
+    background-image: radial-gradient(circle at 50% 30%, rgba(30, 90, 150, 0.06) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(20, 70, 120, 0.05) 0%, transparent 50%);
+}
+
+[data-theme="lavender"] {
+    background-image: radial-gradient(circle at 60% 40%, rgba(180, 140, 255, 0.08) 0%, transparent 50%), radial-gradient(circle at 30% 70%, rgba(200, 160, 255, 0.06) 0%, transparent 50%);
+}
