@@ -6,7 +6,11 @@
                 "name": "Chimie",
                 "emoji": "🧪"
             },
-            "tuesday": null,
+            "tuesday":  {
+                "name": "Română",
+                "emoji": "",
+                "flag": "fi fi-ro"
+            },
             "wednesday": {
                 "name": "Geografie",
                 "emoji": "🌍"
@@ -16,10 +20,7 @@
                 "emoji": "",
                 "flag": "fi fi-ro"
             },
-            "friday": {
-                "name": "Dirigenție",
-                "emoji": "📰"
-            }
+            "friday": null
         },
         {
             "time": "13:00",
@@ -144,18 +145,17 @@
         },
         {
             "time": "18:00",
-            "monday": {
-                "name": "Română",
-                "emoji": "",
-                "flag": "fi fi-ro"
-            },
+            "monday": null,
             "tuesday": {
                 "name": "Sport",
                 "emoji": "⚽"
             },
             "wednesday": null,
             "thursday": null,
-            "friday": null
+            "friday": {
+                "name": "Dirigenție",
+                "emoji": "📰"
+            }
         }
     ]
 }
