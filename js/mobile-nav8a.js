@@ -326,6 +326,9 @@
             navShortcut2.querySelector('span').textContent = shortcutLabels[shortcut2];
             navShortcut2.dataset.shortcutType = shortcut2;
         }
+
+        // After updating shortcuts, sync weather immediately
+        syncWeatherToSheet();
     }
 
     // === Event Listeners ===
@@ -387,6 +390,25 @@
         if (menuTemp && sheetTemp) {
             sheetTemp.textContent = menuTemp.textContent;
         }
+
+        // Sync to shortcuts if they are set to weather
+        [navShortcut1, navShortcut2].forEach(btn => {
+            if (btn && btn.dataset.shortcutType === 'weather') {
+                const icon = btn.querySelector('i');
+                const span = btn.querySelector('span');
+                if (menuEmoji && menuEmoji.textContent !== '❌' && menuEmoji.textContent !== '☁️') {
+                    if (icon) {
+                        icon.className = ''; 
+                        icon.textContent = menuEmoji.textContent;
+                        icon.style.fontStyle = 'normal';
+                        icon.style.fontSize = '1.3rem';
+                    }
+                    if (span && menuTemp && menuTemp.textContent !== '--°C') {
+                        span.textContent = menuTemp.textContent;
+                    }
+                }
+            }
+        });
     }
 
     // Observe weather changes

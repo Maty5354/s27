@@ -27,7 +27,7 @@ async function loadTimetableData() {
 
         renderTimetable();
         setupSubjectHighlight();
-        highlightCurrent();
+        startHighlightLoop(); // Start highlighting loop after data is loaded
     } catch (error) {
         console.error("Error loading timetable data:", error);
     }
@@ -79,45 +79,61 @@ function highlightCurrent() {
     if (!timetableData) return;
     const date = new Date();
     const dayOfWeek = date.getDay(); // 0=Sunday, 1=Monday...
-    const currentHour = date.getHours();
-
-    // Clear previous highlights
-    document.querySelectorAll(".current-day, .current-hour, .current-cell").forEach((el) => {
-        el.classList.remove("current-day", "current-hour", "current-cell");
-    });
-
-    // Only highlight on weekdays (Mon-Fri = 1-5)
-    if (dayOfWeek < 1 || dayOfWeek > 5) return;
+    const currentMinutes = date.getHours() * 60 + date.getMinutes();
 
     const table = document.getElementById("timetable");
     if (!table) return;
 
-    // Highlight day header
+    // Remove any previous highlights within this table only
+    const prev = table.querySelectorAll(".current-day, .current-hour, .current-cell, .current-highlight");
+    if (prev.length) prev.forEach(el => el.classList.remove("current-day", "current-hour", "current-cell", "current-highlight"));
+
+    // Only highlight on weekdays (Mon-Fri = 1-5)
+    if (dayOfWeek < 1 || dayOfWeek > 5) return;
+
+    // Highlight day header (time column is index 0)
     const headerRow = table.querySelector("thead tr");
     if (headerRow) {
         const headerCells = headerRow.querySelectorAll("th");
-        if (headerCells[dayOfWeek]) {
-            headerCells[dayOfWeek].classList.add("current-day");
-        }
+        const dayIndex = dayOfWeek; // maps Monday=1 -> headerCells[1]
+        if (headerCells[dayIndex]) headerCells[dayIndex].classList.add("current-day", "current-highlight");
     }
 
-    // Find and highlight current hour row and cell
+    // Find and highlight the current class row + cell (first match only)
     const rows = table.querySelectorAll("tbody tr");
-    rows.forEach(row => {
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
         const timeCell = row.cells[0];
-        if (!timeCell) return;
-
-        const cellText = timeCell.textContent.trim();
-        const cellHour = parseInt(cellText.split(":")[0]);
-
-        if (cellHour === currentHour) {
-            timeCell.classList.add("current-hour");
-            const subjectCell = row.cells[dayOfWeek];
-            if (subjectCell) {
-                subjectCell.classList.add("current-cell");
+        if (!timeCell) continue;
+        const m = timeCell.textContent.trim().match(/^(\d{1,2}):(\d{2})/);
+        if (!m) continue;
+        const start = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+        // Determine end time from next row's start if available, otherwise fallback to 60 minutes duration
+        let end = start + 60; // default 1h duration
+        if (i + 1 < rows.length) {
+            const nextTimeCell = rows[i + 1].cells[0];
+            if (nextTimeCell) {
+                const m2 = nextTimeCell.textContent.trim().match(/^(\d{1,2}):(\d{2})/);
+                if (m2) {
+                    const nextStart = parseInt(m2[1], 10) * 60 + parseInt(m2[2], 10);
+                    if (nextStart > start) end = nextStart;
+                }
             }
         }
-    });
+        if (currentMinutes >= start && currentMinutes < end) {
+            // highlight hour cell and subject cell, and add a generic current-highlight tag so themes can target it
+            timeCell.classList.add("current-hour", "current-highlight");
+            const subjectCell = row.cells[dayOfWeek];
+            if (subjectCell) subjectCell.classList.add("current-cell", "current-highlight");
+            // Also mark the header (day) with highlight for consistency
+            if (headerRow) {
+                const headerCells = headerRow.querySelectorAll("th");
+                const dayIndex = dayOfWeek; // Monday=1 -> headerCells[1]
+                if (headerCells[dayIndex]) headerCells[dayIndex].classList.add("current-highlight");
+            }
+            break; // only one row should be current
+        }
+    }
 }
 
 function setupSubjectHighlight() {
@@ -132,12 +148,12 @@ function setupSubjectHighlight() {
 }
 
 function startHighlightLoop() {
+    highlightCurrent(); // Run immediately on load
     setInterval(highlightCurrent, 10000);
 }
 
 // Initialize
 loadTimetableData();
-startHighlightLoop();
 
 
 /* --- CELL INTERACTION (Click & Keyboard) --- */
