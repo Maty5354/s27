@@ -23,10 +23,10 @@
 }
 
 .customization-container {
-    width: 90%;
-    max-width: 900px;
+    width: 92%;
+    max-width: 1100px; /* increased for larger screens */
     height: 85vh;
-    max-height: 700px;
+    max-height: 78vh;
     background: var(--card-bg);
     border-radius: 1.5rem;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -35,8 +35,24 @@
     position: relative;
 }
 
+/* Responsive adjustments to avoid tiny containers on narrow screens */
+@media (max-width: 900px) {
+    .customization-container { width: 96%; max-width: 960px; min-width: 0; height: 88vh; max-height: 88vh; }
+    .custom-sidebar { width: 220px; }
+    .highlight-options-grid { grid-auto-columns: minmax(160px, 240px); }
+    .hl-option { min-width: 160px; }
+}
+
+@media (max-width: 560px) {
+    .customization-container { width: 100%; max-width: 100%; border-radius: 0; height: 100vh; max-height: 100vh; }
+    .custom-sidebar { display: none; }
+    .custom-content { padding: 16px; }
+    .highlight-options-grid { grid-auto-columns: minmax(140px, 220px); grid-template-rows: repeat(4, minmax(44px, 1fr)); }
+    .hl-option { min-width: 140px; }
+}
+
 .custom-sidebar {
-    width: 250px;
+    width: 280px; /* slightly wider for labels */
     background: var(--highlight-color);
     border-right: 1px solid var(--border-color);
     display: flex;
@@ -44,7 +60,8 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--accent-color) var(--card-bg);
-}
+    min-width: 220px;
+} 
 
 .sidebar-header {
     padding: 2rem 1.5rem 1rem;
@@ -152,10 +169,15 @@
 /* Theme Cards */
 .theme-options {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* responsive tiles */
     gap: 1rem;
     margin-bottom: 2rem;
 }
+
+/* Prevent flex children from overflowing and allow proper shrinking */
+.custom-content, .custom-sidebar, .ui-control-card, .highlight-col { min-width: 0; }
+.ui-controls-grid > * { min-width: 0; }
+
 .theme-card {
     background: var(--highlight-color);
     border: 3px solid var(--border-color);
@@ -466,6 +488,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    overflow-x: auto;
+    max-width: 100%;
 }
 .ui-control-card label {
     font-weight: 600;
@@ -577,7 +601,82 @@ input[type="range"] {
     margin-bottom: 1.5rem;
     border-bottom: 2px solid var(--border-color);
     padding-bottom: 0.5rem;
+    overflow-x: auto; /* allow horizontal scrolling when many tabs exist */
+    overflow-y: none;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    min-height: 4rem;
 }
+
+/* Ensure tab buttons don't wrap and can scroll horizontally */
+.custom-tabs .preset-tab-btn, .custom-tabs .ui-tab-btn { display: inline-block; }
+.custom-tabs::-webkit-scrollbar { height: 8px; }
+.custom-tabs::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--accent-color) 40%, var(--border-color)); border-radius: 8px; }
+
+/* Highlight controls: stacked rows layout and scrollable options area */
+.highlight-grid .highlight-grid-rows { display: flex; flex-direction: row; gap: 1rem; }
+.highlight-row { display: flex; gap: 1rem; align-items: flex-start; }
+.highlight-col { flex: 1; min-width: 0; }
+
+.highlight-options-wrapper {
+    max-height: calc(4 * 48px + 0.6rem * 3); /* approx 4 rows */
+    overflow-x: auto; /* allow horizontal scrolling */
+    overflow-y: hidden;
+    padding-bottom: 0.4rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--card-bg);
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+.highlight-options-wrapper::after { /* hidden by default; only shown when overflowing */
+    content: none;
+}
+
+.highlight-options-wrapper.overflowing::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255,255,255,0), var(--card-bg));
+}
+/* Add horizontal scrollbar styling (WebKit) */
+.highlight-options-wrapper::-webkit-scrollbar { height: 8px; }
+.highlight-options-wrapper::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--accent-color) 40%, var(--border-color)); border-radius: 8px; }
+
+/* Adjust the options grid to flow by column so there are 4 rows visible and it scrolls horizontally as needed */
+.highlight-options-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 320px); /* bigger columns for clearer labels */
+    grid-template-rows: repeat(4, minmax(48px, 1fr)); /* slightly taller rows */
+    gap: 0.6rem;
+    align-items: start;
+    /* ensure the grid cannot compress columns below their min size and will overflow the wrapper */
+    min-width: max-content;
+}
+
+/* Stronger rule to override other layout rules (applies inside the overlay) */
+#customizationOverlay .highlight-options-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 320px);
+    grid-template-rows: repeat(4, minmax(48px, 1fr));
+    gap: 0.6rem;
+    align-items: start;
+    min-width: max-content;
+}
+
+/* Ensure option buttons are consistent size and labels don't wrap */
+.hl-option { min-width: 200px; min-height: 48px; box-sizing: border-box; padding: 0.6rem 0.8rem; }
+.hl-option .hl-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: calc(100% - 3rem); }
+
+
+/* Ensure individual option buttons have a consistent height for row counting */
+.hl-option { min-height: 44px; align-items: center; }
 
 /* Specific button styles for tabs */
 .preset-tab-btn, .ui-tab-btn {
