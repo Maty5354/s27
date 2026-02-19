@@ -1,0 +1,1985 @@
+/* ========================================
+   CUSTOMIZATION OVERLAY
+   ======================================== */
+
+#customizationOverlay {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay-bg-strong);
+    backdrop-filter: blur(var(--overlay-blur));
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+}
+
+#customizationOverlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.customization-container {
+    width: 92%;
+    max-width: 1100px;
+    height: 85vh;
+    max-height: 78vh;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-modal);
+    backdrop-filter: blur(var(--backdrop-blur));
+    -webkit-backdrop-filter: blur(var(--backdrop-blur));
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Sidebar */
+.custom-sidebar {
+    width: 280px;
+    background: var(--highlight-color);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    min-width: 220px;
+}
+
+.sidebar-header {
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h2 {
+    font-size: var(--font-size-xl);
+    color: var(--accent-color);
+    margin: 0;
+}
+
+.sidebar-nav {
+    padding: 1rem 0;
+}
+
+.sidebar-item {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-color);
+    border-left: 3px solid transparent;
+}
+
+.sidebar-item i {
+    font-size: var(--font-size-lg);
+    width: 24px;
+    color: var(--accent-color);
+}
+
+.sidebar-item:hover {
+    background: var(--card-bg);
+}
+
+.sidebar-item.active {
+    background: var(--card-bg);
+    border-left-color: var(--accent-color);
+    font-weight: 600;
+}
+
+/* Content */
+.custom-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.custom-section {
+    display: none;
+}
+
+.custom-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.custom-section h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+/* ========================================
+   BASE INPUTS GRID
+   ======================================== */
+.base-inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+}
+
+.base-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background: var(--surface-alt);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    transition: box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+.base-input-group:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.base-input-group h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent-color);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+/* ========================================
+   1. COLOR PICKER (existing — Pickr)
+   ======================================== */
+.custom-color-picker-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+#demoColorValue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background: var(--input-bg);
+}
+
+.pickr .pcr-button {
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: var(--border-radius-sm) !important;
+    border: 2px solid var(--border-color) !important;
+}
+
+/* ========================================
+   2. TOGGLE SWITCH
+   ======================================== */
+.cb-toggle {
+    position: relative;
+    width: 52px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.cb-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.cb-toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+    transition: background var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.cb-toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background: var(--card-bg);
+    border-radius: 50%;
+    box-shadow: var(--box-shadow-sm);
+    transition: transform var(--transition-speed-slow) cubic-bezier(.4, 0, .2, 1);
+}
+
+.cb-toggle input:checked~.cb-toggle-track {
+    background: var(--accent-color);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.cb-toggle input:checked~.cb-toggle-thumb {
+    transform: translateX(24px);
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toggle-label-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+}
+
+/* ========================================
+   3. RANGE SLIDER
+   ======================================== */
+.cb-range-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.cb-range-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cb-range-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    padding: 2px 8px;
+    border-radius: var(--border-radius-pill);
+    min-width: 32px;
+    text-align: center;
+}
+
+.cb-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.cb-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: var(--border-radius-pill);
+}
+
+.cb-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 0 0 2px var(--accent-color), var(--box-shadow-sm);
+    cursor: grab;
+    margin-top: -7px;
+    transition: box-shadow var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.cb-range::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 2px var(--accent-color), 0 0 12px var(--accent-glow);
+}
+
+.cb-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 0 0 2px var(--accent-color), var(--box-shadow-sm);
+    cursor: grab;
+}
+
+.cb-range:active::-webkit-slider-thumb {
+    cursor: grabbing;
+}
+
+.cb-range:active::-moz-range-thumb {
+    cursor: grabbing;
+}
+
+/* ========================================
+   4. DUAL RANGE SLIDER
+   ======================================== */
+.cb-dual-range {
+    position: relative;
+    height: 6px;
+    margin: 14px 0;
+}
+
+.cb-dual-range-track {
+    position: absolute;
+    inset: 0;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+}
+
+.cb-dual-range-fill {
+    position: absolute;
+    height: 100%;
+    background: var(--accent-color);
+    border-radius: var(--border-radius-pill);
+    top: 0;
+}
+
+.cb-dual-range input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    background: transparent;
+    pointer-events: none;
+    top: 0;
+    margin: 0;
+}
+
+.cb-dual-range input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 0 0 2px var(--accent-color);
+    pointer-events: all;
+    cursor: grab;
+    margin-top: -7px;
+    transition: transform var(--transition-speed) ease;
+}
+
+.cb-dual-range input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.cb-dual-range input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 0 0 2px var(--accent-color);
+    pointer-events: all;
+    cursor: grab;
+}
+
+.cb-dual-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-sm);
+}
+
+/* ========================================
+   5. SEGMENTED CONTROL
+   ======================================== */
+.cb-segmented {
+    display: flex;
+    background: var(--input-bg);
+    border-radius: var(--border-radius-sm);
+    padding: 3px;
+    gap: 2px;
+    border: 1px solid var(--border-color);
+}
+
+.cb-segmented-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    border-radius: calc(var(--border-radius-sm) - 2px);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    font-family: var(--font-family);
+}
+
+.cb-segmented-btn:hover {
+    color: var(--text-color);
+}
+
+.cb-segmented-btn.active {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    box-shadow: var(--box-shadow-sm);
+}
+
+/* ========================================
+   6. DROPDOWN SELECT
+   ======================================== */
+.cb-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.cb-dropdown-trigger {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.cb-dropdown-trigger:hover,
+.cb-dropdown-trigger:focus {
+    border-color: var(--accent-color);
+    outline: none;
+}
+
+.cb-dropdown-trigger i {
+    font-size: 0.7rem;
+    transition: transform var(--transition-speed) ease;
+    color: var(--text-muted);
+}
+
+.cb-dropdown.open .cb-dropdown-trigger i {
+    transform: rotate(180deg);
+}
+
+.cb-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--box-shadow-md);
+    z-index: 100;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: all var(--transition-speed) ease;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.cb-dropdown.open .cb-dropdown-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.cb-dropdown-item {
+    padding: 9px 14px;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    transition: background var(--transition-speed) ease;
+}
+
+.cb-dropdown-item:hover {
+    background: var(--highlight-color);
+}
+
+.cb-dropdown-item.selected {
+    color: var(--accent-color);
+    font-weight: var(--font-weight-semibold);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+/* ========================================
+   7. TEXT INPUT (floating label)
+   ======================================== */
+.cb-text-field {
+    position: relative;
+}
+
+.cb-text-field input {
+    width: 100%;
+    padding: 14px 14px 8px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color var(--transition-speed) ease;
+    box-sizing: border-box;
+}
+
+.cb-text-field input:focus {
+    border-color: var(--accent-color);
+}
+
+.cb-text-field label {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: all var(--transition-speed) ease;
+    background: transparent;
+}
+
+.cb-text-field input:focus~label,
+.cb-text-field input:not(:placeholder-shown)~label {
+    top: 6px;
+    transform: translateY(0);
+    font-size: 0.65rem;
+    color: var(--accent-color);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   8. NUMBER STEPPER
+   ======================================== */
+.cb-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    background: var(--input-bg);
+    width: fit-content;
+}
+
+.cb-stepper-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: var(--accent-color);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-speed) ease;
+    font-family: var(--font-family);
+}
+
+.cb-stepper-btn:hover {
+    background: var(--highlight-color);
+}
+
+.cb-stepper-btn:active {
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+}
+
+.cb-stepper-value {
+    width: 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    line-height: 36px;
+    user-select: none;
+}
+
+/* ========================================
+   9. RADIO GROUP
+   ======================================== */
+.cb-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.cb-radio {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    position: relative;
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+}
+
+.cb-radio input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cb-radio-mark {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    flex-shrink: 0;
+}
+
+.cb-radio-mark::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    transform: scale(0);
+    transition: transform var(--transition-speed) cubic-bezier(.4, 0, .2, 1);
+}
+
+.cb-radio input:checked~.cb-radio-mark {
+    border-color: var(--accent-color);
+}
+
+.cb-radio input:checked~.cb-radio-mark::after {
+    transform: scale(1);
+}
+
+/* ========================================
+   10. CHECKBOX GROUP
+   ======================================== */
+.cb-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.cb-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    position: relative;
+}
+
+.cb-checkbox input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cb-checkbox-mark {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    flex-shrink: 0;
+}
+
+.cb-checkbox-mark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.6rem;
+    color: var(--text-on-accent);
+    transform: scale(0);
+    transition: transform var(--transition-speed) cubic-bezier(.4, 0, .2, 1);
+}
+
+.cb-checkbox input:checked~.cb-checkbox-mark {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.cb-checkbox input:checked~.cb-checkbox-mark::after {
+    transform: scale(1);
+}
+
+/* ========================================
+   11. ICON SELECTOR
+   ======================================== */
+.cb-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+}
+
+.cb-icon-btn {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-xs);
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+}
+
+.cb-icon-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+.cb-icon-btn.selected {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* ========================================
+   12. BUTTON GROUP
+   ======================================== */
+.cb-btn-group {
+    display: flex;
+    gap: 0;
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.cb-btn-group-item {
+    flex: 1;
+    padding: 9px 14px;
+    border: none;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.cb-btn-group-item:last-child {
+    border-right: none;
+}
+
+.cb-btn-group-item:hover {
+    background: var(--highlight-color);
+    color: var(--text-color);
+}
+
+.cb-btn-group-item.active {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+}
+
+/* ========================================
+   13. TOKEN / TAG INPUT
+   ======================================== */
+.cb-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    min-height: 42px;
+    align-items: center;
+    transition: border-color var(--transition-speed) ease;
+    cursor: text;
+}
+
+.cb-tags-container:focus-within {
+    border-color: var(--accent-color);
+}
+
+.cb-tag {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px 3px 10px;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-radius: var(--border-radius-pill);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+    animation: tagPop 0.2s ease;
+}
+
+@keyframes tagPop {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.cb-tag-remove {
+    background: none;
+    border: none;
+    color: var(--text-on-accent);
+    cursor: pointer;
+    font-size: 0.65rem;
+    opacity: 0.7;
+    padding: 0 2px;
+    line-height: 1;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.cb-tag-remove:hover {
+    opacity: 1;
+}
+
+.cb-tag-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    flex: 1;
+    min-width: 80px;
+    padding: 4px;
+}
+
+.cb-tag-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ========================================
+   14. SWITCH GROUP
+   ======================================== */
+.cb-switch-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.cb-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+}
+
+.cb-switch-label {
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+}
+
+.cb-mini-toggle {
+    position: relative;
+    width: 38px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.cb-mini-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.cb-mini-toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+    transition: background var(--transition-speed) ease;
+}
+
+.cb-mini-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--card-bg);
+    border-radius: 50%;
+    box-shadow: var(--box-shadow-sm);
+    transition: transform var(--transition-speed-slow) cubic-bezier(.4, 0, .2, 1);
+}
+
+.cb-mini-toggle input:checked~.cb-mini-toggle-track {
+    background: var(--accent-color);
+}
+
+.cb-mini-toggle input:checked~.cb-mini-toggle-thumb {
+    transform: translateX(16px);
+}
+
+/* ========================================
+   15. OPACITY SLIDER
+   ======================================== */
+.cb-opacity-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.cb-opacity-preview {
+    height: 24px;
+    border-radius: var(--border-radius-xs);
+    background: linear-gradient(90deg,
+            transparent 0%,
+            var(--accent-color) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.cb-opacity-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(var(--border-color) 0% 25%, transparent 0% 50%) 0 0 / 12px 12px;
+    z-index: -1;
+}
+
+/* ========================================
+   16. BORDER RADIUS CONTROL
+   ======================================== */
+.cb-radius-control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.cb-radius-preview {
+    width: 80px;
+    height: 80px;
+    background: var(--accent-color);
+    transition: border-radius var(--transition-speed) ease;
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+.cb-radius-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    flex: 1;
+}
+
+.cb-radius-input {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cb-radius-input label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: var(--font-weight-semibold);
+}
+
+.cb-radius-input input {
+    width: 100%;
+    padding: 5px 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-color);
+    text-align: center;
+    outline: none;
+    transition: border-color var(--transition-speed) ease;
+    box-sizing: border-box;
+}
+
+.cb-radius-input input:focus {
+    border-color: var(--accent-color);
+}
+
+/* ========================================
+   17. SPACING CONTROL (box-model)
+   ======================================== */
+.cb-spacing-box {
+    position: relative;
+    padding: 24px;
+    background: color-mix(in srgb, var(--accent-color) 6%, transparent);
+    border: 2px dashed color-mix(in srgb, var(--accent-color) 30%, transparent);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+}
+
+.cb-spacing-inner {
+    padding: 16px;
+    background: var(--accent-color);
+    border-radius: var(--border-radius-xs);
+    opacity: 0.2;
+    min-height: 30px;
+}
+
+.cb-spacing-label {
+    position: absolute;
+    font-size: 0.55rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-color);
+    background: var(--surface-alt);
+    padding: 1px 6px;
+    border-radius: 3px;
+}
+
+.cb-spacing-label.top {
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cb-spacing-label.bottom {
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.cb-spacing-label.left {
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.cb-spacing-label.right {
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ========================================
+   18. FONT SIZE SLIDER
+   ======================================== */
+.cb-fontsize-preview {
+    padding: var(--spacing-sm) 0;
+    color: var(--text-color);
+    transition: font-size var(--transition-speed) ease;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ========================================
+   19. FONT WEIGHT SELECTOR
+   ======================================== */
+.cb-weight-selector {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.cb-weight-btn {
+    padding: 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xs);
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.cb-weight-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.cb-weight-btn.active {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+}
+
+.cb-weight-preview {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    transition: font-weight var(--transition-speed) ease;
+}
+
+/* ========================================
+   20. LETTER SPACING SLIDER
+   ======================================== */
+.cb-letterspacing-preview {
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    text-transform: uppercase;
+    padding: var(--spacing-xs) 0;
+    transition: letter-spacing var(--transition-speed) ease;
+}
+
+/* ========================================
+   21. LINE HEIGHT SLIDER
+   ======================================== */
+.cb-lineheight-preview {
+    font-size: var(--font-size-sm);
+    color: var(--text-color);
+    padding: var(--spacing-xs) 0;
+    transition: line-height var(--transition-speed) ease;
+    max-height: 80px;
+    overflow: hidden;
+}
+
+/* ========================================
+   22. GRADIENT PICKER
+   ======================================== */
+.cb-gradient-bar {
+    height: 40px;
+    border-radius: var(--border-radius-sm);
+    margin-bottom: var(--spacing-sm);
+    transition: background var(--transition-speed) ease;
+}
+
+.cb-gradient-stops {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.cb-gradient-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-xs);
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    transition: transform var(--transition-speed) ease;
+}
+
+.cb-gradient-swatch:hover {
+    transform: scale(1.1);
+}
+
+.cb-gradient-arrow {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+}
+
+/* ========================================
+   23. SHADOW CONTROL
+   ======================================== */
+.cb-shadow-preview-box {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto var(--spacing-sm);
+    background: var(--card-bg);
+    border-radius: var(--border-radius-sm);
+    transition: box-shadow var(--transition-speed) ease;
+}
+
+.cb-shadow-sliders {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.cb-shadow-slider-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cb-shadow-slider-row label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.cb-shadow-slider-row input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+    outline: none;
+}
+
+.cb-shadow-slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 2px solid var(--card-bg);
+    box-shadow: 0 0 0 1px var(--accent-color);
+    cursor: grab;
+    margin-top: -5px;
+}
+
+.cb-shadow-slider-row input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 2px solid var(--card-bg);
+    box-shadow: 0 0 0 1px var(--accent-color);
+    cursor: grab;
+}
+
+/* ========================================
+   24. COLOR PALETTE SELECTOR
+   ======================================== */
+.cb-palette-row {
+    display: flex;
+    gap: 6px;
+}
+
+.cb-palette-swatch {
+    flex: 1;
+    height: 36px;
+    border-radius: var(--border-radius-xs);
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+}
+
+.cb-palette-swatch:first-child {
+    border-radius: var(--border-radius-sm) var(--border-radius-xs) var(--border-radius-xs) var(--border-radius-sm);
+}
+
+.cb-palette-swatch:last-child {
+    border-radius: var(--border-radius-xs) var(--border-radius-sm) var(--border-radius-sm) var(--border-radius-xs);
+}
+
+.cb-palette-swatch:hover {
+    transform: scaleY(1.15);
+}
+
+.cb-palette-swatch.selected {
+    border-color: var(--text-color);
+    box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--text-color);
+}
+
+.cb-palette-swatch.selected::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 0.65rem;
+    color: white;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================
+   25. IMAGE SELECTOR
+   ======================================== */
+.cb-image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.cb-image-option {
+    aspect-ratio: 16/10;
+    border-radius: var(--border-radius-xs);
+    border: 3px solid var(--border-color);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-2xl);
+}
+
+.cb-image-option:hover {
+    border-color: var(--accent-color);
+    transform: scale(1.03);
+}
+
+.cb-image-option.selected {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cb-image-option.selected::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-radius: 50%;
+    font-size: 0.55rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ========================================
+   26. ALIGNMENT PICKER
+   ======================================== */
+.cb-align-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    width: fit-content;
+}
+
+.cb-align-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+}
+
+.cb-align-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.cb-align-btn.selected {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+}
+
+/* ========================================
+   27. DATE PICKER
+   ======================================== */
+.cb-datepicker {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    font-size: 0.75rem;
+}
+
+.cb-datepicker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.cb-datepicker-title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+}
+
+.cb-datepicker-nav {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: background var(--transition-speed) ease;
+    font-size: 0.7rem;
+}
+
+.cb-datepicker-nav:hover {
+    background: var(--highlight-color);
+}
+
+.cb-datepicker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+}
+
+.cb-datepicker-day-header {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding: 4px;
+    text-transform: uppercase;
+}
+
+.cb-datepicker-day {
+    padding: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: all var(--transition-speed) ease;
+    border: none;
+    background: transparent;
+    font-family: var(--font-family);
+    font-size: 0.75rem;
+}
+
+.cb-datepicker-day:hover {
+    background: var(--highlight-color);
+}
+
+.cb-datepicker-day.today {
+    color: var(--accent-color);
+    font-weight: var(--font-weight-bold);
+}
+
+.cb-datepicker-day.selected {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+}
+
+.cb-datepicker-day.muted {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+/* ========================================
+   28. TIME PICKER
+   ======================================== */
+.cb-timepicker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: center;
+}
+
+.cb-time-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.cb-time-spin {
+    width: 28px;
+    height: 22px;
+    border: none;
+    background: var(--input-bg);
+    border-radius: 4px;
+    color: var(--accent-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    transition: background var(--transition-speed) ease;
+}
+
+.cb-time-spin:hover {
+    background: var(--highlight-color);
+}
+
+.cb-time-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);
+    width: 44px;
+    text-align: center;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-xs);
+    padding: 6px;
+    line-height: 1;
+}
+
+.cb-time-sep {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--accent-color);
+    margin-top: 8px;
+}
+
+.cb-time-period {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-left: 6px;
+}
+
+.cb-time-period-btn {
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    font-family: var(--font-family);
+}
+
+.cb-time-period-btn.active {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    border-color: var(--accent-color);
+}
+
+/* ========================================
+   29. PROGRESS BAR
+   ======================================== */
+.cb-progress {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.cb-progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.cb-progress-track {
+    height: 8px;
+    background: var(--border-color);
+    border-radius: var(--border-radius-pill);
+    overflow: hidden;
+    position: relative;
+}
+
+.cb-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, var(--success-color)));
+    border-radius: var(--border-radius-pill);
+    transition: width 1s cubic-bezier(.4, 0, .2, 1);
+    position: relative;
+}
+
+.cb-progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
+    animation: progressShimmer 2s infinite linear;
+}
+
+@keyframes progressShimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ========================================
+   30. STAR RATING
+   ======================================== */
+.cb-star-rating {
+    display: flex;
+    gap: 4px;
+}
+
+.cb-star {
+    font-size: var(--font-size-xl);
+    color: var(--border-color);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    background: none;
+    border: none;
+    padding: 2px;
+}
+
+.cb-star:hover,
+.cb-star.hovered {
+    color: #fbbf24;
+    transform: scale(1.2);
+}
+
+.cb-star.active {
+    color: #fbbf24;
+}
+
+.cb-star-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-left: 8px;
+    align-self: center;
+}
+
+/* ========================================
+   31. EMOJI RATING
+   ======================================== */
+.cb-emoji-rating {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.cb-emoji-btn {
+    font-size: 1.5rem;
+    background: none;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: grayscale(80%);
+    opacity: 0.6;
+}
+
+.cb-emoji-btn:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.cb-emoji-btn.selected {
+    filter: grayscale(0%);
+    opacity: 1;
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    transform: scale(1.1);
+}
+
+/* ========================================
+   32. KNOB / DIAL
+   ======================================== */
+.cb-knob-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.cb-knob {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    cursor: grab;
+}
+
+.cb-knob:active {
+    cursor: grabbing;
+}
+
+.cb-knob svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-135deg);
+}
+
+.cb-knob-track {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 6;
+    stroke-linecap: round;
+}
+
+.cb-knob-fill {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s ease;
+    filter: drop-shadow(0 0 4px var(--accent-glow));
+}
+
+.cb-knob-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);
+}
+
+/* ========================================
+   33. BREADCRUMB NAV
+   ======================================== */
+.cb-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.cb-breadcrumb-item {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: var(--border-radius-pill);
+    background: transparent;
+    border: none;
+    font-family: var(--font-family);
+    transition: all var(--transition-speed) ease;
+}
+
+.cb-breadcrumb-item:hover {
+    background: var(--highlight-color);
+    color: var(--text-color);
+}
+
+.cb-breadcrumb-item.active {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    font-weight: var(--font-weight-medium);
+}
+
+.cb-breadcrumb-sep {
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    opacity: 0.5;
+}
+
+/* ========================================
+   34. ACCORDION
+   ======================================== */
+.cb-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cb-accordion-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xs);
+    overflow: hidden;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.cb-accordion-item.open {
+    border-color: var(--accent-color);
+}
+
+.cb-accordion-header {
+    padding: 10px 14px;
+    background: var(--input-bg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-color);
+    border: none;
+    width: 100%;
+    font-family: var(--font-family);
+    transition: background var(--transition-speed) ease;
+}
+
+.cb-accordion-header:hover {
+    background: var(--highlight-color);
+}
+
+.cb-accordion-header i {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    transition: transform var(--transition-speed) ease;
+}
+
+.cb-accordion-item.open .cb-accordion-header i {
+    transform: rotate(180deg);
+    color: var(--accent-color);
+}
+
+.cb-accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-speed-slow) ease;
+}
+
+.cb-accordion-item.open .cb-accordion-body {
+    max-height: 200px;
+}
+
+.cb-accordion-content {
+    padding: 10px 14px;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    line-height: var(--line-height);
+}
+
+/* ========================================
+   35. SEARCH INPUT
+   ======================================== */
+.cb-search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cb-search-wrap i.cb-search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+    pointer-events: none;
+    transition: color var(--transition-speed) ease;
+}
+
+.cb-search-wrap:focus-within i.cb-search-icon {
+    color: var(--accent-color);
+}
+
+.cb-search-input {
+    width: 100%;
+    padding: 10px 36px 10px 36px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-pill);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color var(--transition-speed) ease;
+    box-sizing: border-box;
+}
+
+.cb-search-input:focus {
+    border-color: var(--accent-color);
+}
+
+.cb-search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.cb-search-clear {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 4px;
+    opacity: 0;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.cb-search-wrap:focus-within .cb-search-clear,
+.cb-search-input:not(:placeholder-shown)~.cb-search-clear {
+    opacity: 1;
+}
+
+.cb-search-clear:hover {
+    color: var(--accent-color);
+}
+
+/* ========================================
+   36. TEXTAREA
+   ======================================== */
+.cb-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    outline: none;
+    resize: vertical;
+    transition: border-color var(--transition-speed) ease;
+    line-height: var(--line-height);
+    box-sizing: border-box;
+}
+
+.cb-textarea:focus {
+    border-color: var(--accent-color);
+}
+
+.cb-textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.cb-textarea-counter {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 900px) {
+    .customization-container {
+        width: 96%;
+        height: 85vh;
+    }
+
+    .custom-sidebar {
+        width: 220px;
+    }
+
+    .base-inputs-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .customization-container {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .custom-sidebar {
+        width: 80px;
+    }
+
+    .custom-sidebar span {
+        display: none;
+    }
+
+    .sidebar-item {
+        justify-content: center;
+        padding: 1.5rem 0;
+    }
+
+    .base-inputs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .custom-content {
+        padding: 1rem;
+    }
+}

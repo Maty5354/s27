@@ -1,0 +1,64 @@
+/* ========================================
+   WEATHER IMMERSIVE CHART STYLES
+   ======================================== */
+
+.chart-bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    height: 100%;
+    gap: 5px;
+    position: relative;
+    min-width: 30px;
+}
+
+.chart-bar-label {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+.chart-bar-line {
+    width: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    transition: height 1s ease-out;
+    position: relative;
+}
+
+.chart-bar-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2px;
+    right: -2px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.chart-bar-time {
+    font-size: 0.65rem;
+    opacity: 0.6;
+    margin-top: 5px;
+}
+
+.weather-chart-scroll {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 5px;
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.weather-chart-scroll::-webkit-scrollbar {
+    display: none;
+}

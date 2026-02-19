@@ -1,0 +1,176 @@
+/* ========================================
+   TIMETABLE
+   ======================================== */
+
+.timetable-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    border-radius: var(--border-radius);
+    animation: fadeInUp 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-top: -3rem;
+    scrollbar-width: thin;
+}
+
+.timetable-wrapper::-webkit-scrollbar {
+    height: var(--scrollbar-size);
+}
+
+.timetable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.timetable th,
+.timetable td {
+    padding: 1.2rem 0.75rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    transition: background-color var(--transition-speed);
+    font-size: var(--font-size-xl);
+    border-radius: 0;
+    min-width: 15rem;
+    white-space: nowrap;
+}
+
+.timetable th:first-child,
+.timetable td:first-child {
+    min-width: 6rem;
+    width: 6rem;
+}
+
+/* Compact Mode */
+body.compact-timetable .timetable th,
+body.compact-timetable .timetable td {
+    padding: 0.5rem;
+    font-size: calc(var(--font-size-xl) * 0.85);
+}
+
+/* Minimal Cell Style */
+body.minimal-cells .timetable th,
+body.minimal-cells .timetable td {
+    border: 1px solid transparent;
+    border-bottom: 1px solid var(--divider-color);
+    background: transparent;
+}
+
+body.minimal-cells .timetable th:not(:first-child):hover,
+body.minimal-cells .timetable td:not(:first-child):hover {
+    box-shadow: none;
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    border-radius: var(--border-radius-xs);
+}
+
+
+.timetable th {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: var(--font-weight-semibold);
+    text-transform: none;
+    letter-spacing: 1px;
+    animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+/* Stagger animation for table headers */
+.timetable th:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.timetable th:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.timetable th:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.timetable th:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.timetable th:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.timetable th:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.timetable td {
+    background-color: var(--card-bg);
+}
+
+.timetable td.subject,
+.timetable th.subject {
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.timetable th:not(:first-child),
+.timetable td:not(:first-child) {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.timetable td.subject:hover,
+.timetable th.subject:hover,
+.timetable th:not(:first-child):hover,
+.timetable td:not(:first-child):hover {
+    z-index: var(--z-tooltip);
+    transform: scale(1.05);
+    cursor: pointer;
+    border-radius: var(--border-radius-xs);
+    background: var(--highlight-color);
+    box-shadow: var(--box-shadow-md);
+}
+
+#emojis {
+    font-size: var(--font-size-xl);
+    border-radius: var(--border-radius-xs);
+}
+
+/* Highlighting uses the accent color for clear visual emphasis */
+.timetable thead th.current-day {
+    color: var(--accent-color);
+    border-bottom: 3px solid var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, var(--card-bg));
+}
+
+.timetable th.current-hour,
+.timetable td.current-hour {
+    color: var(--accent-color);
+    /* stronger contrast so the current hour is clearly visible */
+    background: color-mix(in srgb, var(--accent-color) 28%, var(--card-bg));
+    border-right: 4px solid var(--accent-color);
+    font-weight: 600;
+}
+
+.timetable th.current-cell,
+.timetable td.current-cell {
+    color: var(--accent-color);
+    /* stronger contrast so the subject cell stands out */
+    background: color-mix(in srgb, var(--accent-color) 30%, var(--card-bg));
+    border-left: 4px solid var(--accent-color);
+    font-weight: 600;
+}
+
+
+/* Generic highlight tag for theming/customization (applied to the header/time/subject cells) */
+.timetable th.current-highlight,
+.timetable td.current-highlight,
+.timetable thead th.current-highlight {
+    border-radius: var(--border-radius-xs);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 6%, var(--card-bg));
+}
+
+#timetable th.selected,
+#timetable td.selected {
+    background: color-mix(in srgb, var(--text-muted) 12%, transparent);
+}

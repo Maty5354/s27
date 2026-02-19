@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#6196ff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Orar 8D</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://kit.webawesome.com/45396e3eb4054c87.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
+
+    <!-- Pickr Library for Color Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+
+    <base target="_blank">
+    <link rel="stylesheet" href="./css/animations.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/customization.css">
+    <link rel="stylesheet" href="./css/mobile.css">
+    <link rel="stylesheet" href="./css/overlays.css">
+    <link rel="stylesheet" href="./css/timetable.css">
+    <link rel="stylesheet" href="./css/todo.css">
+    <link rel="stylesheet" href="./css/weather.css">
+    <link rel="stylesheet" href="./css/weather-immersive.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/responsive.css">
+    <link rel="stylesheet" href="./css/variables.css">
+
+    <script>
+        window.CLASS_ID = '8d';
+        window.DATA_PATH = '../data/';
+    </script>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <!-- New Sticky Mobile Header -->
+    <header id="mobileHeader" class="mobile-header">
+        <div class="mobile-header-content">
+            <h1 class="mobile-app-title">Orar 8D</h1>
+            <div class="mobile-header-info">
+                <span id="mobileHeaderTime">--:--</span>
+                <span id="mobileHeaderDate">-- --</span>
+            </div>
+        </div>
+    </header>
+
+    <button id="menuToggle" class="menu-toggle" aria-label="Toggle Menu">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </button>
+    <div class="title-container">
+        <h1 class="main-title">Orar 8D</h1>
+        <div class="header-info-wrapper">
+            <div class="time-display" id="titleTime">00:00:00</div>
+            <div class="date-display" id="titleDate"></div>
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="scroll-indicator-bg">
+        <div id="scroll-indicator"></div>
+    </div>
+    <div class="biggest-container">
+        <div class="header">
+            <div id="sideMenu" class="side-menu">
+                <h1 class="menu-title">Menu</h1>
+
+                <!-- Scrollable Menu Items Container -->
+                <div id="menuItemsContainer" class="menu-scroll-container">
+                    <!-- Items injected by ui-core.js -->
+                </div>
+
+                <!-- Sticky Footer -->
+                <div id="recommendedManual" class="recommended-manual">
+                    <h3>Recommended Textbook</h3>
+                    <div class="manual-card">
+                        <p>No textbook available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="big-container">
+            <!-- Full View Header (Mobile Only) - Moved out for sticky positioning -->
+            <div class="full-view-header" id="fullViewHeader">
+                <h2 class="full-view-title"><i class="fa-solid fa-table-cells"></i> Weekly Schedule</h2>
+            </div>
+
+            <div class="timetable-wrapper">
+                <table class="timetable" id="timetable">
+                    <thead>
+                        <tr>
+                            <th class="no-hover" style="width: 4rem !important; height: 3.5rem !important;"></th>
+                            <th class="no-hover" style="text-transform: uppercase;">Luni</th>
+                            <th class="no-hover" style="text-transform: uppercase;">Marți</th>
+                            <th class="no-hover" style="text-transform: uppercase;">Miercuri</th>
+                            <th class="no-hover" style="text-transform: uppercase;">Joi</th>
+                            <th class="no-hover" style="text-transform: uppercase;">Vineri</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- Time Overlay -->
+            <div id="timeOverlay" class="time-overlay">
+                <div class="overlay-content">
+                    <button id="closeOverlay" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <div id="clockDisplay">
+                        <div id="time"></div>
+                        <div id="date"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--menu overlay-->
+            <div id="overlay"></div>
+
+            <!-- Weather Overlay -->
+            <div id="weatherOverlay" class="weather-overlay">
+                <canvas id="weatherCanvas"></canvas>
+                <div class="weather-overlay-container">
+                    <div class="weather-overlay-header">
+                        <h2>
+                            <span id="weatherLocationName">Bucharest</span>
+                            <span class="weather-location-coord" id="weatherCoords"></span>
+                        </h2>
+                        <button id="closeWeatherOverlay" class="weather-close-btn"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="weather-content-grid">
+                        <!-- Left: Main Info -->
+                        <div class="weather-main-info">
+                            <div class="weather-icon-large" id="weatherIconLarge"></div>
+                            <div class="weather-temp-large">
+                                <span id="weatherCurrentTemp">--</span>°
+                            </div>
+                            <div class="weather-condition" id="weatherCondition">Loading...</div>
+                            <div class="weather-high-low">
+                                H:<span id="weatherHigh">--</span>° L:<span id="weatherLow">--</span>°
+                            </div>
+                        </div>
+
+                        <!-- Right: Details & Chart -->
+                        <div class="weather-details-section">
+                            <div class="weather-details-grid">
+                                <div class="weather-detail-card">
+                                    <i class="fa-solid fa-wind"></i>
+                                    <span class="weather-detail-label">Wind</span>
+                                    <span class="weather-detail-value" id="weatherWind">-- km/h</span>
+                                </div>
+                                <div class="weather-detail-card">
+                                    <i class="fa-solid fa-droplet"></i>
+                                    <span class="weather-detail-label">Humidity</span>
+                                    <span class="weather-detail-value" id="weatherHumidity">--%</span>
+                                </div>
+                                <div class="weather-detail-card">
+                                    <i class="fa-solid fa-umbrella"></i>
+                                    <span class="weather-detail-label">Precip</span>
+                                    <span class="weather-detail-value" id="weatherPrecip">-- mm</span>
+                                </div>
+                                <div class="weather-detail-card">
+                                    <i class="fa-solid fa-temperature-half"></i>
+                                    <span class="weather-detail-label">Feels Like</span>
+                                    <span class="weather-detail-value" id="weatherFeelsLike">--°</span>
+                                </div>
+                            </div>
+
+                            <div class="weather-chart-container">
+                                <h3>24h Forecast</h3>
+                                <div id="weatherChart" class="weather-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="weather-footer">
+                        <button id="refreshWeatherBtn" class="refresh-weather-btn">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                        <span>Data provided by Open-Meteo</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced To-Do System Overlay -->
+            <div id="advancedTodoOverlay" class="advanced-todo-overlay">
+                <!-- Todo HTML content kept as is -->
+                <div class="advanced-todo-container">
+                    <!-- Sidebar -->
+                    <div class="todo-sidebar" id="todoSidebar">
+                        <div class="sidebar-header">
+                            <button id="toggleSidebar" class="toggle-sidebar-btn" aria-label="Toggle Sidebar">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <h2><i class="fa-solid fa-list-check"></i> Tasks</h2>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="todo-stats-compact">
+                            <div class="stat-compact">
+                                <div class="stat-number" id="statTotal">0</div>
+                                <div class="stat-label">Total</div>
+                            </div>
+                            <div class="stat-compact">
+                                <div class="stat-number" id="statCompleted">0</div>
+                                <div class="stat-label">Done</div>
+                            </div>
+                            <div class="stat-compact">
+                                <div class="stat-number" id="statPending">0</div>
+                                <div class="stat-label">Pending</div>
+                            </div>
+                        </div>
+
+                        <!-- Folders Section -->
+                        <div class="sidebar-section">
+                            <div class="section-header">
+                                <h3><i class="fa-solid fa-folder"></i> Folders</h3>
+                                <button class="icon-btn" id="addFolderBtn" title="Add Folder">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="folders-list" id="foldersList">
+                                <!-- Folders will be rendered here -->
+                            </div>
+                        </div>
+
+                        <!-- Quick Filters -->
+                        <div class="sidebar-section">
+                            <h3><i class="fa-solid fa-filter"></i> Quick Filters</h3>
+                            <div class="quick-filters">
+                                <button class="quick-filter active" data-filter="all">
+                                    <i class="fa-solid fa-list"></i> <span>All Tasks</span>
+                                </button>
+                                <button class="quick-filter" data-filter="today">
+                                    <i class="fa-solid fa-calendar-day"></i> <span>Today</span>
+                                </button>
+                                <button class="quick-filter" data-filter="week">
+                                    <i class="fa-solid fa-calendar-week"></i> <span>This Week</span>
+                                </button>
+                                <button class="quick-filter" data-filter="overdue">
+                                    <i class="fa-solid fa-exclamation-triangle"></i> <span>Overdue</span>
+                                </button>
+                                <button class="quick-filter" data-filter="completed">
+                                    <i class="fa-solid fa-check-circle"></i> <span>Completed</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="todo-main-content">
+                        <!-- Header -->
+                        <div class="todo-content-header">
+                            <button id="closeTodoOverlay" class="close-btn-todo">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+
+                            <div class="header-left">
+                                <h1 id="currentViewTitle">All Tasks</h1>
+                                <span class="task-count" id="currentTaskCount">0 tasks</span>
+                            </div>
+
+                            <div class="header-actions">
+                                <div class="search-container">
+                                    <i class="fa-solid fa-search"></i>
+                                    <input type="text" id="taskSearch" placeholder="Search tasks..." />
+                                </div>
+
+                                <div class="view-switcher">
+                                    <button class="view-btn active" data-view="list" title="List View">
+                                        <i class="fa-solid fa-list"></i>
+                                    </button>
+                                    <button class="view-btn" data-view="calendar" title="Calendar View">
+                                        <i class="fa-solid fa-calendar"></i>
+                                    </button>
+                                </div>
+
+                                <div class="dropdown-container">
+                                    <button class="dropdown-btn" id="sortBtn">
+                                        <i class="fa-solid fa-sort"></i> Sort
+                                    </button>
+                                    <div class="dropdown-menu" id="sortMenu">
+                                        <button class="dropdown-item" data-sort="manual">
+                                            <i class="fa-solid fa-hand"></i> Manual Order
+                                        </button>
+                                        <button class="dropdown-item" data-sort="priority">
+                                            <i class="fa-solid fa-flag"></i> Priority
+                                        </button>
+                                        <button class="dropdown-item" data-sort="dueDate">
+                                            <i class="fa-solid fa-calendar"></i> Due Date
+                                        </button>
+                                        <button class="dropdown-item" data-sort="created">
+                                            <i class="fa-solid fa-clock"></i> Date Created
+                                        </button>
+                                        <button class="dropdown-item" data-sort="name">
+                                            <i class="fa-solid fa-font"></i> Name
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="dropdown-container">
+                                    <button class="dropdown-btn" id="filterBtn">
+                                        <i class="fa-solid fa-filter"></i> Filter
+                                    </button>
+                                    <div class="dropdown-menu" id="filterMenu">
+                                        <div class="filter-section">
+                                            <h4>Priority</h4>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="priority" value="very-high" checked>
+                                                <span><i class="fa-solid fa-flag" style="color: #dc2626;"></i> Very
+                                                    High</span>
+                                            </label>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="priority" value="high" checked>
+                                                <span><i class="fa-solid fa-flag" style="color: #ea580c;"></i>
+                                                    High</span>
+                                            </label>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="priority" value="medium" checked>
+                                                <span><i class="fa-solid fa-flag" style="color: #f59e0b;"></i>
+                                                    Medium</span>
+                                            </label>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="priority" value="low" checked>
+                                                <span><i class="fa-solid fa-flag" style="color: #10b981;"></i>
+                                                    Low</span>
+                                            </label>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="priority" value="very-low" checked>
+                                                <span><i class="fa-solid fa-flag" style="color: #3b82f6;"></i> Very
+                                                    Low</span>
+                                            </label>
+                                        </div>
+                                        <div class="filter-section">
+                                            <h4>Status</h4>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="status" value="pending" checked>
+                                                <span>Pending</span>
+                                            </label>
+                                            <label class="filter-checkbox">
+                                                <input type="checkbox" data-filter="status" value="completed" checked>
+                                                <span>Completed</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Task FAB -->
+                        <button class="add-task-btn" id="addTaskBtn">
+                            <i class="fa-solid fa-plus"></i> <span>New Task</span>
+                        </button>
+
+                        <!-- Content Area -->
+                        <div class="todo-content-area">
+                            <!-- List View -->
+                            <div class="list-view active" id="listView">
+                                <div class="tasks-container" id="tasksContainer">
+                                    <!-- Tasks will be rendered here -->
+                                </div>
+                                <div class="empty-state" id="emptyState">
+                                    <i class="fa-solid fa-inbox"></i>
+                                    <h3>No tasks found</h3>
+                                    <p>Create a new task to get started!</p>
+                                </div>
+                            </div>
+
+                            <!-- Calendar View -->
+                            <div class="calendar-view" id="calendarView">
+                                <div class="calendar-header">
+                                    <button class="calendar-nav-btn" id="prevMonth">
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+                                    <h3 id="calendarMonth">January 2026</h3>
+                                    <button class="calendar-nav-btn" id="nextMonth">
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid">
+                                    <!-- Calendar will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Task Modal -->
+            <div class="task-edit-modal" id="taskEditModal">
+                <div class="task-edit-container">
+                    <div class="task-edit-header">
+                        <h2 id="taskEditTitle"><i class="fa-solid fa-plus"></i> New Task</h2>
+                        <button class="close-btn-modal" id="closeTaskEdit">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="task-edit-content">
+                        <!-- Title -->
+                        <div class="form-group-edit">
+                            <label for="editTaskTitle">Title *</label>
+                            <input type="text" id="editTaskTitle" placeholder="What needs to be done?" maxlength="200"
+                                required>
+                        </div>
+
+                        <!-- Folder Selection -->
+                        <div class="form-group-edit">
+                            <label for="editTaskFolder">Folder</label>
+                            <select id="editTaskFolder">
+                                <option value="">No Folder</option>
+                            </select>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group-edit">
+                            <label for="editTaskDescription">Description</label>
+                            <textarea id="editTaskDescription" placeholder="Add more details..." rows="4"></textarea>
+                        </div>
+
+                        <!-- Attachments -->
+                        <div class="form-group-edit">
+                            <label>Attachments</label>
+                            <div class="attachments-area">
+                                <button class="add-attachment-btn" id="addAttachmentBtn">
+                                    <i class="fa-solid fa-paperclip"></i> Add Attachment
+                                </button>
+                                <input type="file" id="attachmentInput" multiple style="display: none;">
+                                <div class="attachments-list" id="attachmentsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Priority & Difficulty -->
+                        <div class="form-row">
+                            <div class="form-group-edit">
+                                <label>Priority</label>
+                                <div class="priority-flags">
+                                    <button class="priority-flag" data-priority="very-high" title="Very High">
+                                        <i class="fa-solid fa-flag"></i>
+                                    </button>
+                                    <button class="priority-flag" data-priority="high" title="High">
+                                        <i class="fa-solid fa-flag"></i>
+                                    </button>
+                                    <button class="priority-flag active" data-priority="medium" title="Medium">
+                                        <i class="fa-solid fa-flag"></i>
+                                    </button>
+                                    <button class="priority-flag" data-priority="low" title="Low">
+                                        <i class="fa-solid fa-flag"></i>
+                                    </button>
+                                    <button class="priority-flag" data-priority="very-low" title="Very Low">
+                                        <i class="fa-solid fa-flag"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group-edit">
+                                <label for="editTaskDifficulty">Difficulty</label>
+                                <select id="editTaskDifficulty">
+                                    <option value="very-easy">Very Easy</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="hard">Hard</option>
+                                    <option value="very-hard">Very Hard</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Due Date & Reminders -->
+                        <div class="form-group-edit">
+                            <label for="editTaskDueDate">Due Date</label>
+                            <input type="datetime-local" id="editTaskDueDate">
+                        </div>
+
+                        <div class="form-group-edit">
+                            <label>Reminders</label>
+                            <div class="reminders-area">
+                                <button class="add-reminder-btn" id="addReminderBtn">
+                                    <i class="fa-solid fa-bell"></i> Add Reminder
+                                </button>
+                                <div class="reminders-list" id="remindersList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Repeating Task -->
+                        <div class="form-group-edit">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="editTaskRepeating">
+                                <span>Repeating Task</span>
+                            </label>
+                            <div class="repeating-options" id="repeatingOptions" style="display: none;">
+                                <select id="editTaskRepeatInterval">
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="biweekly">Every 2 Weeks</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Subtasks -->
+                        <div class="form-group-edit">
+                            <label>Subtasks</label>
+                            <div class="subtasks-area">
+                                <div class="add-subtask-input">
+                                    <input type="text" id="subtaskInput" placeholder="Add a subtask..." maxlength="100">
+                                    <button id="addSubtaskBtn">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="subtasks-list" id="subtasksList"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-edit-footer">
+                        <button class="btn-secondary" id="cancelTaskEdit">Cancel</button>
+                        <button class="btn-primary" id="saveTaskEdit">Save Task</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Folder Edit Modal -->
+            <div class="folder-edit-modal" id="folderEditModal">
+                <div class="folder-edit-container">
+                    <div class="folder-edit-header">
+                        <h2 id="folderEditTitle"><i class="fa-solid fa-folder-plus"></i> New Folder</h2>
+                        <button class="close-btn-modal" id="closeFolderEdit">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <div class="folder-edit-content">
+                        <div class="form-group-edit">
+                            <label for="editFolderName">Name *</label>
+                            <input type="text" id="editFolderName" placeholder="Folder name" maxlength="50" required>
+                        </div>
+
+                        <div class="form-group-edit">
+                            <label for="editFolderDescription">Description</label>
+                            <textarea id="editFolderDescription" placeholder="Optional description" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group-edit">
+                            <label>Color</label>
+                            <div class="color-picker-grid">
+                                <button class="color-option active" data-color="#6196ff"
+                                    style="background: #6196ff;"></button>
+                                <button class="color-option" data-color="#ef4444" style="background: #ef4444;"></button>
+                                <button class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></button>
+                                <button class="color-option" data-color="#10b981" style="background: #10b981;"></button>
+                                <button class="color-option" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
+                                <button class="color-option" data-color="#ec4899" style="background: #ec4899;"></button>
+                                <button class="color-option" data-color="#14b8a6" style="background: #14b8a6;"></button>
+                                <button class="color-option" data-color="#f97316" style="background: #f97316;"></button>
+                            </div>
+                        </div>
+
+                        <div class="form-group-edit">
+                            <label>Icon</label>
+                            <div class="icon-picker-grid" id="iconPickerGrid">
+                                <!-- Icons will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="folder-edit-footer">
+                        <button class="btn-secondary" id="cancelFolderEdit">Cancel</button>
+                        <button class="btn-primary" id="saveFolderEdit">Save Folder</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Overlay -->
+            <div id="infoOverlay" class="overlay">
+                <div class="info-overlay-container">
+
+
+                    <div class="info-overlay-header">
+                        <h2><i class="fas fa-info-circle"></i> About Orar 8D</h2>
+                        <button id="closeInfoOverlay" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="info-content" data-simplebar>
+                        <!-- Content remains the same -->
+                        <h2>Schedules - Secondary School No. 27 from Bucharest</h2>
+                        <h2>2025-2026</h2>
+                        <p>
+                            Here you can quickly and easily find the complete timetable for several classes
+                            from Secondary School No. 27 - always just one click away. The site comes with both
+                            a light and a dark theme, so you can choose what you like best, plus a color picker
+                            for extra customization. It's designed to be simple, useful, and elegant - so you
+                            don't waste time looking through crumpled papers or random photos.
+                        </p>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>Click on a subject = highlight it</li>
+                            <li>Click outside the subject = remove highlight</li>
+                            <li>Menu button = open/close side menu</li>
+                            <li>Theme button = switch between light and dark mode</li>
+                            <li>Color picker = choose a custom accent color</li>
+                            <li>All Textbooks = view all textbooks for 8D</li>
+                            <li>Clock = view current time and date</li>
+                            <li>My Tasks = open the to-do list</li>
+                        </ul>
+                        <!-- Release notes etc... -->
+                        <h3><a href="https://s27.ro/8d" target="_blank">Original 8D Schedule Website</a></h3>
+                        <h3><a href="https://manuale.edu.ro/" target="_blank">More Textbooks</a></h3>
+                        <h3><a href="../other-projects/index.html" target="_blank">Other projects by us</a></h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manuals Popup -->
+            <div id="manualsPopup" class="manuals-popup">
+                <button id="closeManualsPopup" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                <h2>All Textbooks</h2>
+                <input type="text" id="manualSearch" placeholder="Search for a textbook...">
+                <div class="boss-container" id="manualsPopupContent" data-simplebar>
+                    <!-- Manuals will be rendered here dynamically from manuals.json -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Overlay -->
+        <div id="customizationOverlay" class="customization-overlay">
+            <!-- Customization HTML content kept as is -->
+            <div class="customization-container">
+                <button id="closeCustomization" class="close-btn" aria-label="Close"><i
+                        class="fa-solid fa-xmark"></i></button>
+
+                <!-- Sidebar -->
+                <div class="custom-sidebar">
+                    <div class="sidebar-header">
+                        <h2><i class="fa-solid fa-sliders"></i> Customize</h2>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <div class="sidebar-item active" data-section="base">
+                            <i class="fa-solid fa-paintbrush"></i>
+                            <span>Base</span>
+                        </div>
+                    </nav>
+                </div>
+
+                <!-- Content -->
+                <div class="custom-content" data-simplebar>
+                    <!-- Sections... (Full Customization HTML) -->
+                    <!-- Base Section -->
+                    <div class="custom-section active" id="baseSection">
+                        <h3><i class="fa-solid fa-paintbrush"></i> Base Styles</h3>
+                        <div class="base-inputs-grid">
+
+                            <!-- 1. Color Picker -->
+                            <div class="base-input-group">
+                                <h4>Color Picker</h4>
+                                <div class="custom-color-picker-container">
+                                    <div class="pickr-container" id="demoColorPicker"></div>
+                                    <div id="demoColorValue"></div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Toggle Switch -->
+                            <div class="base-input-group">
+                                <h4>Toggle Switch</h4>
+                                <div class="toggle-row">
+                                    <span class="toggle-label-text">Enable feature</span>
+                                    <label class="cb-toggle">
+                                        <input type="checkbox" checked>
+                                        <span class="cb-toggle-track"></span>
+                                        <span class="cb-toggle-thumb"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 3. Range Slider -->
+                            <div class="base-input-group">
+                                <h4>Range Slider</h4>
+                                <div class="cb-range-wrap">
+                                    <div class="cb-range-header">
+                                        <span class="toggle-label-text">Intensity</span>
+                                        <span class="cb-range-value" data-range="demoRange">50</span>
+                                    </div>
+                                    <input type="range" class="cb-range" id="demoRange" min="0" max="100" value="50">
+                                </div>
+                            </div>
+
+                            <!-- 4. Dual Range Slider -->
+                            <div class="base-input-group">
+                                <h4>Dual Range Slider</h4>
+                                <div class="cb-range-wrap">
+                                    <div class="cb-range-header">
+                                        <span class="toggle-label-text">Price range</span>
+                                    </div>
+                                    <div class="cb-dual-range" id="demoDualRange">
+                                        <div class="cb-dual-range-track"></div>
+                                        <div class="cb-dual-range-fill"></div>
+                                        <input type="range" min="0" max="100" value="25" data-thumb="min">
+                                        <input type="range" min="0" max="100" value="75" data-thumb="max">
+                                    </div>
+                                    <div class="cb-dual-labels">
+                                        <span class="cb-range-value" data-dual="min">25</span>
+                                        <span class="cb-range-value" data-dual="max">75</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. Segmented Control -->
+                            <div class="base-input-group">
+                                <h4>Segmented Control</h4>
+                                <div class="cb-segmented" data-segmented>
+                                    <button class="cb-segmented-btn active">S</button>
+                                    <button class="cb-segmented-btn">M</button>
+                                    <button class="cb-segmented-btn">L</button>
+                                    <button class="cb-segmented-btn">XL</button>
+                                </div>
+                            </div>
+
+                            <!-- 6. Dropdown Select -->
+                            <div class="base-input-group">
+                                <h4>Dropdown Select</h4>
+                                <div class="cb-dropdown" id="demoDropdown">
+                                    <button class="cb-dropdown-trigger" type="button">
+                                        <span>Select option...</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </button>
+                                    <div class="cb-dropdown-menu">
+                                        <div class="cb-dropdown-item" data-value="modern">Modern</div>
+                                        <div class="cb-dropdown-item" data-value="classic">Classic</div>
+                                        <div class="cb-dropdown-item" data-value="minimal">Minimal</div>
+                                        <div class="cb-dropdown-item" data-value="brutalist">Brutalist</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 7. Text Input -->
+                            <div class="base-input-group">
+                                <h4>Text Input</h4>
+                                <div class="cb-text-field">
+                                    <input type="text" id="demoTextField" placeholder=" ">
+                                    <label for="demoTextField">Enter value</label>
+                                </div>
+                            </div>
+
+                            <!-- 8. Number Stepper -->
+                            <div class="base-input-group">
+                                <h4>Number Stepper</h4>
+                                <div class="cb-stepper" data-stepper data-min="0" data-max="20">
+                                    <button class="cb-stepper-btn" data-action="dec">−</button>
+                                    <span class="cb-stepper-value">5</span>
+                                    <button class="cb-stepper-btn" data-action="inc">+</button>
+                                </div>
+                            </div>
+
+                            <!-- 9. Radio Group -->
+                            <div class="base-input-group">
+                                <h4>Radio Group</h4>
+                                <div class="cb-radio-group">
+                                    <label class="cb-radio">
+                                        <input type="radio" name="demoRadio" checked>
+                                        <span class="cb-radio-mark"></span>
+                                        <span>Option Alpha</span>
+                                    </label>
+                                    <label class="cb-radio">
+                                        <input type="radio" name="demoRadio">
+                                        <span class="cb-radio-mark"></span>
+                                        <span>Option Beta</span>
+                                    </label>
+                                    <label class="cb-radio">
+                                        <input type="radio" name="demoRadio">
+                                        <span class="cb-radio-mark"></span>
+                                        <span>Option Gamma</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 10. Checkbox Group -->
+                            <div class="base-input-group">
+                                <h4>Checkbox Group</h4>
+                                <div class="cb-checkbox-group">
+                                    <label class="cb-checkbox">
+                                        <input type="checkbox" checked>
+                                        <span class="cb-checkbox-mark"></span>
+                                        <span>Animations</span>
+                                    </label>
+                                    <label class="cb-checkbox">
+                                        <input type="checkbox" checked>
+                                        <span class="cb-checkbox-mark"></span>
+                                        <span>Blur effects</span>
+                                    </label>
+                                    <label class="cb-checkbox">
+                                        <input type="checkbox">
+                                        <span class="cb-checkbox-mark"></span>
+                                        <span>Reduced motion</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 11. Icon Selector -->
+                            <div class="base-input-group">
+                                <h4>Icon Selector</h4>
+                                <div class="cb-icon-grid" data-icon-selector>
+                                    <button class="cb-icon-btn selected"><i class="fa-solid fa-sun"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-moon"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-star"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-heart"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-bolt"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-gem"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-fire"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-leaf"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-snowflake"></i></button>
+                                    <button class="cb-icon-btn"><i class="fa-solid fa-palette"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- 12. Button Group -->
+                            <div class="base-input-group">
+                                <h4>Button Group</h4>
+                                <div class="cb-btn-group" data-btn-group>
+                                    <button class="cb-btn-group-item active"><i
+                                            class="fa-solid fa-align-left"></i></button>
+                                    <button class="cb-btn-group-item"><i class="fa-solid fa-align-center"></i></button>
+                                    <button class="cb-btn-group-item"><i class="fa-solid fa-align-right"></i></button>
+                                    <button class="cb-btn-group-item"><i class="fa-solid fa-align-justify"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- 13. Token / Tag Input -->
+                            <div class="base-input-group">
+                                <h4>Tag Input</h4>
+                                <div class="cb-tags-container" id="demoTags">
+                                    <span class="cb-tag">Design <button class="cb-tag-remove">&times;</button></span>
+                                    <span class="cb-tag">Layout <button class="cb-tag-remove">&times;</button></span>
+                                    <input type="text" class="cb-tag-input" placeholder="Add tag...">
+                                </div>
+                            </div>
+
+                            <!-- 14. Switch Group -->
+                            <div class="base-input-group">
+                                <h4>Switch Group</h4>
+                                <div class="cb-switch-group">
+                                    <div class="cb-switch-row">
+                                        <span class="cb-switch-label">Notifications</span>
+                                        <label class="cb-mini-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="cb-mini-toggle-track"></span>
+                                            <span class="cb-mini-toggle-thumb"></span>
+                                        </label>
+                                    </div>
+                                    <div class="cb-switch-row">
+                                        <span class="cb-switch-label">Auto-save</span>
+                                        <label class="cb-mini-toggle">
+                                            <input type="checkbox" checked>
+                                            <span class="cb-mini-toggle-track"></span>
+                                            <span class="cb-mini-toggle-thumb"></span>
+                                        </label>
+                                    </div>
+                                    <div class="cb-switch-row">
+                                        <span class="cb-switch-label">Dark mode</span>
+                                        <label class="cb-mini-toggle">
+                                            <input type="checkbox">
+                                            <span class="cb-mini-toggle-track"></span>
+                                            <span class="cb-mini-toggle-thumb"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 15. Opacity Slider -->
+                            <div class="base-input-group">
+                                <h4>Opacity Slider</h4>
+                                <div class="cb-opacity-wrap">
+                                    <div class="cb-opacity-preview"></div>
+                                    <div class="cb-range-wrap">
+                                        <div class="cb-range-header">
+                                            <span class="toggle-label-text">Opacity</span>
+                                            <span class="cb-range-value" data-range="demoOpacity">80%</span>
+                                        </div>
+                                        <input type="range" class="cb-range" id="demoOpacity" min="0" max="100"
+                                            value="80">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 16. Border Radius Control -->
+                            <div class="base-input-group">
+                                <h4>Border Radius</h4>
+                                <div class="cb-radius-control">
+                                    <div class="cb-radius-preview" id="demoRadiusPreview" style="border-radius: 16px;">
+                                    </div>
+                                    <div class="cb-radius-inputs">
+                                        <div class="cb-radius-input">
+                                            <label>Top-L</label>
+                                            <input type="number" value="16" min="0" max="50" data-corner="tl">
+                                        </div>
+                                        <div class="cb-radius-input">
+                                            <label>Top-R</label>
+                                            <input type="number" value="16" min="0" max="50" data-corner="tr">
+                                        </div>
+                                        <div class="cb-radius-input">
+                                            <label>Bot-L</label>
+                                            <input type="number" value="16" min="0" max="50" data-corner="bl">
+                                        </div>
+                                        <div class="cb-radius-input">
+                                            <label>Bot-R</label>
+                                            <input type="number" value="16" min="0" max="50" data-corner="br">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 17. Spacing Control -->
+                            <div class="base-input-group">
+                                <h4>Spacing Control</h4>
+                                <div class="cb-spacing-box">
+                                    <span class="cb-spacing-label top">16</span>
+                                    <span class="cb-spacing-label bottom">16</span>
+                                    <span class="cb-spacing-label left">24</span>
+                                    <span class="cb-spacing-label right">24</span>
+                                    <div class="cb-spacing-inner"></div>
+                                </div>
+                            </div>
+
+                            <!-- 18. Font Size Slider -->
+                            <div class="base-input-group">
+                                <h4>Font Size Slider</h4>
+                                <div class="cb-range-wrap">
+                                    <div class="cb-range-header">
+                                        <span class="toggle-label-text">Size</span>
+                                        <span class="cb-range-value" data-range="demoFontSize">16px</span>
+                                    </div>
+                                    <input type="range" class="cb-range" id="demoFontSize" min="10" max="32" value="16">
+                                </div>
+                                <div class="cb-fontsize-preview" id="fontSizePreview" style="font-size: 16px;">
+                                    Preview Text Aa
+                                </div>
+                            </div>
+
+                            <!-- 19. Font Weight Selector -->
+                            <div class="base-input-group">
+                                <h4>Font Weight</h4>
+                                <div class="cb-weight-selector" data-weight-selector>
+                                    <button class="cb-weight-btn" data-weight="100">Thin</button>
+                                    <button class="cb-weight-btn" data-weight="300">Light</button>
+                                    <button class="cb-weight-btn active" data-weight="400">Regular</button>
+                                    <button class="cb-weight-btn" data-weight="600">Semi</button>
+                                    <button class="cb-weight-btn" data-weight="700">Bold</button>
+                                    <button class="cb-weight-btn" data-weight="900">Black</button>
+                                </div>
+                                <div class="cb-weight-preview" id="weightPreview" style="font-weight: 400;">
+                                    The quick brown fox
+                                </div>
+                            </div>
+
+                            <!-- 20. Letter Spacing Slider -->
+                            <div class="base-input-group">
+                                <h4>Letter Spacing</h4>
+                                <div class="cb-range-wrap">
+                                    <div class="cb-range-header">
+                                        <span class="toggle-label-text">Tracking</span>
+                                        <span class="cb-range-value" data-range="demoLetterSpacing">0px</span>
+                                    </div>
+                                    <input type="range" class="cb-range" id="demoLetterSpacing" min="-2" max="10"
+                                        value="0">
+                                </div>
+                                <div class="cb-letterspacing-preview" id="letterSpacingPreview"
+                                    style="letter-spacing: 0px;">
+                                    Letter Spacing
+                                </div>
+                            </div>
+
+                            <!-- 21. Line Height Slider -->
+                            <div class="base-input-group">
+                                <h4>Line Height</h4>
+                                <div class="cb-range-wrap">
+                                    <div class="cb-range-header">
+                                        <span class="toggle-label-text">Leading</span>
+                                        <span class="cb-range-value" data-range="demoLineHeight">1.5</span>
+                                    </div>
+                                    <input type="range" class="cb-range" id="demoLineHeight" min="10" max="30"
+                                        value="15">
+                                </div>
+                                <div class="cb-lineheight-preview" id="lineHeightPreview" style="line-height: 1.5;">
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.
+                                </div>
+                            </div>
+
+                            <!-- 22. Gradient Picker -->
+                            <div class="base-input-group">
+                                <h4>Gradient Picker</h4>
+                                <div class="cb-gradient-bar" id="demoGradient"
+                                    style="background: linear-gradient(90deg, #6196ff, #a855f7);"></div>
+                                <div class="cb-gradient-stops">
+                                    <div class="cb-gradient-swatch" style="background: #6196ff;" data-stop="start">
+                                    </div>
+                                    <span class="cb-gradient-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                                    <div class="cb-gradient-swatch" style="background: #a855f7;" data-stop="end"></div>
+                                </div>
+                            </div>
+
+                            <!-- 23. Shadow Control -->
+                            <div class="base-input-group">
+                                <h4>Shadow Control</h4>
+                                <div class="cb-shadow-preview-box" id="demoShadowBox"
+                                    style="box-shadow: 4px 4px 12px rgba(0,0,0,0.15);"></div>
+                                <div class="cb-shadow-sliders" id="demoShadowSliders">
+                                    <div class="cb-shadow-slider-row">
+                                        <label>X Offset</label>
+                                        <input type="range" min="-20" max="20" value="4" data-shadow="x">
+                                    </div>
+                                    <div class="cb-shadow-slider-row">
+                                        <label>Y Offset</label>
+                                        <input type="range" min="-20" max="20" value="4" data-shadow="y">
+                                    </div>
+                                    <div class="cb-shadow-slider-row">
+                                        <label>Blur</label>
+                                        <input type="range" min="0" max="40" value="12" data-shadow="blur">
+                                    </div>
+                                    <div class="cb-shadow-slider-row">
+                                        <label>Spread</label>
+                                        <input type="range" min="-10" max="20" value="0" data-shadow="spread">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 24. Color Palette Selector -->
+                            <div class="base-input-group">
+                                <h4>Color Palette</h4>
+                                <div class="cb-palette-row" data-palette>
+                                    <div class="cb-palette-swatch selected" style="background: #6196ff;"
+                                        data-color="#6196ff"></div>
+                                    <div class="cb-palette-swatch" style="background: #ef4444;" data-color="#ef4444">
+                                    </div>
+                                    <div class="cb-palette-swatch" style="background: #f59e0b;" data-color="#f59e0b">
+                                    </div>
+                                    <div class="cb-palette-swatch" style="background: #10b981;" data-color="#10b981">
+                                    </div>
+                                    <div class="cb-palette-swatch" style="background: #8b5cf6;" data-color="#8b5cf6">
+                                    </div>
+                                    <div class="cb-palette-swatch" style="background: #ec4899;" data-color="#ec4899">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 25. Image Selector -->
+                            <div class="base-input-group">
+                                <h4>Image Selector</h4>
+                                <div class="cb-image-grid" data-image-selector>
+                                    <div class="cb-image-option selected"
+                                        style="background: linear-gradient(135deg, #667eea, #764ba2);">🌌</div>
+                                    <div class="cb-image-option"
+                                        style="background: linear-gradient(135deg, #f093fb, #f5576c);">🌅</div>
+                                    <div class="cb-image-option"
+                                        style="background: linear-gradient(135deg, #4facfe, #00f2fe);">🌊</div>
+                                    <div class="cb-image-option"
+                                        style="background: linear-gradient(135deg, #43e97b, #38f9d7);">🌿</div>
+                                    <div class="cb-image-option"
+                                        style="background: linear-gradient(135deg, #fa709a, #fee140);">🔥</div>
+                                    <div class="cb-image-option"
+                                        style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">✨</div>
+                                </div>
+                            </div>
+
+                            <!-- 26. Alignment Picker -->
+                            <div class="base-input-group">
+                                <h4>Alignment Picker</h4>
+                                <div class="cb-align-grid" data-align-grid>
+                                    <button class="cb-align-btn" data-align="tl"><i
+                                            class="fa-solid fa-arrow-up-left"></i></button>
+                                    <button class="cb-align-btn" data-align="tc"><i
+                                            class="fa-solid fa-arrow-up"></i></button>
+                                    <button class="cb-align-btn" data-align="tr"><i
+                                            class="fa-solid fa-arrow-up-right"></i></button>
+                                    <button class="cb-align-btn" data-align="ml"><i
+                                            class="fa-solid fa-arrow-left"></i></button>
+                                    <button class="cb-align-btn selected" data-align="mc"><i
+                                            class="fa-solid fa-compress"></i></button>
+                                    <button class="cb-align-btn" data-align="mr"><i
+                                            class="fa-solid fa-arrow-right"></i></button>
+                                    <button class="cb-align-btn" data-align="bl"><i
+                                            class="fa-solid fa-arrow-down-left"></i></button>
+                                    <button class="cb-align-btn" data-align="bc"><i
+                                            class="fa-solid fa-arrow-down"></i></button>
+                                    <button class="cb-align-btn" data-align="br"><i
+                                            class="fa-solid fa-arrow-down-right"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- 27. Date Picker -->
+                            <div class="base-input-group">
+                                <h4>Date Picker</h4>
+                                <div class="cb-datepicker" id="demoDatpicker">
+                                    <div class="cb-datepicker-header">
+                                        <button class="cb-datepicker-nav" data-dp-nav="prev"><i
+                                                class="fa-solid fa-chevron-left"></i></button>
+                                        <span class="cb-datepicker-title" id="dpTitle">February 2026</span>
+                                        <button class="cb-datepicker-nav" data-dp-nav="next"><i
+                                                class="fa-solid fa-chevron-right"></i></button>
+                                    </div>
+                                    <div class="cb-datepicker-days" id="dpGrid">
+                                        <span class="cb-datepicker-day-header">Mo</span>
+                                        <span class="cb-datepicker-day-header">Tu</span>
+                                        <span class="cb-datepicker-day-header">We</span>
+                                        <span class="cb-datepicker-day-header">Th</span>
+                                        <span class="cb-datepicker-day-header">Fr</span>
+                                        <span class="cb-datepicker-day-header">Sa</span>
+                                        <span class="cb-datepicker-day-header">Su</span>
+                                        <!-- Days rendered by JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 28. Time Picker -->
+                            <div class="base-input-group">
+                                <h4>Time Picker</h4>
+                                <div class="cb-timepicker" id="demoTimePicker">
+                                    <div class="cb-time-col">
+                                        <button class="cb-time-spin" data-time="h-up"><i
+                                                class="fa-solid fa-chevron-up"></i></button>
+                                        <span class="cb-time-display" data-time-display="h">09</span>
+                                        <button class="cb-time-spin" data-time="h-down"><i
+                                                class="fa-solid fa-chevron-down"></i></button>
+                                    </div>
+                                    <span class="cb-time-sep">:</span>
+                                    <div class="cb-time-col">
+                                        <button class="cb-time-spin" data-time="m-up"><i
+                                                class="fa-solid fa-chevron-up"></i></button>
+                                        <span class="cb-time-display" data-time-display="m">30</span>
+                                        <button class="cb-time-spin" data-time="m-down"><i
+                                                class="fa-solid fa-chevron-down"></i></button>
+                                    </div>
+                                    <div class="cb-time-period">
+                                        <button class="cb-time-period-btn active" data-period="AM">AM</button>
+                                        <button class="cb-time-period-btn" data-period="PM">PM</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 29. Progress Bar -->
+                            <div class="base-input-group">
+                                <h4>Progress Bar</h4>
+                                <div class="cb-progress">
+                                    <div class="cb-progress-header">
+                                        <span>Setup progress</span>
+                                        <span>72%</span>
+                                    </div>
+                                    <div class="cb-progress-track">
+                                        <div class="cb-progress-fill" style="width: 72%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 30. Star Rating -->
+                            <div class="base-input-group">
+                                <h4>Star Rating</h4>
+                                <div class="cb-star-rating" data-star-rating>
+                                    <button class="cb-star active" data-star="1"><i
+                                            class="fa-solid fa-star"></i></button>
+                                    <button class="cb-star active" data-star="2"><i
+                                            class="fa-solid fa-star"></i></button>
+                                    <button class="cb-star active" data-star="3"><i
+                                            class="fa-solid fa-star"></i></button>
+                                    <button class="cb-star" data-star="4"><i class="fa-solid fa-star"></i></button>
+                                    <button class="cb-star" data-star="5"><i class="fa-solid fa-star"></i></button>
+                                    <span class="cb-star-value">3/5</span>
+                                </div>
+                            </div>
+
+                            <!-- 31. Emoji Rating -->
+                            <div class="base-input-group">
+                                <h4>Emoji Rating</h4>
+                                <div class="cb-emoji-rating" data-emoji-rating>
+                                    <button class="cb-emoji-btn" data-emoji="1">😢</button>
+                                    <button class="cb-emoji-btn" data-emoji="2">😕</button>
+                                    <button class="cb-emoji-btn selected" data-emoji="3">😐</button>
+                                    <button class="cb-emoji-btn" data-emoji="4">😊</button>
+                                    <button class="cb-emoji-btn" data-emoji="5">😍</button>
+                                </div>
+                            </div>
+
+                            <!-- 32. Knob / Dial -->
+                            <div class="base-input-group">
+                                <h4>Knob / Dial</h4>
+                                <div class="cb-knob-wrap">
+                                    <div class="cb-knob" id="demoKnob" data-value="65">
+                                        <svg viewBox="0 0 100 100">
+                                            <circle class="cb-knob-track" cx="50" cy="50" r="40"
+                                                stroke-dasharray="188.5" stroke-dashoffset="0"></circle>
+                                            <circle class="cb-knob-fill" cx="50" cy="50" r="40" stroke-dasharray="188.5"
+                                                stroke-dashoffset="66"></circle>
+                                        </svg>
+                                        <span class="cb-knob-center">65</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 33. Breadcrumb Nav -->
+                            <div class="base-input-group">
+                                <h4>Breadcrumb Nav</h4>
+                                <div class="cb-breadcrumb" data-breadcrumb>
+                                    <button class="cb-breadcrumb-item">Home</button>
+                                    <span class="cb-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></span>
+                                    <button class="cb-breadcrumb-item">Settings</button>
+                                    <span class="cb-breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></span>
+                                    <button class="cb-breadcrumb-item active">Appearance</button>
+                                </div>
+                            </div>
+
+                            <!-- 34. Accordion -->
+                            <div class="base-input-group">
+                                <h4>Accordion</h4>
+                                <div class="cb-accordion" data-accordion>
+                                    <div class="cb-accordion-item open">
+                                        <button class="cb-accordion-header">
+                                            <span>General Settings</span>
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                        <div class="cb-accordion-body">
+                                            <div class="cb-accordion-content">Configure your general application
+                                                preferences here.</div>
+                                        </div>
+                                    </div>
+                                    <div class="cb-accordion-item">
+                                        <button class="cb-accordion-header">
+                                            <span>Advanced Options</span>
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                        <div class="cb-accordion-body">
+                                            <div class="cb-accordion-content">Fine-tune advanced behavior and
+                                                experimental features.</div>
+                                        </div>
+                                    </div>
+                                    <div class="cb-accordion-item">
+                                        <button class="cb-accordion-header">
+                                            <span>Danger Zone</span>
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </button>
+                                        <div class="cb-accordion-body">
+                                            <div class="cb-accordion-content">Actions here are irreversible. Proceed
+                                                with caution.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 35. Search Input -->
+                            <div class="base-input-group">
+                                <h4>Search Input</h4>
+                                <div class="cb-search-wrap">
+                                    <i class="fa-solid fa-magnifying-glass cb-search-icon"></i>
+                                    <input type="text" class="cb-search-input" placeholder="Search settings...">
+                                    <button class="cb-search-clear"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- 36. Textarea -->
+                            <div class="base-input-group">
+                                <h4>Textarea</h4>
+                                <textarea class="cb-textarea" placeholder="Write your custom CSS..."></textarea>
+                                <div class="cb-textarea-counter"><span id="demoTextareaCount">0</span> / 500</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today View (Card Layout) -->
+        <div class="today-view" id="todayView">
+            <div class="today-view-header">
+                <h2 class="today-title"><i class="fa-solid fa-calendar-day"></i> Today's Schedule</h2>
+                <div class="today-date" id="todayDate"></div>
+            </div>
+
+            <!-- Mobile Recommended Textbook -->
+            <div id="mobileRecommendedManual" class="mobile-recommended-manual">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="today-cards" id="todayCards">
+                <!-- Cards will be populated via JS -->
+            </div>
+            <div class="today-empty" id="todayEmpty">
+                <i class="fa-solid fa-umbrella-beach"></i>
+                <p>No classes today!</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar (Mobile Only) -->
+        <nav class="bottom-navbar" id="bottomNavbar">
+            <button class="nav-item active" data-view="today" id="navToday">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>Today</span>
+            </button>
+            <button class="nav-item" data-view="full" id="navFull">
+                <i class="fa-solid fa-table-cells"></i>
+                <span>Full</span>
+            </button>
+            <button class="nav-item nav-menu-btn" id="bottomMenuBtn">
+                <i class="fa-solid fa-grip-lines"></i>
+                <span>Menu</span>
+            </button>
+            <button class="nav-item nav-shortcut" data-shortcut="1" id="navShortcut1">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Custom</span>
+            </button>
+            <button class="nav-item nav-shortcut" data-shortcut="2" id="navShortcut2">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <span>Weather</span>
+            </button>
+        </nav>
+
+        <!-- Bottom Sheet Menu (Mobile) -->
+        <div class="bottom-sheet-overlay" id="bottomSheetOverlay"></div>
+        <div class="bottom-sheet" id="bottomSheet">
+            <div class="bottom-sheet-handle-container">
+                <div class="bottom-sheet-handle"></div>
+            </div>
+            <div class="bottom-sheet-header-actions">
+                <button class="bottom-sheet-close" onclick="window.mobileNav.closeBottomSheet()">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </div>
+            <div class="bottom-sheet-content">
+                <h2 class="bottom-sheet-title">Menu</h2>
+                <div class="bottom-sheet-grid">
+                    <button class="sheet-menu-btn" id="sheetCustomizationBtn">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Customization</span>
+                    </button>
+
+                    <button class="sheet-menu-btn" id="sheetWeatherBtn">
+                        <div class="weather-btn-content">
+                            <span id="sheetWeatherEmoji" class="sheet-weather-emoji">☁️</span>
+                            <div class="weather-btn-text">
+                                <span class="weather-btn-label">Weather</span>
+                                <span id="sheetWeatherTemp" class="sheet-weather-temp">--°C</span>
+                            </div>
+                        </div>
+                    </button>
+
+                    <button class="sheet-menu-btn" id="sheetManualsBtn">
+                        <i class="fa-solid fa-book"></i>
+                        <span>All Textbooks</span>
+                    </button>
+
+                    <button class="sheet-menu-btn" id="sheetClockBtn">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Clock</span>
+                    </button>
+
+                    <button class="sheet-menu-btn" id="sheetTodoBtn">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>My Tasks</span>
+                    </button>
+
+                    <button class="sheet-menu-btn" id="sheetInfoBtn">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Info</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script src="./js/customization.js"></script>
+        <script src="./js/manuals.js"></script>
+        <script src="./js/mobile-nav8d.js"></script>
+        <script src="./js/overlay-manager.js"></script>
+        <script src="./js/timetable8d.js"></script>
+        <script src="./js/todo.js"></script>
+        <script src="./js/ui-core.js"></script>
+        <script src="./js/weather-chart.js"></script>
+        <script src="./js/weather-particles.js"></script>
+        <script src="./js/weather-time.js"></script>
+</body>
+
+</html>
