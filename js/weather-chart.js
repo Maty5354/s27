@@ -265,19 +265,21 @@ class WeatherChartEngine {
         const progressOffset = progressArcLength * (1 - progress);
 
         const svg = `
-            <defs>
-                <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#fb923c;stop-opacity:1" />
-                </linearGradient>
-            </defs>
-            <path d="${arcPath}" class="sun-arc-track"/>
-            <path d="${arcPath}" class="sun-arc-fill" 
-                  stroke-dasharray="${progressArcLength}" 
-                  stroke-dashoffset="${progressOffset}"/>
-            <circle cx="${sunX}" cy="${sunY}" r="6" fill="#fbbf24" 
-                    filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))" 
-                    class="sun-position-circle"/>
+            <svg viewBox="0 0 ${width} ${height}" class="sun-arc-svg">
+                <defs>
+                    <linearGradient id="sunGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#fb923c;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="${arcPath}" class="sun-arc-track"/>
+                <path d="${arcPath}" class="sun-arc-fill" 
+                      stroke-dasharray="${progressArcLength}" 
+                      stroke-dashoffset="${progressOffset}"/>
+                <circle cx="${sunX}" cy="${sunY}" r="6" fill="#fbbf24" 
+                        filter="drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))" 
+                        class="sun-position-circle"/>
+            </svg>
         `;
 
         container.innerHTML = svg;
