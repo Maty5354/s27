@@ -1,303 +1,583 @@
 /* ========================================
-   WEATHER PARTICLE ENGINE (PHYSICS & FX)
+   WEATHER PARTICLE ENGINE v2
+   Rain (interactive), Snow (accumulating),
+   Fog, Thunderstorm, Stars, Clouds, Sun Rays
    ======================================== */
 
 class WeatherParticleEngine {
-    constructor() {
-        this.bgCanvas = document.getElementById('weatherCanvasBg');
-        this.fxCanvas = document.getElementById('weatherCanvasFx');
-        if (!this.bgCanvas || !this.fxCanvas) return;
-        
-        this.bgCtx = this.bgCanvas.getContext('2d');
-        this.fxCtx = this.fxCanvas.getContext('2d');
-        
-        this.w = 0;
-        this.h = 0;
-        this.animId = null;
-        
-        // State
-        this.code = 0;
-        this.isDay = 1;
-        this.scrollY = 0;
-        
-        // Physics Arrays
-        this.clouds = [];
+    constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+
+        this.particles   = [];
+        this.snowPiles   = [];     // accumulation data per x column
+        this.w = this.h  = 0;
+        this.animId      = null;
+        this.condCode    = -1;
+        this.isDay       = 1;
+        this.mouseX      = null;
+        this.mouseY      = null;
+        this.flashOpacity= 0;
+        this.flashTimer  = 0;
+        this.nextFlash   = this._randRange(3000, 8000);
+        this.elapsed     = 0;
+        this.lastTs      = 0;
+        this.snowDepth   = 0;      // 0-1, grows with heavy snow
+        this.snowDepthMax= 0;      // target max depth based on code
+        this.fogBlur     = 0;
+        this.fogTarget   = 0;
+
+        // DOM refs for non-canvas effects
+        this.fogLayer       = document.querySelector('.weather-fog-layer');
+        this.fogVisionBlur  = document.querySelector('.fog-vision-blur');
+        this.thunderFlash   = document.querySelector('.thunder-flash');
+        this.lightningOverlay = document.querySelector('.lightning-bolt-overlay');
+
+        this._resize();
+        window.addEventListener('resize', () => this._resize());
+
+        // Interactive mouse for rain direction
+        const overlay = document.getElementById('weatherOverlay');
+        if (overlay) {
+            overlay.addEventListener('mousemove', (e) => {
+                const r = this.canvas.getBoundingClientRect();
+                this.mouseX = e.clientX - r.left;
+                this.mouseY = e.clientY - r.top;
+            });
+            overlay.addEventListener('mouseleave', () => {
+                this.mouseX = null;
+                this.mouseY = null;
+            });
+            overlay.addEventListener('touchmove', (e) => {
+                const t = e.touches[0];
+                const r = this.canvas.getBoundingClientRect();
+                this.mouseX = t.clientX - r.left;
+                this.mouseY = t.clientY - r.top;
+            }, { passive: true });
+        }
+    }
+
+    _resize() {
+        if (!this.canvas) return;
+        this.w = this.canvas.width  = window.innerWidth;
+        this.h = this.canvas.height = window.innerHeight;
+        this._initSnowPiles();
+    }
+
+    _randRange(min, max) { return min + Math.random() * (max - min); }
+
+    /* ── Main setCondition ───────────────────────── */
+    setCondition(code, isDay = 1) {
+        if (this.condCode === code && this.isDay === isDay) return;
+        this.condCode = code;
+        this.isDay    = isDay;
         this.particles = [];
-        this.splashes = [];
-        
-        // Snow Accumulation (Array representing heights across the screen)
-        this.snowResolution = 10;
-        this.snowHeights = [];
-        
-        // Thunder
-        this.isThunder = false;
-        this.flashAlpha = 0;
-
-        this.resize();
-        window.addEventListener('resize', () => this.resize());
+        this._initSnowPiles();
+        this._updateOverlayClass(code, isDay);
+        this._updateFogTarget(code);
+        this._buildParticles(code, isDay);
     }
 
-    resize() {
-        this.w = window.innerWidth;
-        this.h = window.innerHeight;
-        this.bgCanvas.width = this.fxCanvas.width = this.w;
-        this.bgCanvas.height = this.fxCanvas.height = this.h;
-        
-        // Reset snow array on resize
-        this.snowHeights = new Float32Array(Math.ceil(this.w / this.snowResolution));
-        this.initEntities();
+    /* ── Overlay CSS class management ────────────── */
+    _updateOverlayClass(code, isDay) {
+        const ov = document.getElementById('weatherOverlay');
+        if (!ov) return;
+        ov.className = ov.className
+            .replace(/\bcond-\S+\b/g, '')
+            .replace(/\bis-day\b|\bis-night\b/g, '')
+            .trim();
+
+        ov.classList.add(isDay ? 'is-day' : 'is-night');
+        let condCls = '';
+        if ([0,1].includes(code))            condCls = isDay ? 'cond-clear-day'    : 'cond-clear-night';
+        else if ([2,3].includes(code))       condCls = isDay ? 'cond-cloudy-day'   : 'cond-cloudy-night';
+        else if ([45,48].includes(code))     condCls = 'cond-fog';
+        else if (code >= 51 && code <= 82)   condCls = 'cond-rain';
+        else if ([71,73,75,77,85,86].includes(code)) condCls = 'cond-snow';
+        else if ([95,96,99].includes(code))  condCls = 'cond-storm';
+        if (condCls) ov.classList.add(condCls);
+
+        // Hero icon glow
+        const hero = document.querySelector('.weather-hero-icon');
+        if (hero) {
+            hero.className = hero.className
+                .replace(/\bglow-\S+\b/g, '').trim();
+            if ([0,1].includes(code) && isDay)    hero.classList.add('glow-sun');
+            if ([0,1].includes(code) && !isDay)   hero.classList.add('glow-moon');
+            if ([95,96,99].includes(code))         hero.classList.add('glow-storm');
+            if ([71,73,75,77,85,86].includes(code)) hero.classList.add('glow-snow');
+        }
     }
 
-    setCondition(code, isDay) {
-        if(this.code === code && this.isDay === isDay) return;
-        this.code = code;
-        this.isDay = isDay;
-        this.isThunder = [95, 96, 99].includes(code);
-        this.initEntities();
-    }
-
-    setScroll(y) {
-        this.scrollY = y;
-    }
-
-    initEntities() {
-        this.particles = [];
-        this.clouds = [];
-        this.splashes = [];
-        const count = this.w < 600 ? 60 : 150;
-
-        // Clouds (drawn on BG, fade on scroll)
-        if ([2, 3, 45, 48].includes(this.code) || (this.code >= 51)) {
-            const numClouds = this.code === 3 ? 15 : 8;
-            for(let i=0; i<numClouds; i++) {
-                this.clouds.push({
-                    x: Math.random() * this.w,
-                    y: Math.random() * (this.h * 0.4), // Top 40%
-                    r: 80 + Math.random() * 100,
-                    vx: 0.1 + Math.random() * 0.3
-                });
+    /* ── Fog blur update ──────────────────────────── */
+    _updateFogTarget(code) {
+        if ([45,48].includes(code)) {
+            this.fogTarget = 0.08;
+            if (this.fogVisionBlur) {
+                this.fogVisionBlur.style.setProperty('--fog-blur',     '8px');
+                this.fogVisionBlur.style.setProperty('--fog-opacity',  '0.1');
+            }
+        } else {
+            this.fogTarget = 0;
+            if (this.fogVisionBlur) {
+                this.fogVisionBlur.style.setProperty('--fog-blur',    '0px');
+                this.fogVisionBlur.style.setProperty('--fog-opacity', '0');
             }
         }
+    }
 
-        // Rain
-        if ((this.code >= 51 && this.code <= 67) || (this.code >= 80 && this.code <= 82) || this.isThunder) {
-            const numRain = this.code >= 65 ? count * 2 : count;
-            for(let i=0; i<numRain; i++) {
+    /* ── Snow pile initialisation ────────────────── */
+    _initSnowPiles() {
+        const cols = Math.ceil(this.w / 3);
+        this.snowPiles = new Float32Array(cols).fill(0);
+        // target max depth
+        if ([75,86].includes(this.condCode))      this.snowDepthMax = 0.18; // heavy
+        else if ([73,85].includes(this.condCode)) this.snowDepthMax = 0.10;
+        else if ([71,77].includes(this.condCode)) this.snowDepthMax = 0.05;
+        else                                      this.snowDepthMax = 0;
+    }
+
+    /* ── Build particles for condition ───────────── */
+    _buildParticles(code, isDay) {
+        const dense = this.w < 600 ? 0.6 : 1;
+        this.snowDepthMax = 0;
+
+        // ── STARS (clear night) ──
+        if (isDay === 0 && [0,1,2].includes(code)) {
+            const n = Math.floor(120 * dense);
+            for (let i = 0; i < n; i++) {
                 this.particles.push({
-                    type: 'rain',
+                    type: 'star',
                     x: Math.random() * this.w,
-                    y: Math.random() * this.h,
-                    l: 15 + Math.random() * 20, // length
-                    vx: -0.5 + Math.random(), // slight wind
-                    vy: 15 + Math.random() * 10 // speed
+                    y: Math.random() * this.h * 0.7,
+                    r: this._randRange(0.5, 2.2),
+                    maxA: this._randRange(0.4, 1.0),
+                    phase: Math.random() * Math.PI * 2,
+                    speed: this._randRange(0.005, 0.025),
+                    isShootingSeed: Math.random() < 0.003
                 });
             }
         }
 
-        // Snow
-        if ([71, 73, 75, 77, 85, 86].includes(this.code)) {
-            const numSnow = this.code >= 75 ? count * 1.5 : count;
-            for(let i=0; i<numSnow; i++) {
+        // ── SUN RAYS (clear day) ──
+        if (isDay === 1 && [0,1].includes(code)) {
+            for (let i = 0; i < 10; i++) {
                 this.particles.push({
-                    type: 'snow',
-                    x: Math.random() * this.w,
-                    y: Math.random() * this.h,
-                    r: 1.5 + Math.random() * 3,
-                    vx: -1 + Math.random() * 2,
-                    vy: 1.5 + Math.random() * 2,
-                    angle: Math.random() * Math.PI * 2
+                    type: 'sunray',
+                    angle: (i / 10) * Math.PI * 2,
+                    len: this._randRange(200, 500),
+                    alpha: this._randRange(0.02, 0.06),
+                    speed: this._randRange(0.0002, 0.0006),
                 });
             }
         }
 
-        // Fog
-        if ([45, 48].includes(this.code)) {
-            for(let i=0; i<15; i++) {
+        // ── CLOUDS (cloudy) ──
+        if ([2,3].includes(code)) {
+            const n = code === 3 ? 8 : 4;
+            for (let i = 0; i < n; i++) this._addCloud();
+        }
+
+        // ── RAIN ──
+        const isRain = (code >= 51 && code <= 82) || [95,96,99].includes(code);
+        if (isRain) {
+            let intensity = 1;
+            if ([65,67,82].includes(code))      intensity = 3;
+            else if ([63,66,81].includes(code)) intensity = 2;
+            else if ([95,96,99].includes(code)) intensity = 3.5;
+            const n = Math.floor(140 * intensity * dense);
+            for (let i = 0; i < n; i++) {
+                this.particles.push(this._newRainDrop());
+            }
+        }
+
+        // ── SNOW ──
+        const isSnow = [71,73,75,77,85,86].includes(code);
+        if (isSnow) {
+            let intensity = 1;
+            if ([75,86].includes(code))      { intensity = 3;   this.snowDepthMax = 0.18; }
+            else if ([73,85].includes(code)) { intensity = 1.8; this.snowDepthMax = 0.10; }
+            else                             {                   this.snowDepthMax = 0.05; }
+            const n = Math.floor(80 * intensity * dense);
+            for (let i = 0; i < n; i++) {
+                this.particles.push(this._newSnowflake());
+            }
+        }
+
+        // ── FOG WISPS ──
+        if ([45,48].includes(code)) {
+            for (let i = 0; i < 18; i++) {
                 this.particles.push({
                     type: 'fog',
                     x: Math.random() * this.w,
-                    y: Math.random() * this.h,
-                    r: 150 + Math.random() * 200,
-                    vx: (Math.random() - 0.5) * 0.5
+                    y: this._randRange(0, this.h),
+                    rx: this._randRange(80, 280),
+                    ry: this._randRange(40, 120),
+                    alpha: this._randRange(0.03, 0.1),
+                    vx: this._randRange(-0.15, 0.15),
+                    vy: this._randRange(-0.05, 0.05),
+                    phase: Math.random() * Math.PI * 2,
+                    pSpeed: this._randRange(0.003, 0.008),
                 });
             }
         }
+
+        // ── STORM: extra clouds + heavy rain already added ──
+        if ([95,96,99].includes(code)) {
+            this.nextFlash = this._randRange(1500, 5000);
+        }
     }
 
+    _addCloud() {
+        this.particles.push({
+            type: 'cloud',
+            x: -this._randRange(100, 300),
+            y: this._randRange(0, this.h * 0.5),
+            rx: this._randRange(80, 200),
+            ry: this._randRange(40, 100),
+            vx: this._randRange(0.1, 0.5),
+            alpha: this._randRange(0.06, 0.15),
+        });
+    }
+
+    _newRainDrop() {
+        const heavy = [65,67,82,95,96,99].includes(this.condCode);
+        return {
+            type: 'rain',
+            x: Math.random() * (this.w + 100) - 50,
+            y: Math.random() * this.h,
+            len: heavy ? this._randRange(18, 30) : this._randRange(10, 20),
+            speed: heavy ? this._randRange(14, 22) : this._randRange(8, 16),
+            xs: -2 + Math.random() * 1.5,  // slight sideways; mouse can modify
+            alpha: this._randRange(0.35, 0.65),
+            w: heavy ? 1.8 : 1.2,
+        };
+    }
+
+    _newSnowflake() {
+        return {
+            type: 'snow',
+            x: Math.random() * this.w,
+            y: -10 - Math.random() * 20,
+            r: this._randRange(1.5, 4.5),
+            vy: this._randRange(0.6, 2.2),
+            vx: this._randRange(-0.5, 0.5),
+            swing: this._randRange(0.3, 1.2),
+            swingSpeed: this._randRange(0.01, 0.04),
+            swingPhase: Math.random() * Math.PI * 2,
+            alpha: this._randRange(0.6, 0.95),
+            settled: false,
+        };
+    }
+
+    /* ── Main start/stop ─────────────────────────── */
     start() {
-        if(!this.animId) this.animate();
+        if (this.animId) return;
+        this.lastTs = performance.now();
+        this._frame(this.lastTs);
     }
-
     stop() {
-        if(this.animId) {
-            cancelAnimationFrame(this.animId);
-            this.animId = null;
-        }
+        if (this.animId) { cancelAnimationFrame(this.animId); this.animId = null; }
     }
 
-    drawBackground() {
-        const ctx = this.bgCtx;
+    /* ── Main animation loop ─────────────────────── */
+    _frame(ts) {
+        const dt = Math.min(ts - this.lastTs, 50); // cap at 50ms
+        this.lastTs  = ts;
+        this.elapsed += dt;
+
+        const ctx = this.ctx;
         ctx.clearRect(0, 0, this.w, this.h);
 
-        // 1. Dynamic Gradient based on Weather & Time
-        let grd = ctx.createLinearGradient(0, 0, 0, this.h);
-        if ([0, 1].includes(this.code)) {
-            if (this.isDay) { grd.addColorStop(0, "#2980b9"); grd.addColorStop(1, "#6dd5fa"); }
-            else { grd.addColorStop(0, "#0f2027"); grd.addColorStop(1, "#203a43"); }
-        } else if ([2, 3].includes(this.code)) {
-            if (this.isDay) { grd.addColorStop(0, "#4b6cb7"); grd.addColorStop(1, "#182848"); }
-            else { grd.addColorStop(0, "#232526"); grd.addColorStop(1, "#414345"); }
-        } else if (this.isThunder) {
-            grd.addColorStop(0, "#0f0c29"); grd.addColorStop(1, "#24243e");
-        } else if (this.code >= 71 && this.code <= 86) {
-            if (this.isDay) { grd.addColorStop(0, "#83a4d4"); grd.addColorStop(1, "#b6fbff"); }
-            else { grd.addColorStop(0, "#000428"); grd.addColorStop(1, "#004e92"); }
-        } else {
-            if (this.isDay) { grd.addColorStop(0, "#3a6073"); grd.addColorStop(1, "#16222a"); }
-            else { grd.addColorStop(0, "#000000"); grd.addColorStop(1, "#434343"); }
-        }
-        
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, this.w, this.h);
-
-        // 2. Clouds (Fade out based on scroll to make panels "glassier")
-        const cloudAlpha = Math.max(0, 1 - (this.scrollY / 400));
-        
-        if (cloudAlpha > 0) {
-            this.clouds.forEach(c => {
-                c.x += c.vx;
-                if(c.x - c.r > this.w) c.x = -c.r;
-                
-                const cGrd = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
-                cGrd.addColorStop(0, `rgba(255, 255, 255, ${0.3 * cloudAlpha})`);
-                cGrd.addColorStop(1, `rgba(255, 255, 255, 0)`);
-                ctx.fillStyle = cGrd;
-                ctx.beginPath();
-                ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
-    }
-
-    drawFX() {
-        const ctx = this.fxCtx;
-        ctx.clearRect(0, 0, this.w, this.h);
-
-        // Thunder Flash
-        if (this.isThunder) {
-            if (Math.random() < 0.005 && this.flashAlpha <= 0) this.flashAlpha = 1;
-            if (this.flashAlpha > 0) {
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.flashAlpha})`;
-                ctx.fillRect(0, 0, this.w, this.h);
-                this.flashAlpha -= 0.05;
+        // ── Thunder / Lightning ──
+        if ([95,96,99].includes(this.condCode)) {
+            this.flashTimer += dt;
+            if (this.flashTimer >= this.nextFlash) {
+                this.flashTimer  = 0;
+                this.nextFlash   = this._randRange(2000, 8000);
+                this._triggerLightning();
             }
         }
 
-        // Particles
-        for (let i = 0; i < this.particles.length; i++) {
+        // ── Snow accumulation ──
+        if (this.snowDepthMax > 0 && this.snowDepth < this.snowDepthMax) {
+            this.snowDepth += (this.snowDepthMax - this.snowDepth) * 0.00002 * dt;
+        }
+
+        // ── Draw & update particles ──
+        for (let i = this.particles.length - 1; i >= 0; i--) {
             const p = this.particles[i];
-
-            if (p.type === 'rain') {
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(p.x + p.vx, p.y + p.l);
-                ctx.stroke();
-
-                p.x += p.vx;
-                p.y += p.vy;
-
-                // Hit bottom -> Splash
-                if (p.y > this.h) {
-                    for(let s=0; s<2; s++) {
-                        this.splashes.push({
-                            x: p.x, y: this.h,
-                            vx: (Math.random() - 0.5) * 2,
-                            vy: -Math.random() * 3,
-                            life: 1
-                        });
-                    }
-                    p.y = -p.l;
-                    p.x = Math.random() * this.w;
-                }
-            } 
-            else if (p.type === 'snow') {
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-                ctx.fill();
-
-                p.angle += 0.02;
-                p.x += Math.sin(p.angle) + p.vx;
-                p.y += p.vy;
-
-                // Accumulate Snow at bottom
-                const col = Math.floor(p.x / this.snowResolution);
-                if (col >= 0 && col < this.snowHeights.length) {
-                    const groundY = this.h - this.snowHeights[col];
-                    if (p.y >= groundY) {
-                        if (this.snowHeights[col] < 100) this.snowHeights[col] += 0.2; // Increase snow height
-                        p.y = -10;
-                        p.x = Math.random() * this.w;
-                    }
-                } else if (p.y > this.h) {
-                    p.y = -10;
-                    p.x = Math.random() * this.w;
-                }
-            }
-            else if (p.type === 'fog') {
-                const fGrd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-                fGrd.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-                fGrd.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                ctx.fillStyle = fGrd;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-                ctx.fill();
-
-                p.x += p.vx;
-                if(p.x - p.r > this.w) p.x = -p.r;
-                if(p.x + p.r < 0) p.x = this.w + p.r;
+            switch (p.type) {
+                case 'star':    this._drawStar(p, dt);    break;
+                case 'sunray':  this._drawSunray(p, dt);  break;
+                case 'cloud':   this._drawCloud(p, dt);   break;
+                case 'rain':    this._drawRain(p, dt);    break;
+                case 'snow':    this._drawSnow(p, dt);    break;
+                case 'fog':     this._drawFog(p, dt);     break;
             }
         }
 
-        // Draw Splashes
-        for (let i = this.splashes.length - 1; i >= 0; i--) {
-            const s = this.splashes[i];
-            ctx.fillStyle = `rgba(255, 255, 255, ${s.life})`;
-            ctx.beginPath();
-            ctx.arc(s.x, s.y, 1.5, 0, Math.PI*2);
-            ctx.fill();
-            
-            s.x += s.vx;
-            s.y += s.vy;
-            s.vy += 0.2; // Gravity
-            s.life -= 0.05;
-            
-            if(s.life <= 0) this.splashes.splice(i, 1);
+        // ── Draw snow accumulation ──
+        if (this.snowDepth > 0.001) {
+            this._drawSnowAccumulation();
         }
 
-        // Draw Accumulated Snow Polygon
-        if (this.code >= 71 && this.code <= 86) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.beginPath();
-            ctx.moveTo(0, this.h);
-            for(let i=0; i<this.snowHeights.length; i++) {
-                ctx.lineTo(i * this.snowResolution, this.h - this.snowHeights[i]);
-            }
-            ctx.lineTo(this.w, this.h);
-            ctx.closePath();
-            ctx.fill();
-        }
+        this.animId = requestAnimationFrame((t) => this._frame(t));
     }
 
-    animate() {
-        this.drawBackground();
-        this.drawFX();
-        this.animId = requestAnimationFrame(() => this.animate());
+    /* ── STAR ─────────────────────────────────────── */
+    _drawStar(p, dt) {
+        p.phase += p.speed * dt * 0.05;
+        const a = p.maxA * (0.5 + 0.5 * Math.sin(p.phase));
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    /* ── SUN RAY ──────────────────────────────────── */
+    _drawSunray(p, dt) {
+        p.angle += p.speed * dt;
+        const ctx = this.ctx;
+        const cx = this.w * 0.65, cy = 0;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.strokeStyle = 'rgba(255,220,100,0.8)';
+        ctx.lineWidth = 60;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(
+            cx + Math.cos(p.angle) * p.len,
+            cy + Math.sin(p.angle) * p.len
+        );
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    /* ── CLOUD ────────────────────────────────────── */
+    _drawCloud(p, dt) {
+        p.x += p.vx * dt * 0.05;
+        if (p.x > this.w + 300) {
+            p.x = -250;
+            p.y = this._randRange(0, this.h * 0.5);
+        }
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.rx);
+        grd.addColorStop(0, 'rgba(255,255,255,0.7)');
+        grd.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = grd;
+        ctx.scale(1, p.ry / p.rx);
+        ctx.beginPath();
+        ctx.arc(p.x * (p.rx / p.rx), p.y * (p.rx / p.ry), p.rx, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    /* ── RAIN ─────────────────────────────────────── */
+    _drawRain(p, dt) {
+        const speed = p.speed * dt * 0.06;
+        let xs = p.xs;
+        // Interactive: wind toward mouse
+        if (this.mouseX !== null) {
+            const dx = (this.mouseX - p.x) / this.w;
+            xs += dx * 0.8;
+        }
+        p.x += xs;
+        p.y += speed;
+
+        if (p.y > this.h + 20) {
+            // Splash effect
+            if (p.y - speed <= this.h) {
+                this._spawnSplash(p.x, this.h);
+            }
+            Object.assign(p, this._newRainDrop());
+            p.y = -20;
+        }
+        if (p.x > this.w + 50) p.x = -50;
+        if (p.x < -50)         p.x = this.w + 50;
+
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha  = p.alpha;
+        ctx.strokeStyle  = 'rgba(180,215,255,0.8)';
+        ctx.lineWidth    = p.w;
+        ctx.lineCap      = 'round';
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + xs * (p.len / speed), p.y - p.len);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    /* ── RAIN SPLASH ──────────────────────────────── */
+    _spawnSplash(x, y) {
+        if (Math.random() > 0.15) return;
+        const el = document.createElement('div');
+        el.className = 'rain-splash';
+        el.style.cssText = `left:${x}px;top:${y - 4}px;position:fixed;z-index:2;`;
+        document.getElementById('weatherOverlay')?.appendChild(el);
+        setTimeout(() => el.remove(), 600);
+    }
+
+    /* ── SNOW ─────────────────────────────────────── */
+    _drawSnow(p, dt) {
+        if (p.settled) return;
+        p.swingPhase += p.swingSpeed * dt * 0.05;
+        p.x += p.vx + Math.sin(p.swingPhase) * p.swing * 0.3;
+        p.y += p.vy * dt * 0.05;
+
+        // Check if landed
+        const col  = Math.floor(p.x / 3);
+        const pile = this.snowPiles[col] || 0;
+        const ground = this.h - pile;
+        if (p.y + p.r >= ground) {
+            // Accumulate
+            if (col >= 0 && col < this.snowPiles.length) {
+                const maxPile = this.h * this.snowDepthMax * 0.85;
+                this.snowPiles[col] = Math.min(maxPile, pile + p.r * 0.3);
+            }
+            Object.assign(p, this._newSnowflake());
+            return;
+        }
+
+        // Wrap
+        if (p.x > this.w + 10) p.x = -10;
+        if (p.x < -10)         p.x = this.w + 10;
+
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = 'rgba(240,248,255,0.9)';
+        ctx.shadowColor = 'rgba(200,230,255,0.5)';
+        ctx.shadowBlur  = 4;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    /* ── SNOW ACCUMULATION ────────────────────────── */
+    _drawSnowAccumulation() {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.fillStyle = 'rgba(230,242,250,0.75)';
+        ctx.beginPath();
+        ctx.moveTo(0, this.h);
+        for (let i = 0; i < this.snowPiles.length; i++) {
+            const x = i * 3;
+            const y = this.h - (this.snowPiles[i] || 0);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.lineTo(this.w, this.h);
+        ctx.closePath();
+        ctx.fill();
+
+        // Top highlight
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (let i = 0; i < this.snowPiles.length; i++) {
+            const x = i * 3;
+            const y = this.h - (this.snowPiles[i] || 0);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    /* ── FOG ──────────────────────────────────────── */
+    _drawFog(p, dt) {
+        p.phase += p.pSpeed * dt * 0.05;
+        p.x += p.vx * dt * 0.05;
+        p.y += p.vy * dt * 0.05;
+        if (p.x > this.w + p.rx)  p.x = -p.rx;
+        if (p.x < -p.rx)          p.x = this.w + p.rx;
+        if (p.y > this.h + p.ry)  p.y = -p.ry;
+        if (p.y < -p.ry)          p.y = this.h + p.ry;
+
+        const a = p.alpha * (0.6 + 0.4 * Math.sin(p.phase));
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.scale(1, p.ry / p.rx);
+        const grd = ctx.createRadialGradient(
+            p.x, p.y * (p.rx / p.ry), 0,
+            p.x, p.y * (p.rx / p.ry), p.rx
+        );
+        grd.addColorStop(0, 'rgba(190,205,210,0.8)');
+        grd.addColorStop(1, 'rgba(190,205,210,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y * (p.rx / p.ry), p.rx, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    /* ── LIGHTNING ────────────────────────────────── */
+    _triggerLightning() {
+        // Canvas flash
+        this.flashOpacity = 0.85;
+
+        // DOM flash element
+        if (this.thunderFlash) {
+            this.thunderFlash.classList.remove('active');
+            void this.thunderFlash.offsetWidth;
+            this.thunderFlash.classList.add('active');
+            setTimeout(() => this.thunderFlash?.classList.remove('active'), 700);
+        }
+
+        // Draw lightning bolt on canvas briefly
+        this._drawLightningBolt();
+
+        // Schedule thunder sound hint (visual only)
+        // Fade out flash
+        const fadeFlash = () => {
+            this.flashOpacity -= 0.06;
+            if (this.flashOpacity > 0) requestAnimationFrame(fadeFlash);
+            else this.flashOpacity = 0;
+        };
+        setTimeout(fadeFlash, 80);
+    }
+
+    _drawLightningBolt() {
+        const ctx = this.ctx;
+        const x0 = this._randRange(this.w * 0.2, this.w * 0.8);
+        let x = x0, y = 0;
+        const segments = [];
+        while (y < this.h * 0.8) {
+            const nx = x + this._randRange(-60, 60);
+            const ny = y + this._randRange(40, 100);
+            segments.push([x, y, nx, ny]);
+            x = nx; y = ny;
+        }
+        ctx.save();
+        ctx.strokeStyle = 'rgba(200,230,255,0.95)';
+        ctx.shadowColor  = 'rgba(150,200,255,1)';
+        ctx.shadowBlur   = 20;
+        ctx.lineWidth    = 2;
+        ctx.lineCap      = 'round';
+        ctx.globalAlpha  = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(x0, 0);
+        segments.forEach(([, , nx, ny]) => ctx.lineTo(nx, ny));
+        ctx.stroke();
+        // Bright inner bolt
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+        ctx.lineWidth   = 1;
+        ctx.shadowBlur  = 5;
+        ctx.beginPath();
+        ctx.moveTo(x0, 0);
+        segments.forEach(([, , nx, ny]) => ctx.lineTo(nx, ny));
+        ctx.stroke();
+        ctx.restore();
     }
 }
-
-window.addEventListener('DOMContentLoaded', () => {
-    window.weatherParticleEngine = new WeatherParticleEngine();
-});
