@@ -1,0 +1,275 @@
+/* ========================================
+   THEMES TAB STYLES
+   Dynamically loaded
+   ======================================== */
+
+.theme-page-header {
+    background: var(--surface-alt);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-header-text h3 {
+    margin: 0;
+    font-size: var(--font-size-xl);
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.theme-header-text p {
+    margin: var(--spacing-xs) 0 0 0;
+    color: var(--text-muted);
+    font-size: var(--font-size-sm);
+}
+
+.theme-header-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.accordion-search {
+    position: relative;
+    flex: 1 1 200px;
+    max-width: 400px;
+    transition: all var(--transition-speed) ease;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+.accordion-search input {
+    width: 100%;
+    padding: 10px 14px 10px 40px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-full);
+    color: var(--text-color);
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-speed) ease;
+}
+
+.accordion-search input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+}
+
+.theme-tag {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: var(--border-radius-full);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.theme-tag:hover,
+.theme-tag.active {
+    background: var(--accent-color);
+    color: var(--surface-color);
+    border-color: var(--accent-color);
+}
+
+.theme-category {
+    margin-bottom: var(--spacing-xl);
+}
+
+.category-title {
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    margin: 0 0 var(--spacing-md) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-sm);
+}
+
+.theme-fab {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--accent-color) 40%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100;
+}
+
+.theme-fab:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 60%, transparent);
+}
+
+.theme-fab:active {
+    transform: scale(0.95);
+}
+
+/* Theme Creator Structural Layout */
+.theme-creator-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-creator-header h3 {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: var(--font-size-xl);
+}
+
+.theme-creator-body {
+    background: var(--surface-alt);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-lg);
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+}
+
+.creator-basic {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.color-section-title {
+    margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.theme-creator-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+}
+
+.theme-creator-footer button {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.theme-creator-footer .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.theme-creator-footer .btn-secondary:hover {
+    background: var(--surface-alt);
+}
+
+.theme-creator-footer .btn-primary {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+}
+
+.theme-creator-footer .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent-color) 80%, black);
+}
+
+.themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.theme-card {
+    background: var(--theme-card-bg, var(--surface-alt));
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-md);
+    border-color: var(--accent-color);
+}
+
+.theme-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.theme-card-icon {
+    font-size: 2rem;
+    color: var(--theme-text-color, var(--text-color));
+}
+
+.theme-card-info h4 {
+    margin: 0;
+    font-size: var(--font-size-md);
+    color: var(--theme-text-color, var(--text-color));
+}
+
+.theme-card-info p {
+    margin: var(--spacing-xs) 0 0 0;
+    font-size: var(--font-size-xs);
+    color: var(--theme-text-muted, var(--text-muted));
+}
+
+.theme-card-colors {
+    display: flex;
+    gap: 6px;
+    margin-top: auto;
+}
+
+.theme-color-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--shadow-color);
+}

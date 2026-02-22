@@ -1,4 +1,3 @@
-
 /* ========================================
    MOBILE NAVIGATION & VIEWS
    ======================================== */
@@ -72,12 +71,21 @@
 }
 
 @keyframes navIndicator {
-    from { width: 0; opacity: 0; }
-    to { width: 30%; opacity: 1; }
+    from {
+        width: 0;
+        opacity: 0;
+    }
+
+    to {
+        width: 30%;
+        opacity: 1;
+    }
 }
 
 @media (hover: hover) {
-    .nav-item:hover { color: var(--accent-color); }
+    .nav-item:hover {
+        color: var(--accent-color);
+    }
 }
 
 /* Mobile Header */
@@ -138,7 +146,8 @@
     display: none;
     text-align: center;
     padding: var(--spacing-md) 0;
-    position: static; /* Changed from sticky */
+    position: static;
+    /* Changed from sticky */
     background: color-mix(in srgb, var(--bg-color) 90%, transparent);
     z-index: var(--z-overlay);
     width: 100%;
@@ -235,13 +244,33 @@
     box-shadow: 0 0 0 2px var(--accent-color) inset;
 }
 
-.today-card:nth-child(1) { animation-delay: 0.05s; }
-.today-card:nth-child(2) { animation-delay: 0.1s; }
-.today-card:nth-child(3) { animation-delay: 0.15s; }
-.today-card:nth-child(4) { animation-delay: 0.2s; }
-.today-card:nth-child(5) { animation-delay: 0.25s; }
-.today-card:nth-child(6) { animation-delay: 0.3s; }
-.today-card:nth-child(7) { animation-delay: 0.35s; }
+.today-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.today-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.today-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.today-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.today-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.today-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.today-card:nth-child(7) {
+    animation-delay: 0.35s;
+}
 
 .today-card-time {
     min-width: 4.5rem;
@@ -526,14 +555,13 @@ body.hide-empty-days .mobile-weekly-empty {
     border-radius: var(--spacing-2xl) var(--spacing-2xl) 0 0;
     z-index: var(--z-bottom-sheet);
     transform: translateY(100%);
-    /* CHANGED: Use ease-out for standard slide, no bounce */
-    transition: transform 0.3s ease-out, height 0.3s ease-out, border-radius 0.3s ease;
-    max-height: 80vh;
-    height: auto;
-    overflow-y: auto;
-    padding-bottom: max(var(--spacing-lg), env(safe-area-inset-bottom));
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.3s ease;
+    height: 100dvh;
+    overflow: hidden;
+    /* Content scrolls instead */
+    padding-bottom: 0;
     box-shadow: 0 -5px 40px var(--shadow-color-strong);
-    touch-action: none; /* Prevent browser handling of gestures */
+    touch-action: none;
 }
 
 /* Fullscreen State for Top Snap */
@@ -606,7 +634,11 @@ body.hide-empty-days .mobile-weekly-empty {
 }
 
 .bottom-sheet-content {
-    padding: 1.5rem 2rem 3rem;
+    padding: 1rem 1.5rem 3rem;
+    height: calc(100% - 60px);
+    /* Allow for handle/header */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .bottom-sheet-title {

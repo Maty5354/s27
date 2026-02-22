@@ -21,7 +21,6 @@
         timetableWrapper: $(".timetable-wrapper"),
         fullViewHeader: $("#fullViewHeader"),
         sheetCustomizationBtn: $("#sheetCustomizationBtn"),
-        sheetWeatherBtn: $("#sheetWeatherBtn"),
         sheetManualsBtn: $("#sheetManualsBtn"),
         sheetClockBtn: $("#sheetClockBtn"),
         sheetTodoBtn: $("#sheetTodoBtn"),
@@ -45,7 +44,6 @@
     };
     const shortcuts = {
         customization: ["fa-solid fa-sliders", "Custom"],
-        weather: ["fa-solid fa-cloud-sun", "Weather"],
         textbooks: ["fa-solid fa-book", "Books"],
         clock: ["fa-solid fa-clock", "Clock"],
         tasks: ["fa-solid fa-list-check", "Tasks"],
@@ -60,7 +58,7 @@
         chips = "monday";
     
     // Bottom Sheet State
-    let sheetState = "CLOSED"; // CLOSED, MIDDLE, PEEK, FULL
+    let sheetState = "CLOSED"; // CLOSED, MIDDLE, FULL
     let startY = 0;
     let currentY = 0;
     let isDragging = false;
@@ -562,33 +560,23 @@
     function updateSheetState() {
         if (!dom.bottomSheet || !dom.bottomSheetOverlay) return;
         
-        // Remove transitions during drag (re-added after snap)
-        dom.bottomSheet.style.transition = "transform 0.3s ease-out, height 0.3s ease-out, border-radius 0.3s ease";
+        // Ensure transitions are active for snapping
+        dom.bottomSheet.style.transition = "transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.3s ease";
+        dom.bottomSheet.style.height = "100dvh"; // Always full height to avoid gaps when dragging up
         
         switch (sheetState) {
             case "CLOSED":
                 dom.bottomSheet.classList.remove("active", "fullscreen");
                 dom.bottomSheetOverlay.classList.remove("active");
                 dom.bottomSheet.style.transform = "translateY(100%)";
-                dom.bottomSheet.style.height = "auto";
                 dom.bottomSheetOverlay.style.opacity = "0";
                 document.body.style.overflow = "";
-                break;
-            case "PEEK":
-                dom.bottomSheet.classList.add("active");
-                dom.bottomSheet.classList.remove("fullscreen");
-                dom.bottomSheetOverlay.classList.add("active");
-                dom.bottomSheet.style.transform = "translateY(75%)";
-                dom.bottomSheet.style.height = "auto";
-                dom.bottomSheetOverlay.style.opacity = "0.2"; // "More transparent when at bottom"
-                document.body.style.overflow = "hidden";
                 break;
             case "MIDDLE":
                 dom.bottomSheet.classList.add("active");
                 dom.bottomSheet.classList.remove("fullscreen");
                 dom.bottomSheetOverlay.classList.add("active");
-                dom.bottomSheet.style.transform = "translateY(0)";
-                dom.bottomSheet.style.height = "auto"; // Default (max-height 80vh)
+                dom.bottomSheet.style.transform = "translateY(20dvh)";
                 dom.bottomSheetOverlay.style.opacity = "1";
                 document.body.style.overflow = "hidden";
                 break;
@@ -596,7 +584,6 @@
                 dom.bottomSheet.classList.add("active", "fullscreen");
                 dom.bottomSheetOverlay.classList.add("active");
                 dom.bottomSheet.style.transform = "translateY(0)";
-                dom.bottomSheet.style.height = "100dvh";
                 dom.bottomSheetOverlay.style.opacity = "1";
                 document.body.style.overflow = "hidden";
                 break;
@@ -607,90 +594,52 @@
         if (!dom.bottomSheet) return;
 
         dom.bottomSheet.addEventListener("touchstart", (e) => {
-            // Only drag if handle or top area is touched to avoid conflict with scrolling content
             const content = dom.bottomSheet.querySelector('.bottom-sheet-content');
             if (content && content.contains(e.target) && content.scrollTop > 0) return;
 
             isDragging = true;
             startY = e.touches[0].clientY;
-            initialSheetHeight = dom.bottomSheet.offsetHeight;
-            dom.bottomSheet.style.transition = "none"; // Disable transition for drag
+            dom.bottomSheet.style.transition = "none";
         }, { passive: true });
 
         dom.bottomSheet.addEventListener("touchmove", (e) => {
             if (!isDragging) return;
             const y = e.touches[0].clientY;
-            const deltaY = y - startY;
+            let deltaY = y - startY;
             currentY = deltaY;
 
-            // Simple resistance logic
-            // If dragging Up from Middle: 
-            if (sheetState === "MIDDLE" && deltaY < 0) {
-                // Moving towards Full
-                // We can't easily animate height smoothly with transform in same step without jitter
-                // Just use translate for now, snap later
-                dom.bottomSheet.style.transform = `translateY(${deltaY}px)`;
-            } 
-            // If dragging Down from Middle
-            else if (sheetState === "MIDDLE" && deltaY > 0) {
-                dom.bottomSheet.style.transform = `translateY(${deltaY}px)`;
-                // Fade overlay
-                const opacity = Math.max(0.2, 1 - (deltaY / (window.innerHeight * 0.5)));
-                dom.bottomSheetOverlay.style.opacity = opacity;
-            }
-            // If dragging from Peek (Up)
-            else if (sheetState === "PEEK" && deltaY < 0) {
-                 // Moving towards Middle. Initial transform is 75% height.
-                 // This is complex because we are mixing percentages and pixels.
-                 // Simplified: Reset to Middle visual state start and calculate from there?
-                 // Let's rely on delta from start touch.
-                 // StartY was at Peek position.
-                 // Peek position is approx translateY(75%).
-                 // We need to know pixel value of 75% height.
-                 const h = dom.bottomSheet.offsetHeight;
-                 const peekOffset = h * 0.75;
-                 dom.bottomSheet.style.transform = `translateY(${peekOffset + deltaY}px)`;
-                 
-                 // Update opacity
-                 const progress = Math.abs(deltaY) / peekOffset; // 0 to 1
-                 const opacity = 0.2 + (0.8 * Math.min(1, progress));
-                 dom.bottomSheetOverlay.style.opacity = opacity;
-            }
-            // If dragging from Full (Down)
-            else if (sheetState === "FULL" && deltaY > 0) {
-                 dom.bottomSheet.style.transform = `translateY(${deltaY}px)`;
-            }
+            let baseOffset = 0;
+            if (sheetState === "MIDDLE") baseOffset = window.innerHeight * 0.2;
+            else if (sheetState === "FULL") baseOffset = 0;
 
+            let finalTranslate = baseOffset + deltaY;
+            
+            // Limit top drag (resistance)
+            if (finalTranslate < 0) finalTranslate = finalTranslate * 0.2;
+
+            dom.bottomSheet.style.transform = `translateY(${finalTranslate}px)`;
+            
+            // Update overlay opacity if dragging down
+            if (finalTranslate > baseOffset) {
+                const progress = (finalTranslate - baseOffset) / (window.innerHeight - baseOffset);
+                dom.bottomSheetOverlay.style.opacity = Math.max(0, 1 - progress);
+            }
         }, { passive: true });
 
         dom.bottomSheet.addEventListener("touchend", (e) => {
             if (!isDragging) return;
             isDragging = false;
             
-            const threshold = 100; // px
-            const h = dom.bottomSheet.offsetHeight;
+            const threshold = 100;
+            const velocity = currentY; // Simple proxy for velocity
 
-            // Logic to determine next state
             if (sheetState === "MIDDLE") {
-                if (currentY < -threshold) {
-                    sheetState = "FULL";
-                } else if (currentY > threshold) {
-                    sheetState = "PEEK";
-                }
-            } else if (sheetState === "PEEK") {
-                if (currentY < -threshold) {
-                    sheetState = "MIDDLE"; // Go back up
-                } else if (currentY > 50) {
-                    // Pulling further down from peek -> Close?
-                    // Prompt says "instead of auto closing". 
-                    // Let's assume sticking to Peek if pulled down, or maybe Close if REALLY pulled.
-                    // Let's enable Close on deep pull
-                    if (currentY > 150) sheetState = "CLOSED";
-                }
+                if (currentY < -threshold) sheetState = "FULL";
+                else if (currentY > threshold) sheetState = "CLOSED";
+                else updateSheetState(); // Snap back
             } else if (sheetState === "FULL") {
-                if (currentY > threshold) {
-                    sheetState = "MIDDLE";
-                }
+                if (currentY > threshold) sheetState = "MIDDLE";
+                else updateSheetState(); // Snap back
             }
 
             updateSheetState();
@@ -710,7 +659,6 @@
         
         const map = {
             customization: "customizationBtn",
-            weather: "weatherBtn",
             textbooks: "allManualsBtn",
             clock: "clockBtn",
             tasks: "todoBtn",
@@ -722,7 +670,7 @@
     function upShortcuts() {
         const s = getAdv(),
             a = s.shortcut1 || "customization",
-            b = s.shortcut2 || "weather";
+            b = s.shortcut2 || "textbooks";
         if (dom.navShortcut1) {
             const [i, l] = shortcuts[a];
             dom.navShortcut1.querySelector("i").className = i;
@@ -735,43 +683,8 @@
             dom.navShortcut2.querySelector("span").textContent = l;
             dom.navShortcut2.dataset.shortcutType = b;
         }
-        syncWeather();
     }
-    function syncWeather() {
-        const me = $("#menuWeatherEmoji"),
-            mt = $("#menuWeatherTemp"),
-            se = $("#sheetWeatherEmoji"),
-            st = $("#sheetWeatherTemp");
-        if (me && se) se.textContent = me.textContent;
-        if (mt && st) st.textContent = mt.textContent;
-        [dom.navShortcut1, dom.navShortcut2].forEach((btn) => {
-            if (!btn || btn.dataset.shortcutType !== "weather") return;
-            const i = btn.querySelector("i"),
-                s = btn.querySelector("span");
-            if (me && me.textContent !== "?" && me.textContent !== "??") {
-                if (i) {
-                    i.className = "";
-                    i.textContent = me.textContent;
-                    i.style.fontStyle = "normal";
-                    i.style.fontSize = "1.3rem";
-                }
-                if (s && mt && mt.textContent !== "--C")
-                    s.textContent = mt.textContent;
-            }
-        });
-    }
-    function upHeader() {
-        if (!dom.mobileHeaderTime || !dom.mobileHeaderDate) return;
-        const d = new Date(),
-            h = String(d.getHours()).padStart(2, "0"),
-            m = String(d.getMinutes()).padStart(2, "0");
-        dom.mobileHeaderTime.textContent = `${h}:${m}`;
-        dom.mobileHeaderDate.textContent = d.toLocaleDateString("ro-RO", {
-            weekday: "short",
-            day: "numeric",
-            month: "short",
-        });
-    }
+
     let last = 0;
     function onScroll() {
         if (!document.body.classList.contains("mobile-nav-scroll")) {
@@ -799,13 +712,12 @@
             trig(dom.navShortcut1.dataset.shortcutType || "customization"),
         );
         dom.navShortcut2?.addEventListener("click", () =>
-            trig(dom.navShortcut2.dataset.shortcutType || "weather"),
+            trig(dom.navShortcut2.dataset.shortcutType || "textbooks"),
         );
         dom.bottomSheetOverlay?.addEventListener("click", closeSheet);
         
         // Sheet Actions
         dom.sheetCustomizationBtn?.addEventListener("click", () => trig("customization"));
-        dom.sheetWeatherBtn?.addEventListener("click", () => trig("weather"));
         dom.sheetManualsBtn?.addEventListener("click", () => trig("textbooks"));
         dom.sheetClockBtn?.addEventListener("click", () => trig("clock"));
         dom.sheetTodoBtn?.addEventListener("click", () => trig("tasks"));
@@ -816,10 +728,6 @@
 
         initSheetGestures();
 
-        const obs = new MutationObserver(syncWeather);
-        const me = $("#menuWeatherEmoji");
-        if (me)
-            obs.observe(me, { characterData: true, childList: true, subtree: true });
         window.addEventListener("scroll", onScroll, { passive: true });
         window.addEventListener("resize", () => {
             if (window.innerWidth > 768) showFull();
@@ -840,9 +748,6 @@
         }
         ensureHost();
         upShortcuts();
-        syncWeather();
-        upHeader();
-        setInterval(upHeader, 1000);
         if (isMobile()) showToday();
         else showFull();
         setInterval(() => {

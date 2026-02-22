@@ -5,7 +5,6 @@
 /* --- SIDE MENU GENERATION CONFIG --- */
 /* 
    To customize order: simply rearrange the objects in this array.
-   type: 'button' (default) or 'weather-widget' (custom HTML structure)
 */
 const defaultMenuOrder = [
     { id: "customizationBtn", icon: "fa-sliders", label: "Customization" },
@@ -25,16 +24,10 @@ function renderSideMenu() {
     defaultMenuOrder.forEach(item => {
         const btn = document.createElement("button");
         btn.id = item.id;
-        
-        // Add specific classes
-        if (item.id === "weatherBtn") {
-            btn.className = "menu-btn weather-menu-btn";
-        } else {
-            btn.className = "menu-btn";
-        }
+        btn.className = "menu-btn";
+        if (item.id === "weatherBtn") btn.classList.add("weather-menu-btn");
 
         if (item.type === "weather-widget") {
-            // Reconstruct the specific Weather Widget HTML structure expected by weather-time.js
             btn.innerHTML = `
                 <div class="weather-btn-content">
                     <span id="menuWeatherEmoji" class="menu-weather-emoji">☁️</span>
@@ -109,7 +102,6 @@ window.addEventListener("DOMContentLoaded", () => {
             '.custom-sidebar',
             '.custom-content',
             '#manualsPopupContent',
-            '.weather-overlay-container',
             '.task-edit-content',
             '.folder-edit-content',
             '.boss-container',
