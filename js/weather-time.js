@@ -1,85 +1,7 @@
-
 /* ========================================
-   WEATHER & TIME: Clock, Forecasts
+   WEATHER SERVICE (Multi-City & Advanced API)
    ======================================== */
 
-// --- CLOCK OVERLAY ---
-const clockBtn = document.getElementById("clockBtn");
-const timeOverlay = document.getElementById("timeOverlay");
-const closeOverlay = document.getElementById("closeOverlay");
-const timeEl = document.getElementById("time");
-const dateEl = document.getElementById("date");
-
-function updateClock() {
-    const devOverride = window.getDevTimeOverride?.();
-    const now = devOverride || new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const seconds = now.getSeconds().toString().padStart(2, "0");
-    const options = { weekday: "long", month: "long", day: "numeric", year: "numeric" };
-    const dateStr = now.toLocaleDateString(undefined, options);
-    if (timeEl) timeEl.textContent = `${hours}:${minutes}:${seconds}`;
-    if (dateEl) dateEl.textContent = dateStr;
-}
-
-if (window.overlayManager) {
-    window.overlayManager.register("timeOverlay");
-}
-
-if (clockBtn) {
-    clockBtn.addEventListener("click", () => {
-        if (window.overlayManager) {
-            window.overlayManager.close("sideMenu");
-            window.overlayManager.open("timeOverlay");
-        }
-        updateClock();
-    });
-}
-
-if (closeOverlay) {
-    closeOverlay.addEventListener("click", () => {
-        if (window.overlayManager) {
-            window.overlayManager.close("timeOverlay");
-        }
-    });
-}
-
-setInterval(updateClock, 1000);
-
-// --- TITLE TIME DISPLAY ---
-function updateTitleTime() {
-    const devOverride = window.getDevTimeOverride?.();
-    const now = devOverride || new Date();
-    const hours = now.getHours().toString().padStart(2, "0");
-    const minutes = now.getMinutes().toString().padStart(2, "0");
-    const seconds = now.getSeconds().toString().padStart(2, "0");
-    const timeEl = document.getElementById("titleTime");
-    const dateEl = document.getElementById("titleDate");
-    
-    if (timeEl) {
-        timeEl.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-    
-    if (dateEl) {
-        const options = { weekday: 'short', day: 'numeric', month: 'short' };
-        dateEl.textContent = now.toLocaleDateString('ro-RO', options);
-    }
-}
-
-// Update every second
-setInterval(updateTitleTime, 1000);
-updateTitleTime();
-
-document.getElementById("titleTime")?.addEventListener("click", function () {
-    const clockBtn = document.getElementById("clockBtn");
-    if (clockBtn) clockBtn.click();
-});
-
-/* ========================================
-   WEATHER SERVICE
-   ======================================== */
-
-// WMO Weather Codes Mapping
 const WMO_CODES = {
     0: { desc: "Clear sky", icon: "☀️" },
     1: { desc: "Mainly clear", icon: "🌤️" },
@@ -107,67 +29,47 @@ const WMO_CODES = {
     85: { desc: "Slight snow showers", icon: "❄️" },
     86: { desc: "Heavy snow showers", icon: "❄️" },
     95: { desc: "Thunderstorm", icon: "⛈️" },
-    96: { desc: "Thunderstorm with slight hail", icon: "⛈️" },
-    99: { desc: "Thunderstorm with heavy hail", icon: "⛈️" }
+    96: { desc: "Thunderstorm with hail", icon: "⛈️" },
+    99: { desc: "Heavy thunderstorm", icon: "⛈️" }
 };
 
-class WeatherService {
+class WeatherApp {
     constructor() {
-        if (WeatherService.instance) {
-            return WeatherService.instance;
-        }
-        WeatherService.instance = this;
-
-        this.cacheKey = "weather_cache_v3"; // Bumped version
-        this.cacheDuration = 10 * 60 * 1000; // 10 minutes
+        this.cities = JSON.parse(localStorage.getItem('w-cities')) || [
+            { id: 'bucharest', name: 'Bucharest', lat: 44.4268, lon: 26.1025, country: 'Romania' }
+        ];
+        this.currentIndex = 0;
+        this.weatherDataCache = {};
         
-        this.defaultLocation = { lat: 44.4268, lon: 26.1025 }; // Bucharest
-        this.weatherData = null;
-        this.locationName = "Bucharest (Default)";
-        this.lastUpdated = null;
-        this.particleEngine = null;
-
-        this.init();
+        this.initDOM();
+        this.bindEvents();
+        this.initSwiper();
+        this.loadAllCities();
     }
 
-    async init() {
-        this.setupOverlay();
-        this.loadWeather();
-        
-        // Auto refresh
-        setInterval(() => this.loadWeather(), this.cacheDuration + 1000);
-    }
+    initDOM() {
+        this.overlay = document.getElementById('weatherOverlay');
+        this.swiper = document.getElementById('wSwiper');
+        this.dotsContainer = document.getElementById('wCityDots');
+        this.cityManager = document.getElementById('wCityManager');
+        this.searchInput = document.getElementById('wCitySearch');
+        this.searchResults = document.getElementById('wSearchResults');
+        this.savedCitiesList = document.getElementById('wSavedCities');
 
-    setupOverlay() {
-        // Register Overlay
-        if (window.overlayManager) {
-            window.overlayManager.register("weatherOverlay", {
-                onOpen: () => {
-                    if (this.particleEngine) {
-                        this.particleEngine.resize();
-                        this.particleEngine.start();
-                    }
-                },
-                onClose: () => {
-                    if (this.particleEngine) this.particleEngine.stop();
-                }
+        if(window.overlayManager) {
+            window.overlayManager.register('weatherOverlay', {
+                onOpen: () => this.onOpen(),
+                onClose: () => this.onClose()
             });
         }
+    }
 
-        // Initialize Particle Engine
-        if (typeof WeatherParticleEngine !== 'undefined') {
-            this.particleEngine = new WeatherParticleEngine('weatherCanvas');
-        }
-
-        // Bind Buttons
-        const triggers = ['weatherBtn', 'sheetWeatherBtn'];
-        triggers.forEach(id => {
+    bindEvents() {
+        // Triggers
+        ['weatherBtn', 'sheetWeatherBtn'].forEach(id => {
             document.getElementById(id)?.addEventListener('click', () => {
-                if(window.overlayManager) {
-                    window.overlayManager.close('sideMenu');
-                    window.overlayManager.open('weatherOverlay');
-                }
-                this.renderOverlay();
+                if(window.overlayManager) window.overlayManager.close('sideMenu');
+                if(window.overlayManager) window.overlayManager.open('weatherOverlay');
             });
         });
 
@@ -175,193 +77,406 @@ class WeatherService {
             if(window.overlayManager) window.overlayManager.close('weatherOverlay');
         });
 
-        document.getElementById('refreshWeatherBtn')?.addEventListener('click', () => {
-            this.refresh();
+        // City Manager
+        document.getElementById('manageCitiesBtn')?.addEventListener('click', () => {
+            this.renderSavedCities();
+            this.cityManager.classList.remove('hidden');
+        });
+        document.getElementById('closeCityManager')?.addEventListener('click', () => {
+            this.cityManager.classList.add('hidden');
+        });
+
+        // Search API
+        let debounce;
+        this.searchInput?.addEventListener('input', (e) => {
+            clearTimeout(debounce);
+            debounce = setTimeout(() => this.searchCity(e.target.value), 500);
         });
     }
 
-    async loadWeather() {
-        // Dev Override Check
-        const devOverride = localStorage.getItem("dev-weather-override");
-        if (devOverride) {
-            this.applyDevOverride(parseInt(devOverride));
-            return;
-        }
-
-        if (this.loadFromCache()) {
-            this.updateUI();
-            return;
-        }
-        await this.refresh();
+    onOpen() {
+        if(window.weatherParticleEngine) window.weatherParticleEngine.start();
+        this.updateBackgroundForCurrentCity();
     }
 
-    async refresh() {
+    onClose() {
+        if(window.weatherParticleEngine) window.weatherParticleEngine.stop();
+        this.cityManager.classList.add('hidden');
+    }
+
+    /* --- Swiper Logic --- */
+    initSwiper() {
+        let startX = 0;
+        let isDragging = false;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+
+        this.swiper.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            this.swiper.style.transition = 'none';
+        }, {passive: true});
+
+        this.swiper.addEventListener('touchmove', (e) => {
+            if(!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diff = currentX - startX;
+            currentTranslate = prevTranslate + diff;
+            this.swiper.style.transform = `translateX(${currentTranslate}px)`;
+        }, {passive: true});
+
+        this.swiper.addEventListener('touchend', (e) => {
+            isDragging = false;
+            const movedBy = currentTranslate - prevTranslate;
+            this.swiper.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+            
+            if (movedBy < -70 && this.currentIndex < this.cities.length - 1) this.currentIndex += 1;
+            if (movedBy > 70 && this.currentIndex > 0) this.currentIndex -= 1;
+            
+            this.snapToCurrentIndex();
+        });
+    }
+
+    snapToCurrentIndex() {
+        const translate = this.currentIndex * -window.innerWidth;
+        this.swiper.style.transform = `translateX(${translate}px)`;
+        // Update dots
+        Array.from(this.dotsContainer.children).forEach((dot, i) => {
+            dot.classList.toggle('active', i === this.currentIndex);
+        });
+        this.updateBackgroundForCurrentCity();
+    }
+
+    /* --- Data Fetching --- */
+    async loadAllCities() {
+        this.swiper.innerHTML = '';
+        this.dotsContainer.innerHTML = '';
+
+        for (let i = 0; i < this.cities.length; i++) {
+            // Build Slide Skeleton
+            const slide = document.createElement('div');
+            slide.className = 'w-slide';
+            slide.id = `w-slide-${i}`;
+            slide.innerHTML = `<div class="w-slide-content" id="w-content-${i}"><div style="text-align:center; margin-top:50px;"><i class="fa-solid fa-spinner fa-spin fa-2x"></i></div></div>`;
+            this.swiper.appendChild(slide);
+
+            // Add Dot
+            const dot = document.createElement('div');
+            dot.className = `w-dot ${i === this.currentIndex ? 'active' : ''}`;
+            this.dotsContainer.appendChild(dot);
+            
+            // Fetch
+            this.fetchCityData(this.cities[i], i);
+        }
+        this.snapToCurrentIndex();
+    }
+
+    async fetchCityData(city, index) {
         try {
-            const btn = document.getElementById('refreshWeatherBtn');
-            if(btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+            const weatherParams = new URLSearchParams({
+                latitude: city.lat, longitude: city.lon,
+                current: "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,surface_pressure",
+                hourly: "temperature_2m,precipitation_probability,weather_code",
+                daily: "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max",
+                timezone: "auto"
+            });
+            const aqiParams = new URLSearchParams({
+                latitude: city.lat, longitude: city.lon,
+                current: "european_aqi,uv_index",
+                timezone: "auto"
+            });
 
-            const position = await this.getGeolocation();
-            const { latitude, longitude } = position.coords;
-            await this.fetchData(latitude, longitude);
+            const [wRes, aRes] = await Promise.all([
+                fetch(`https://api.open-meteo.com/v1/forecast?${weatherParams}`),
+                fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?${aqiParams}`)
+            ]);
+
+            const weather = await wRes.json();
+            const aqi = aRes.ok ? await aRes.json() : null;
+
+            this.weatherDataCache[index] = { weather, aqi, city };
+            this.renderSlide(index);
             
-            // Reverse Geocode (Simple mock or API if available, defaulting to generic)
-            this.locationName = "Current Location"; // Or fetch from OpenStreetMap API
-            
-            this.updateUI();
-            
-            if(btn) btn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Refresh';
-        } catch (error) {
-            console.warn("Weather error:", error);
-            if (!this.weatherData) {
-                await this.fetchData(this.defaultLocation.lat, this.defaultLocation.lon);
-                this.locationName = "Bucharest";
-                this.updateUI();
-            }
-            if(document.getElementById('refreshWeatherBtn')) {
-                document.getElementById('refreshWeatherBtn').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
-            }
+            // Update Menu buttons if it's the first city
+            if(index === 0) this.updateMenuButtons(weather.current);
+
+        } catch (e) {
+            console.error("Failed to load weather for", city.name, e);
+            document.getElementById(`w-content-${index}`).innerHTML = `<div style="text-align:center; margin-top:50px;">Failed to load data.</div>`;
         }
     }
 
-    getGeolocation() {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) return reject("Not supported");
-            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-        });
-    }
-
-    async fetchData(lat, lon) {
-        const params = new URLSearchParams({
-            latitude: lat,
-            longitude: lon,
-            current: "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weather_code,wind_speed_10m",
-            hourly: "temperature_2m,precipitation_probability,weather_code",
-            daily: "temperature_2m_max,temperature_2m_min",
-            timezone: "auto"
-        });
-
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`);
-        if (!response.ok) throw new Error("API failed");
+    /* --- Rendering --- */
+    renderSlide(index) {
+        const { weather, aqi, city } = this.weatherDataCache[index];
+        const cur = weather.current;
+        const daily = weather.daily;
+        const info = WMO_CODES[cur.weather_code] || WMO_CODES[0];
         
-        this.weatherData = await response.json();
-        this.lastUpdated = Date.now();
-        this.saveToCache();
-    }
+        // AQI & UV
+        const currentAqi = aqi?.current?.european_aqi || 0;
+        const currentUv = aqi?.current?.uv_index || 0;
 
-    saveToCache() {
-        if (!this.weatherData) return;
-        localStorage.setItem(this.cacheKey, JSON.stringify({
-            timestamp: this.lastUpdated,
-            data: this.weatherData,
-            locationName: this.locationName
-        }));
-    }
-
-    loadFromCache() {
-        const cached = localStorage.getItem(this.cacheKey);
-        if (!cached) return false;
-        try {
-            const { timestamp, data, locationName } = JSON.parse(cached);
-            if (Date.now() - timestamp < this.cacheDuration) {
-                this.weatherData = data;
-                this.locationName = locationName;
-                return true;
-            }
-        } catch (e) { return false; }
-        return false;
-    }
-
-    getWeatherInfo(code, isDay = 1) {
-        const info = WMO_CODES[code] || { desc: "Unknown", icon: "❓" };
-        let icon = info.icon;
-        if (isDay === 0 && [0,1,2].includes(code)) icon = code === 0 ? "🌙" : "☁️";
-        return { ...info, icon };
-    }
-
-    applyDevOverride(code) {
-        const info = this.getWeatherInfo(code);
-        // Mock structure matching API
-        this.weatherData = {
-            current: {
-                temperature_2m: 20,
-                weather_code: code,
-                is_day: 1,
-                relative_humidity_2m: 50,
-                apparent_temperature: 21,
-                wind_speed_10m: 10,
-                precipitation: 0
-            },
-            daily: { temperature_2m_max: [25], temperature_2m_min: [15] }
-        };
-        this.locationName = "Dev Override";
-        this.updateUI();
-    }
-
-    updateUI() {
-        if (!this.weatherData) return;
-        const current = this.weatherData.current;
-        const info = this.getWeatherInfo(current.weather_code, current.is_day);
+        const content = document.getElementById(`w-content-${index}`);
         
-        // 1. Update Menu Buttons
-        const updateBtn = (emojiId, tempId) => {
-            const el1 = document.getElementById(emojiId);
-            const el2 = document.getElementById(tempId);
-            if(el1) el1.textContent = info.icon;
-            if(el2) el2.textContent = `${Math.round(current.temperature_2m)}°C`;
-        };
-        updateBtn("menuWeatherEmoji", "menuWeatherTemp");
-        updateBtn("sheetWeatherEmoji", "sheetWeatherTemp");
+        let html = `
+            <!-- HERO -->
+            <div class="w-hero">
+                <h2 class="w-city-name">${city.name}</h2>
+                <div class="w-temp">${Math.round(cur.temperature_2m)}&deg;</div>
+                <div class="w-condition">${info.icon} ${info.desc}</div>
+                <div class="w-hilo">H:${Math.round(daily.temperature_2m_max[0])}&deg; L:${Math.round(daily.temperature_2m_min[0])}&deg;</div>
+            </div>
 
-        // 2. Render Overlay if open (or prepare it)
-        this.renderOverlay();
-        
-        // 3. Update Particles
-        if (this.particleEngine) {
-            this.particleEngine.setCondition(current.weather_code, current.is_day);
-        }
-    }
+            <!-- HOURLY & CHART -->
+            <div class="w-panel">
+                <div class="w-panel-title"><i class="fa-solid fa-clock"></i> 24-Hour Forecast</div>
+                <div class="w-hourly-scroll">
+                    ${this.generateHourlyHTML(weather.hourly)}
+                </div>
+                <div class="w-chart-container" id="w-chart-${index}"></div>
+            </div>
 
-    renderOverlay() {
-        if (!this.weatherData) return;
-        const current = this.weatherData.current;
-        const daily = this.weatherData.daily;
-        const info = this.getWeatherInfo(current.weather_code, current.is_day);
+            <!-- GAUGES GRID -->
+            <div class="w-grid">
+                <!-- UV Index -->
+                <div class="w-grid-card">
+                    <h4><i class="fa-solid fa-sun"></i> UV Index</h4>
+                    ${this.generateGaugeHTML(currentUv, 11, this.getUVDesc(currentUv))}
+                </div>
+                <!-- Air Quality -->
+                <div class="w-grid-card">
+                    <h4><i class="fa-solid fa-leaf"></i> Air Quality</h4>
+                    ${this.generateGaugeHTML(currentAqi, 100, this.getAQIDesc(currentAqi))}
+                </div>
+                <!-- Wind -->
+                <div class="w-grid-card">
+                    <h4><i class="fa-solid fa-wind"></i> Wind</h4>
+                    <div style="font-size:1.5rem; font-weight:700;">${cur.wind_speed_10m} <span style="font-size:1rem; opacity:0.7;">km/h</span></div>
+                    <div class="w-gauge-desc">Direction: ${cur.wind_direction_10m}&deg;</div>
+                </div>
+                <!-- Humidity -->
+                <div class="w-grid-card">
+                    <h4><i class="fa-solid fa-droplet"></i> Humidity</h4>
+                    <div style="font-size:1.5rem; font-weight:700;">${cur.relative_humidity_2m}%</div>
+                    <div class="w-gauge-desc">Dew point is matched.</div>
+                </div>
+                <!-- Sunrise/Sunset -->
+                <div class="w-grid-card" style="grid-column: span 2;">
+                    <h4><i class="fa-solid fa-mountain-sun"></i> Sun</h4>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>Rise: <b>${new Date(daily.sunrise[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</b></div>
+                        <div>Set: <b>${new Date(daily.sunset[0]).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</b></div>
+                    </div>
+                </div>
+            </div>
 
-        // Text Elements
-        const setText = (id, txt) => {
-            const el = document.getElementById(id);
-            if(el) el.textContent = txt;
-        };
+            <!-- DAILY -->
+            <div class="w-panel">
+                <div class="w-panel-title"><i class="fa-solid fa-calendar-days"></i> 7-Day Forecast</div>
+                ${this.generateDailyHTML(daily)}
+            </div>
+        `;
 
-        setText('weatherLocationName', this.locationName);
-        setText('weatherCoords', `${this.weatherData.latitude.toFixed(2)}, ${this.weatherData.longitude.toFixed(2)}`);
-        setText('weatherCurrentTemp', Math.round(current.temperature_2m));
-        setText('weatherCondition', info.desc);
-        setText('weatherHigh', Math.round(daily.temperature_2m_max[0]));
-        setText('weatherLow', Math.round(daily.temperature_2m_min[0]));
-        
-        setText('weatherWind', `${current.wind_speed_10m} km/h`);
-        setText('weatherHumidity', `${current.relative_humidity_2m}%`);
-        setText('weatherPrecip', `${current.precipitation} mm`);
-        setText('weatherFeelsLike', `${Math.round(current.apparent_temperature)}°`);
-
-        // Icon
-        const iconEl = document.getElementById('weatherIconLarge');
-        if(iconEl) {
-            iconEl.textContent = info.icon;
-            // Reset animation to sync
-            iconEl.style.animation = 'none';
-            iconEl.offsetHeight; 
-            iconEl.style.animation = 'floatEmoji 6s ease-in-out infinite';
-        }
+        content.innerHTML = html;
 
         // Render Chart
-        if (window.renderForecastChart && this.weatherData.hourly) {
-            window.renderForecastChart(this.weatherData.hourly);
+        if(window.renderAdvancedChart) {
+            window.renderAdvancedChart(weather.hourly, `w-chart-${index}`);
         }
+
+        // Scroll listener for Background fade
+        content.addEventListener('scroll', (e) => {
+            if(index === this.currentIndex && window.weatherParticleEngine) {
+                window.weatherParticleEngine.setScroll(e.target.scrollTop);
+            }
+        });
+    }
+
+    generateHourlyHTML(hourly) {
+        const nowIdx = new Date().getHours();
+        let html = '';
+        for(let i=nowIdx; i<nowIdx+24; i++) {
+            const time = new Date(hourly.time[i]).getHours() + ':00';
+            const icon = (WMO_CODES[hourly.weather_code[i]] || WMO_CODES[0]).icon;
+            const temp = Math.round(hourly.temperature_2m[i]);
+            html += `
+                <div class="w-hour-item">
+                    <div class="w-hour-time">${time}</div>
+                    <div class="w-hour-icon">${icon}</div>
+                    <div class="w-hour-temp">${temp}&deg;</div>
+                </div>
+            `;
+        }
+        return html;
+    }
+
+    generateDailyHTML(daily) {
+        let html = '';
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        // Global min/max for scale bar
+        const globMin = Math.min(...daily.temperature_2m_min);
+        const globMax = Math.max(...daily.temperature_2m_max);
+        const range = globMax - globMin;
+
+        for(let i=0; i<7; i++) {
+            const date = new Date(daily.time[i]);
+            const dayName = i === 0 ? 'Today' : days[date.getDay()];
+            const icon = (WMO_CODES[daily.weather_code[i]] || WMO_CODES[0]).icon;
+            const min = Math.round(daily.temperature_2m_min[i]);
+            const max = Math.round(daily.temperature_2m_max[i]);
+            
+            const leftPct = ((min - globMin) / range) * 100;
+            const widthPct = ((max - min) / range) * 100;
+
+            html += `
+                <div class="w-daily-row">
+                    <div class="w-daily-day">${dayName}</div>
+                    <div class="w-daily-icon">${icon}</div>
+                    <div class="w-daily-temps">
+                        <span class="w-temp-min">${min}&deg;</span>
+                        <div class="w-temp-bar-wrap">
+                            <div class="w-temp-bar" style="left: ${leftPct}%; width: ${widthPct}%;"></div>
+                        </div>
+                        <span class="w-temp-max">${max}&deg;</span>
+                    </div>
+                </div>
+            `;
+        }
+        return html;
+    }
+
+    generateGaugeHTML(value, max, desc) {
+        const pct = Math.min(value / max, 1);
+        const offset = 125.6 - (125.6 * pct);
+        // Map color based on value
+        let color = '#10b981'; // green
+        if(pct > 0.33) color = '#f59e0b'; // yellow
+        if(pct > 0.66) color = '#ef4444'; // red
+
+        return `
+            <div class="w-gauge-wrap">
+                <svg viewBox="0 0 100 50" class="w-gauge-svg">
+                    <path class="w-gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" />
+                    <path class="w-gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke-dasharray="125.6" stroke-dashoffset="${offset}" stroke="${color}" />
+                </svg>
+                <div class="w-gauge-value">${value}</div>
+            </div>
+            <div class="w-gauge-desc">${desc}</div>
+        `;
+    }
+
+    getUVDesc(uv) {
+        if(uv < 3) return "Low";
+        if(uv < 6) return "Moderate";
+        if(uv < 8) return "High";
+        return "Very High";
+    }
+
+    getAQIDesc(aqi) {
+        if(aqi < 20) return "Good";
+        if(aqi < 40) return "Fair";
+        if(aqi < 60) return "Moderate";
+        return "Poor";
+    }
+
+    updateBackgroundForCurrentCity() {
+        const data = this.weatherDataCache[this.currentIndex];
+        if(!data || !window.weatherParticleEngine) return;
+        const c = data.weather.current;
+        window.weatherParticleEngine.setCondition(c.weather_code, c.is_day);
+        
+        // Reset scroll value on change
+        const content = document.getElementById(`w-content-${this.currentIndex}`);
+        if(content) window.weatherParticleEngine.setScroll(content.scrollTop);
+    }
+
+    updateMenuButtons(cur) {
+        const info = WMO_CODES[cur.weather_code] || WMO_CODES[0];
+        ['menuWeatherEmoji', 'sheetWeatherEmoji'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.textContent = info.icon;
+        });
+        ['menuWeatherTemp', 'sheetWeatherTemp'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.innerHTML = `${Math.round(cur.temperature_2m)}&deg;C`;
+        });
+    }
+
+    /* --- City Manager --- */
+    async searchCity(query) {
+        if(query.length < 2) {
+            this.searchResults.innerHTML = '';
+            return;
+        }
+        try {
+            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5`);
+            const data = await res.json();
+            if(!data.results) {
+                this.searchResults.innerHTML = '<div class="w-result-item">No results found.</div>';
+                return;
+            }
+            this.searchResults.innerHTML = data.results.map(r => `
+                <div class="w-result-item" data-name="${r.name}" data-lat="${r.latitude}" data-lon="${r.longitude}" data-country="${r.country}">
+                    <div><b>${r.name}</b>, ${r.country}</div>
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+            `).join('');
+
+            this.searchResults.querySelectorAll('.w-result-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    this.addCity({
+                        id: Date.now().toString(),
+                        name: item.dataset.name,
+                        lat: parseFloat(item.dataset.lat),
+                        lon: parseFloat(item.dataset.lon),
+                        country: item.dataset.country
+                    });
+                });
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    addCity(cityObj) {
+        this.cities.push(cityObj);
+        this.saveCities();
+        this.searchInput.value = '';
+        this.searchResults.innerHTML = '';
+        this.renderSavedCities();
+        this.loadAllCities(); // Re-render swiper
+        this.currentIndex = this.cities.length - 1; // Go to new city
+        setTimeout(() => this.snapToCurrentIndex(), 100);
+    }
+
+    removeCity(index) {
+        if(this.cities.length <= 1) return alert("You must have at least one city.");
+        this.cities.splice(index, 1);
+        this.saveCities();
+        this.currentIndex = 0;
+        this.renderSavedCities();
+        this.loadAllCities();
+    }
+
+    saveCities() {
+        localStorage.setItem('w-cities', JSON.stringify(this.cities));
+    }
+
+    renderSavedCities() {
+        this.savedCitiesList.innerHTML = this.cities.map((c, i) => `
+            <div class="w-saved-city">
+                <div class="w-saved-city-info">
+                    <h4>${c.name}</h4>
+                    <p>${c.country || ''}</p>
+                </div>
+                ${this.cities.length > 1 ? `<button class="w-city-del" onclick="window.weatherApp.removeCity(${i})"><i class="fa-solid fa-trash"></i></button>` : ''}
+            </div>
+        `).join('');
     }
 }
 
-// Initialize Global Service
-const weatherService = new WeatherService();
-window.weatherService = weatherService;
+// Initialize Global App
+window.addEventListener('DOMContentLoaded', () => {
+    window.weatherApp = new WeatherApp();
+});
