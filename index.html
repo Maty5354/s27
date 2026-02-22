@@ -127,35 +127,227 @@
 
 <!-- Advanced Weather App Overlay -->
             <div id="weatherOverlay" class="weather-overlay">
-                <!-- Dynamic Sky Background & Particle Effects -->
-                <canvas id="weatherCanvasBg" class="w-canvas-bg"></canvas>
-                <canvas id="weatherCanvasFx" class="w-canvas-fx"></canvas>
+                <!-- Background Canvas for Particles -->
+                <canvas id="weatherCanvas"></canvas>
 
-                <!-- Top Navigation & City Indicators -->
-                <div class="w-top-nav">
-                    <button class="w-icon-btn" id="closeWeatherOverlay"><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="w-city-dots" id="wCityDots"></div>
-                    <button class="w-icon-btn" id="manageCitiesBtn"><i class="fa-solid fa-bars"></i></button>
+                <!-- Fog Vision Effect -->
+                <div class="weather-fog-layer"></div>
+
+                <!-- Lightning Flash -->
+                <div class="weather-lightning-flash thunder-flash"></div>
+
+                <!-- Cloud Background Layer -->
+                <div class="weather-cloud-bg"></div>
+
+                <!-- Snow Accumulation -->
+                <div class="weather-snow-accumulation"></div>
+
+                <!-- App Container -->
+                <div class="weather-app-container">
+                    <!-- Header Bar -->
+                    <div class="weather-header-bar">
+                        <div class="weather-city-chips" id="weatherCityChips">
+                            <!-- City chips will be injected by JS -->
+                        </div>
+                        <div class="weather-header-actions">
+                            <button class="weather-icon-btn" id="weatherSearchBtn" aria-label="Search Cities">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <button class="weather-icon-btn" id="closeWeatherOverlay" aria-label="Close Weather">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- City Search Panel -->
+                    <div class="weather-search-panel" id="weatherSearchPanel">
+                        <div class="weather-search-input-wrap">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <input type="text" id="weatherSearchInput" placeholder="Search for a city...">
+                            <button class="weather-icon-btn" id="closeSearchPanel" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="weather-search-results" id="weatherSearchResults">
+                            <!-- Search results will be injected by JS -->
+                        </div>
+                        <div class="weather-search-saved-cities" id="weatherSavedCities">
+                            <!-- Saved cities will be injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Cities Swipe Container -->
+                    <div class="weather-cities-swipe">
+                        <div class="weather-city-pages" id="weatherCityPages">
+                            <!-- City pages will be injected by JS -->
+                            <!-- Example structure for one city: -->
+                            <div class="weather-city-page" data-city-id="0">
+                                <!-- Left Panel (Mobile: stacked top, Desktop: left column) -->
+                                <div class="weather-left-panel">
+                                    <!-- Hero Section -->
+                                    <div class="weather-hero">
+                                        <div class="weather-hero-location">Loading...</div>
+                                        <div class="weather-hero-icon">☁️</div>
+                                        <div class="weather-hero-temp-row">
+                                            <span class="weather-hero-temp">--</span>
+                                            <span class="weather-hero-unit">°C</span>
+                                        </div>
+                                        <div class="weather-hero-condition">--</div>
+                                        <div class="weather-hero-range">
+                                            <span class="hi">H:--°</span>
+                                            <span class="lo">L:--°</span>
+                                        </div>
+                                        <div class="weather-hero-updated">Updated: --</div>
+                                    </div>
+
+                                    <!-- Hourly Strip -->
+                                    <div class="weather-hourly-strip">
+                                        <div class="weather-hourly-strip-inner" id="weatherHourlyStrip">
+                                            <!-- Hourly items injected by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Sparkline Chart -->
+                                    <div class="weather-sparkline-wrap">
+                                        <svg class="weather-sparkline" id="weatherSparkline" viewBox="0 0 800 60">
+                                            <!-- Sparkline path injected by JS -->
+                                        </svg>
+                                    </div>
+
+                                    <!-- Quick Stats Grid -->
+                                    <div class="weather-stats-grid" id="weatherStatsGrid">
+                                        <!-- Stats cards injected by JS -->
+                                    </div>
+
+                                    <!-- Sunrise/Sunset Arc -->
+                                    <div class="weather-sun-arc-section">
+                                        <div class="weather-sun-arc-card">
+                                            <div class="sun-arc-title">
+                                                <i class="fa-solid fa-sun"></i> Sunrise & Sunset
+                                            </div>
+                                            <div id="weatherSunArc">
+                                                <!-- SVG arc injected by JS -->
+                                            </div>
+                                            <div class="sun-arc-times" id="weatherSunTimes">
+                                                <span class="rise"><i class="fa-solid fa-arrow-up"></i> --:--</span>
+                                                <span class="set"><i class="fa-solid fa-arrow-down"></i> --:--</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 7-Day Forecast -->
+                                    <div class="weather-daily-section">
+                                        <div class="weather-section-title">
+                                            <i class="fa-solid fa-calendar-week"></i> 7-Day Forecast
+                                        </div>
+                                        <div class="weather-daily-list" id="weatherDailyList">
+                                            <!-- Daily rows injected by JS -->
+                                        </div>
+                                    </div>
+
+                                    <!-- Air Quality -->
+                                    <div class="weather-aqi-section">
+                                        <div class="weather-section-title">
+                                            <i class="fa-solid fa-wind"></i> Air Quality
+                                        </div>
+                                        <div class="weather-aqi-card" id="weatherAQICard">
+                                            <!-- AQI content injected by JS -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Panel (Desktop only - tabs) -->
+                                <div class="weather-right-panel">
+                                    <!-- Desktop Tab Navigation -->
+                                    <div class="weather-right-tabs">
+                                        <button class="weather-right-tab-btn active" data-tab="today">Today</button>
+                                        <button class="weather-right-tab-btn" data-tab="hourly">Hourly</button>
+                                        <button class="weather-right-tab-btn" data-tab="7day">7 Days</button>
+                                        <button class="weather-right-tab-btn" data-tab="details">Details</button>
+                                    </div>
+
+                                    <!-- Tab Panels -->
+                                    <div class="weather-tab-panel active" data-panel="today">
+                                        <!-- Today content (same as left panel on mobile) -->
+                                    </div>
+
+                                    <div class="weather-tab-panel" data-panel="hourly">
+                                        <div class="weather-hourly-table-section">
+                                            <table class="weather-hourly-table" id="weatherHourlyTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Time</th>
+                                                        <th>Condition</th>
+                                                        <th>Temp</th>
+                                                        <th>Precip</th>
+                                                        <th>Wind</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="weatherHourlyTableBody">
+                                                    <!-- Table rows injected by JS -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="weather-tab-panel" data-panel="7day">
+                                        <div class="weather-7day-section" id="weather7DaySection">
+                                            <!-- 7-day cards injected by JS -->
+                                        </div>
+                                    </div>
+
+                                    <div class="weather-tab-panel" data-panel="details">
+                                        <!-- Additional details section -->
+                                        <div class="weather-hourly-table-section">
+                                            <div class="weather-section-title">
+                                                <i class="fa-solid fa-circle-info"></i> Additional Details
+                                            </div>
+                                            <div id="weatherDetailsPanel">
+                                                <!-- Details injected by JS -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Tab Bar (Mobile Only) -->
+                    <div class="weather-tab-bar">
+                        <button class="weather-tab-btn active" data-tab="today">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Today</span>
+                        </button>
+                        <button class="weather-tab-btn" data-tab="hourly">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Hourly</span>
+                        </button>
+                        <button class="weather-tab-btn" data-tab="7day">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span>7 Days</span>
+                        </button>
+                        <button class="weather-tab-btn" data-tab="details">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Details</span>
+                        </button>
+                    </div>
+
+                    <!-- Footer Bar -->
+                    <div class="weather-footer-bar">
+                        <div class="weather-footer-attribution">
+                            <small>Powered by Open-Meteo</small>
+                        </div>
+                        <button class="weather-refresh-btn" id="weatherRefreshBtn">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- City Manager & Search Panel (Hidden by default) -->
-                <div id="wCityManager" class="w-city-manager hidden">
-                    <div class="w-manager-header">
-                        <h3>Manage Cities</h3>
-                        <button class="w-icon-btn" id="closeCityManager"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="w-search-box">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="wCitySearch" placeholder="Search for a city...">
-                    </div>
-                    <div id="wSearchResults" class="w-search-results"></div>
-                    <h4 class="w-saved-title">Saved Cities</h4>
-                    <div id="wSavedCities" class="w-saved-cities"></div>
-                </div>
-
-                <!-- Swiper Container for Multiple Cities -->
-                <div class="w-swiper" id="wSwiper">
-                    <!-- City slides will be injected here by JS -->
+                <!-- Loading Overlay -->
+                <div class="weather-loading-overlay" id="weatherLoadingOverlay" style="display: none;">
+                    <div class="weather-loading-spinner"></div>
+                    <div class="weather-loading-text">Loading weather data...</div>
                 </div>
             </div>
 
