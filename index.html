@@ -30,7 +30,6 @@
     <link rel="stylesheet" href="./css/layout.css">
     <link rel="stylesheet" href="./css/responsive.css">
     <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/depth.css">
     
 
     <script>
@@ -126,72 +125,40 @@
             <!--menu overlay-->
             <div id="overlay"></div>
 
-            <!-- Weather Overlay -->
+<!-- Advanced Weather App Overlay -->
             <div id="weatherOverlay" class="weather-overlay">
-                <canvas id="weatherCanvas"></canvas>
-                <div class="weather-overlay-container">
-                    <div class="weather-overlay-header">
-                        <h2>
-                            <span id="weatherLocationName">Bucharest</span>
-                            <span class="weather-location-coord" id="weatherCoords"></span>
-                        </h2>
-                        <button id="closeWeatherOverlay" class="weather-close-btn"><i
-                                class="fa-solid fa-xmark"></i></button>
+                <!-- Dynamic Sky Background & Particle Effects -->
+                <canvas id="weatherCanvasBg" class="w-canvas-bg"></canvas>
+                <canvas id="weatherCanvasFx" class="w-canvas-fx"></canvas>
+
+                <!-- Top Navigation & City Indicators -->
+                <div class="w-top-nav">
+                    <button class="w-icon-btn" id="closeWeatherOverlay"><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="w-city-dots" id="wCityDots"></div>
+                    <button class="w-icon-btn" id="manageCitiesBtn"><i class="fa-solid fa-bars"></i></button>
+                </div>
+
+                <!-- City Manager & Search Panel (Hidden by default) -->
+                <div id="wCityManager" class="w-city-manager hidden">
+                    <div class="w-manager-header">
+                        <h3>Manage Cities</h3>
+                        <button class="w-icon-btn" id="closeCityManager"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-
-                    <div class="weather-content-grid">
-                        <!-- Left: Main Info -->
-                        <div class="weather-main-info">
-                            <div class="weather-icon-large" id="weatherIconLarge"></div>
-                            <div class="weather-temp-large">
-                                <span id="weatherCurrentTemp">--</span>°
-                            </div>
-                            <div class="weather-condition" id="weatherCondition">Loading...</div>
-                            <div class="weather-high-low">
-                                H:<span id="weatherHigh">--</span>° L:<span id="weatherLow">--</span>°
-                            </div>
-                        </div>
-
-                        <!-- Right: Details & Chart -->
-                        <div class="weather-details-section">
-                            <div class="weather-details-grid">
-                                <div class="weather-detail-card">
-                                    <i class="fa-solid fa-wind"></i>
-                                    <span class="weather-detail-label">Wind</span>
-                                    <span class="weather-detail-value" id="weatherWind">-- km/h</span>
-                                </div>
-                                <div class="weather-detail-card">
-                                    <i class="fa-solid fa-droplet"></i>
-                                    <span class="weather-detail-label">Humidity</span>
-                                    <span class="weather-detail-value" id="weatherHumidity">--%</span>
-                                </div>
-                                <div class="weather-detail-card">
-                                    <i class="fa-solid fa-umbrella"></i>
-                                    <span class="weather-detail-label">Precip</span>
-                                    <span class="weather-detail-value" id="weatherPrecip">-- mm</span>
-                                </div>
-                                <div class="weather-detail-card">
-                                    <i class="fa-solid fa-temperature-half"></i>
-                                    <span class="weather-detail-label">Feels Like</span>
-                                    <span class="weather-detail-value" id="weatherFeelsLike">--°</span>
-                                </div>
-                            </div>
-
-                            <div class="weather-chart-container">
-                                <h3>24h Forecast</h3>
-                                <div id="weatherChart" class="weather-chart"></div>
-                            </div>
-                        </div>
+                    <div class="w-search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="wCitySearch" placeholder="Search for a city...">
                     </div>
+                    <div id="wSearchResults" class="w-search-results"></div>
+                    <h4 class="w-saved-title">Saved Cities</h4>
+                    <div id="wSavedCities" class="w-saved-cities"></div>
+                </div>
 
-                    <div class="weather-footer">
-                        <button id="refreshWeatherBtn" class="refresh-weather-btn">
-                            <i class="fa-solid fa-rotate-right"></i> Refresh
-                        </button>
-                        <span>Data provided by Open-Meteo</span>
-                    </div>
+                <!-- Swiper Container for Multiple Cities -->
+                <div class="w-swiper" id="wSwiper">
+                    <!-- City slides will be injected here by JS -->
                 </div>
             </div>
+
 
             <!-- Advanced To-Do System Overlay -->
             <div id="advancedTodoOverlay" class="advanced-todo-overlay">
