@@ -1143,3 +1143,45 @@
     animation: wShimmer 1.5s infinite;
     border-radius: 6px;
 }
+
+/* ─── Chart Specific Styles ─────────────────────── */
+.w-chart-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.w-chart-path {
+    fill: none;
+    stroke: url(#chartGradient);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.w-chart-point {
+    fill: white;
+    stroke: rgba(255,255,255,0.5);
+    stroke-width: 1.5;
+    transition: r 0.2s ease;
+    cursor: pointer;
+}
+
+.w-chart-point:hover {
+    r: 6;
+}
+
+.w-precip-chart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+/* ─── Canvas Background ─────────────────────────── */
+.w-canvas-bg,
+.w-canvas-fx {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
