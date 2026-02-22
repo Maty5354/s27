@@ -549,6 +549,7 @@ class WeatherApp {
                     ${this._dailyForecastHTML(daily)}
                 </div>
                 <div data-desktop-panel="hourly" class="weather-tab-panel">
+                    ${this._advancedChartHTML(hourly)}
                     ${this._hourlyTableHTML(hourly, isDay)}
                 </div>
                 <div data-desktop-panel="daily" class="weather-tab-panel">
@@ -566,6 +567,7 @@ class WeatherApp {
                 ${this._dailyForecastHTML(daily)}
             </div>
             <div data-tab="hourly" class="weather-tab-panel">
+                ${this._advancedChartHTML(hourly)}
                 ${this._hourlyTableHTML(hourly, isDay)}
             </div>
             <div data-tab="daily" class="weather-tab-panel">
@@ -583,6 +585,11 @@ class WeatherApp {
             this._animateSunArc(el, daily);
             this._animateCloudCover(el, cur.cloud_cover);
             this._animateAQIGauge(el, aqi);
+            // Render advanced chart
+            const chartId = `advancedChart_${this.cityIdx || 0}`;
+            if (window.renderAdvancedChart && hourly) {
+                window.renderAdvancedChart(hourly, chartId);
+            }
         });
     }
 
@@ -731,6 +738,23 @@ class WeatherApp {
                 <polygon points="20,36 23,22 20,19 17,22" fill="rgba(255,255,255,0.6)"/>
             </g>
         </svg>`;
+    }
+
+    /* ── Advanced Chart ──────────────────────────── */
+    _advancedChartHTML(hourly) {
+        if (!hourly?.time || !hourly?.temperature_2m) return '';
+        const chartId = `advancedChart_${this.cityIdx || 0}`;
+        return `
+        <div class="w-advanced-chart-wrap w-anim-up-1">
+            <div class="w-advanced-chart-card">
+                <div class="w-chart-title">
+                    <i class="fa-solid fa-chart-line"></i> Temperature Trend (24h)
+                </div>
+                <div class="w-chart-container" id="${chartId}">
+                    <!-- Chart will be rendered here by renderAdvancedChart -->
+                </div>
+            </div>
+        </div>`;
     }
 
     /* ── Hourly strip ────────────────────────────── */
