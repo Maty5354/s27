@@ -1,0 +1,301 @@
+================================================================================
+                    S27 PROJECT - COMPLETE EMOJI & ICON LIST
+                     For Custom SVG Icon Creation
+================================================================================
+
+This document contains ALL emojis and icons used in the s27 project.
+Generated: 2026-02-24
+
+
+================================================================================
+                           UNICODE EMOJIS (50+)
+================================================================================
+
+WEATHER EMOJIS (9)
+------------------
+🌙  Moon/Night
+☀️  Sunny/Clear
+🌤️  Partly Cloudy
+☁️  Cloud
+🌫️  Fog/Mist
+🌦️  Drizzle
+🌧️  Rain
+❄️  Snow
+⛈️  Thunderstorm
+
+
+SUBJECT/SCHEDULE EMOJIS (14)
+-----------------------------
+🧪  Chemistry (Chimie)
+📰  Journalism
+⚽  Sports (Sport)
+📏  Mathematics (Mate)
+💻  IT/Informatics
+🎵  Music (Muzică)
+💡  Physics (Fizică)
+📜  History (Istorie)
+🧰  Technology (Tehnologică)
+🧬  Biology (Biologie)
+🏛️  Civic (Civică)
+📐  Optional Math
+🌍  Geography
+☦️  Religion/Orthodox
+
+
+UI EMOJIS (2)
+-------------
+🔔  Bell/Reminder
+✓   Checkmark
+
+
+================================================================================
+                        FONTAWESOME ICONS (120+)
+================================================================================
+
+NAVIGATION & CORE (10)
+----------------------
+fa-sliders           - Customization
+fa-book             - All Textbooks
+fa-clock            - Clock
+fa-list-check       - My Tasks
+fa-circle-info      - Info
+fa-bars             - Menu
+fa-search           - Search
+fa-filter           - Filter
+fa-sort             - Sort
+fa-inbox            - Inbox
+
+
+WEATHER ICONS (5)
+-----------------
+fa-cloud-sun        - Weather header
+fa-location-dot     - Location
+fa-sun              - Sunrise
+fa-moon             - Sunset
+fa-rotate           - Refresh Weather
+
+
+TASKS & ORGANIZATION (45)
+-------------------------
+fa-folder           - Folder
+fa-folder-plus      - Add folder
+fa-folder-pen       - Edit folder
+fa-briefcase        - Work tasks
+fa-home             - Personal tasks
+fa-shopping-cart    - Shopping
+fa-heart            - Favorites
+fa-star             - Starred
+fa-graduation-cap   - Education
+fa-book             - Study
+fa-utensils         - Food/Meals
+fa-dumbbell         - Health/Fitness
+fa-plane            - Travel
+fa-palette          - Art/Design
+fa-music            - Music
+fa-gamepad          - Games
+fa-film             - Movies/Entertainment
+fa-camera           - Photography
+fa-car              - Transport
+fa-coffee           - Coffee/Break
+fa-gift             - Gifts
+fa-lightbulb        - Ideas
+fa-rocket           - Projects
+fa-umbrella         - Events
+fa-key              - Important
+fa-bell             - Notifications
+fa-flag             - Flagged
+fa-chart-line       - Analytics
+fa-code             - Programming
+fa-laptop           - Work
+fa-mobile           - Mobile
+fa-headphones       - Audio
+fa-bicycle          - Sports
+fa-tree             - Nature
+fa-paw              - Pets
+fa-hammer           - Tools
+fa-wrench           - Maintenance
+fa-flask            - Science
+fa-trophy           - Achievement
+fa-medal            - Awards
+fa-fire             - Hot/Priority
+fa-snowflake        - Cool/Low Priority
+fa-pencil           - Edit
+fa-trash            - Delete
+fa-paperclip        - Attachments
+fa-repeat           - Repeating tasks
+
+
+LAYOUT VIEWS (13)
+-----------------
+fa-table-cells      - Weekly Schedule
+fa-mobile-screen    - Landscape Table
+fa-id-card          - Cards
+fa-left-right       - Swipe
+fa-list             - Accordion
+fa-table-list       - Tabs
+fa-columns          - Kanban
+fa-arrows-left-right - Kanban Swipe
+fa-table-columns    - Split Columns
+fa-stream           - Timeline
+fa-calendar-week    - Day Chips
+fa-umbrella-beach   - Today's Schedule
+fa-grip-lines       - Layout options
+
+
+ARROWS & NAVIGATION (12)
+------------------------
+fa-chevron-left     - Previous
+fa-chevron-right    - Next
+fa-chevron-down     - Expand
+fa-chevron-up       - Collapse
+fa-arrow-up         - Up
+fa-arrow-down       - Down
+fa-arrow-left       - Left
+fa-arrow-right      - Right
+fa-arrow-up-left    - Diagonal Up-Left
+fa-arrow-up-right   - Diagonal Up-Right
+fa-arrow-down-left  - Diagonal Down-Left
+fa-arrow-down-right - Diagonal Down-Right
+
+
+TEXT & ALIGNMENT (5)
+--------------------
+fa-font             - Text
+fa-align-left       - Align Left
+fa-align-center     - Align Center
+fa-align-right      - Align Right
+fa-align-justify    - Justify
+
+
+CUSTOMIZATION & THEMES (40+)
+----------------------------
+fa-wand-magic-sparkles - Theme Creator
+fa-palette          - Colors
+fa-moon             - Dark mode toggle
+fa-sliders          - Advanced settings
+fa-floppy-disk      - Save
+fa-magnifying-glass - Search
+fa-arrow-down-a-z   - Sort A-Z
+fa-arrow-up-z-a     - Sort Z-A
+fa-clock-rotate-left - Recent/History
+fa-trash-can        - Delete
+fa-eyedropper       - Color picker
+fa-copy             - Copy
+fa-bookmark         - Save preset
+fa-check            - Apply/Confirm
+fa-shuffle          - Random
+fa-adjust           - Saturation
+fa-tint             - Vivid
+fa-tint-slash       - Muted
+fa-exchange-alt     - Flip/Swap
+fa-code-branch      - Triadic
+fa-arrows-alt       - Split
+fa-thermometer-full - Warmer
+fa-snowflake        - Cooler
+fa-eye              - Visible
+fa-eye-slash        - Hidden/Blind mode
+fa-download         - Download
+fa-file-export      - Export
+fa-file-import      - Import
+fa-code             - CSS
+fa-project-diagram  - Harmonies
+fa-history          - History
+fa-chevron-down     - Toggle
+fa-circle           - Radial gradient
+fa-rotate           - Conic gradient
+fa-sort-amount-up   - Sort ascending
+fa-sort-amount-down - Sort descending
+fa-sync             - Refresh
+fa-info-circle      - Information
+fa-user-pen         - My Themes
+fa-desktop          - System Presets
+
+
+UI CONTROLS (6)
+---------------
+fa-xmark            - Close
+fa-plus             - Add
+fa-compress         - Collapse
+fa-calendar         - Calendar
+fa-calendar-day     - Day view
+fa-hand             - Manual order
+
+
+================================================================================
+                            FLAG ICONS (3)
+================================================================================
+
+fi fi-ro            - 🇷🇴 Romania
+fi fi-gb            - 🇬🇧 Great Britain
+fi fi-fr            - 🇫🇷 France
+
+
+================================================================================
+                          SPECIAL CHARACTERS
+================================================================================
+
+✓   - Checkmark (CSS content)
+❌  - Error/Close indicator
+
+
+================================================================================
+                              SUMMARY
+================================================================================
+
+Total Counts:
+- Unicode Emojis: 50+
+- FontAwesome Icons: 120+
+- Flag Icons: 3
+- Special Characters: 2
+
+Current Dependencies:
+- FontAwesome 6.5.0 (CDN)
+  URL: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css
+
+- Flag Icons 7.3.2 (CDN)
+  URL: https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css
+
+
+================================================================================
+                          FILES SCANNED
+================================================================================
+
+- /home/runner/work/s27/s27/index.html
+- /home/runner/work/s27/s27/js/ui-core.js
+- /home/runner/work/s27/s27/js/weather-time.js
+- /home/runner/work/s27/s27/js/todo.js
+- /home/runner/work/s27/s27/js/mobile-nav8d.js
+- /home/runner/work/s27/s27/js/timetable8d.js
+- /home/runner/work/s27/s27/js/overlay-manager.js
+- /home/runner/work/s27/s27/js/customization.js
+- /home/runner/work/s27/s27/js/customization/themes.js
+- /home/runner/work/s27/s27/js/customization/accent.js
+- /home/runner/work/s27/s27/js/manuals.js
+- /home/runner/work/s27/s27/data/themes.json
+- /home/runner/work/s27/s27/data/8d.json
+- /home/runner/work/s27/s27/data/manuals.json
+- /home/runner/work/s27/s27/css/*.css
+
+
+================================================================================
+                              NOTES
+================================================================================
+
+1. This list includes ALL emojis and icons currently used in the project
+2. Each icon is categorized by its usage context
+3. FontAwesome icons use the 'fa-' prefix
+4. Flag icons use the 'fi fi-XX' format (XX = country code)
+5. Unicode emojis can be rendered directly or replaced with SVG
+6. Consider maintaining similar visual appearance when creating SVG replacements
+
+For creating custom SVG icons:
+- Maintain consistent sizing and stroke widths
+- Use semantic naming conventions
+- Consider accessibility (ARIA labels)
+- Optimize SVG file sizes
+- Create variants for different states (hover, active, disabled)
+
+
+================================================================================
+                           END OF DOCUMENT
+================================================================================
