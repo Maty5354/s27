@@ -629,28 +629,63 @@
 
                 <!-- Sidebar -->
                 <div class="custom-sidebar">
+                    <button class="custom-nav-arrow left" id="sidebarPrev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
                     <div class="sidebar-header">
                         <h2><i class="fa-solid fa-sliders"></i> Customize</h2>
                     </div>
-
                     <nav class="sidebar-nav">
                         <div class="sidebar-item active" data-section="themes">
                             <i class="fa-solid fa-palette"></i>
                             <span>Themes</span>
                         </div>
-                        <div class="sidebar-item" data-section="base">
+                        <div class="sidebar-item" data-section="accent">
+                            <i class="fa-solid fa-droplet"></i>
+                            <span>Accent Color</span>
+                        </div>
+                        <div class="sidebar-item" data-section="font">
+                            <i class="fa-solid fa-font"></i>
+                            <span>Typography</span>
+                        </div>
+                        <div class="sidebar-item" data-section="ui">
+                            <i class="fa-solid fa-desktop"></i>
+                            <span>Interface</span>
+                        </div>
+                        <div class="sidebar-item" data-section="timetable">
+                            <i class="fa-solid fa-table-cells"></i>
+                            <span>Timetable</span>
+                        </div>
+                        <div class="sidebar-item mobile-only" data-section="mobile">
+                            <i class="fa-solid fa-mobile"></i>
+                            <span>Mobile</span>
+                        </div>
+                        <div class="sidebar-item" data-section="accesibility">
+                            <i class="fa-solid fa-universal-access"></i>
+                            <span>Accesibility</span>
+                        </div>
+                        <div class="sidebar-item" data-section="advanced">
+                            <i class="fa-solid fa-cog"></i>
+                            <span>Advanced</span>
+                        </div>
+                        <div class="sidebar-item" data-section="sharing">
+                            <i class="fa-solid fa-share"></i>
+                            <span>Sharing</span>
+                        </div>
+                        <div class="sidebar-item" data-section="presets">
+                            <i class="fa-solid fa-bookmark"></i>
+                            <span>Presets</span>
+                        </div>
+                        <div class="sidebar-item dev-mode" data-section="base">
                             <i class="fa-solid fa-paintbrush"></i>
                             <span>Base</span>
                         </div>
                     </nav>
+                    <button class="custom-nav-arrow right" id="sidebarNext" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
 
                 <!-- Content -->
                 <div class="custom-content" data-simplebar>
 
-
-
-                    <!-- Base Section -->
+                    <!-- Base Section USED FOR ALL TABS -->
                     <div class="custom-section" id="baseSection">
                         <h3><i class="fa-solid fa-paintbrush"></i> Base Styles</h3>
                         <div class="base-inputs-grid">

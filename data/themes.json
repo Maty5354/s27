@@ -8,7 +8,6 @@
       "tags": [
         "dynamic"
       ],
-      "author": system,
       "isDarkThemed": null,
       "isSystemCreated": true,
       "colors": {},
@@ -27,7 +26,6 @@
         "light",
         "minimal"
       ],
-      "author": system,
       "isSystemCreated": true,
       "isDarkThemed": false,
       "colors": {
@@ -73,7 +71,6 @@
         "dark",
         "minimal"
       ],
-      "author": system,
       "isDarkThemed": true,
       "isSystemCreated": true,
       "colors": {
@@ -113,5 +110,4 @@
   ],
   "DevPresets": [],
   "CommunityPresets": []
-
 }

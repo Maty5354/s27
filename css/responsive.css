@@ -3,6 +3,11 @@
    RESPONSIVE
    ======================================== */
 
+/* Hide carousel arrows on desktop by default */
+.custom-nav-arrow {
+    display: none !important;
+}
+
 /* Tablet (max-width: 1024px) */
 @media (max-width: 1024px) {
     body {
@@ -323,6 +328,31 @@
         position: relative; /* Context for arrows */
     }
 
+    /* Gradient fade overlay for carousel */
+    .custom-sidebar::before {
+        content: '';
+        position: absolute;
+        left: 2rem;
+        top: 0;
+        bottom: 0;
+        width: 2rem;
+        background: linear-gradient(90deg, var(--card-bg) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: 11;
+    }
+
+    .custom-sidebar::after {
+        content: '';
+        position: absolute;
+        right: 2rem;
+        top: 0;
+        bottom: 0;
+        width: 2rem;
+        background: linear-gradient(270deg, var(--card-bg) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: 11;
+    }
+
     /* Force Hide Sidebar Header on Mobile (Customization overlay only) */
     .custom-sidebar .sidebar-header {
         display: none !important;
@@ -364,6 +394,7 @@
         position: absolute;
         top: 0;
         bottom: 0;
+        height: 100%;
         width: 2rem;
         background: color-mix(in srgb, var(--card-bg) 90%, transparent);
         border: none;

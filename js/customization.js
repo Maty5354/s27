@@ -60,6 +60,7 @@
     // ── Bootstrap ──────────────────────────
     function init() {
         setupOverlay();
+        setupCarouselNav();
         initializeBaseControls();
         applyAccentColor(currentAccentColor);
     }
@@ -111,6 +112,31 @@
         localStorage.setItem(STORAGE_KEYS.ACCENT_COLOR, color);
         const demoColorValue = document.getElementById("demoColorValue");
         if (demoColorValue) demoColorValue.textContent = color.toUpperCase();
+    }
+
+    // ── Setup Carousel Navigation ───────────
+    function setupCarouselNav() {
+        const prevBtn = document.getElementById("sidebarPrev");
+        const nextBtn = document.getElementById("sidebarNext");
+        const sidebarNav = document.querySelector(".sidebar-nav");
+        
+        if (!prevBtn || !nextBtn || !sidebarNav) return;
+        
+        const scrollAmount = 200; // Pixels to scroll
+        
+        prevBtn.addEventListener("click", () => {
+            sidebarNav.scrollBy({
+                left: -scrollAmount,
+                behavior: "smooth"
+            });
+        });
+        
+        nextBtn.addEventListener("click", () => {
+            sidebarNav.scrollBy({
+                left: scrollAmount,
+                behavior: "smooth"
+            });
+        });
     }
 
     // ══════════════════════════════════════

@@ -37,9 +37,14 @@
     --shadow-color-modal: rgba(0, 0, 0, 0.5);
     --overlay-bg: rgba(0, 0, 0, 0.5);
     --overlay-bg-strong: rgba(0, 0, 0, 0.85);
-    --overlay-blur: 10px;
-    --overlay-blur-light: 2px;
-    --overlay-blur-medium: 8px;
+    --overlay-blur-heavy: calc(var(--overlay-blur) * 1.5);
+    --overlay-blur: 8px;
+    --overlay-blur-light: calc(var(--overlay-blur) * 1.25);
+    --overlay-blur-medium: calc(var(--overlay-blur) * 0.75);
+    --backdrop-blur: 8px;
+    --backdrop-blur-strong: calc(var(--backdrop-blur) * 2);
+    --backdrop-blur-weak: calc(var(--backdrop-blur) * 0.5);
+    --backdrop-blur-super-weak: calc(var(--backdrop-blur) * 0.25);
 
     /* === Current Indicators === */
     --current-hour-color: #81ade6;
@@ -105,12 +110,7 @@
     --border-radius-sm: calc(var(--border-radius) * 0.5);
     --border-radius-xs: calc(var(--border-radius) * 0.25);
     --border-radius-pill: 9999px;
-    --backdrop-blur: 10px;
-    /* Dynamic via UI settings */
-    --backdrop-blur-strong: calc(var(--backdrop-blur) * 2);
-    /* Dynamic via UI (glass intensity) */
     --glass-opacity: 0.8;
-    /* Dynamic via UI settings */
     --box-shadow: 0 4px 6px var(--shadow-color);
     --box-shadow-sm: 0 2px 5px var(--shadow-color);
     --box-shadow-md: 0 4px 15px var(--shadow-color);

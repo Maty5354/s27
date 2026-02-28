@@ -58,7 +58,7 @@ function updateTitleTime() {
     }
     
     if (dateEl) {
-        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        const options = { weekday: 'long', day: 'numeric', month: 'short' };
         dateEl.textContent = now.toLocaleDateString('ro-RO', options);
     }
 }
@@ -66,6 +66,28 @@ function updateTitleTime() {
 // Update every second
 setInterval(updateTitleTime, 1000);
 updateTitleTime();
+
+// --- MOBILE HEADER TIME DISPLAY ---
+function updateMobileHeaderTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const mobileTimeEl = document.getElementById("mobileHeaderTime");
+    const mobileDateEl = document.getElementById("mobileHeaderDate");
+    
+    if (mobileTimeEl) {
+        mobileTimeEl.textContent = `${hours}:${minutes}`;
+    }
+    
+    if (mobileDateEl) {
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        mobileDateEl.textContent = now.toLocaleDateString('ro-RO', options);
+    }
+}
+
+// Update mobile header every second
+setInterval(updateMobileHeaderTime, 1000);
+updateMobileHeaderTime();
 
 document.getElementById("titleTime")?.addEventListener("click", function () {
     const clockBtn = document.getElementById("clockBtn");
