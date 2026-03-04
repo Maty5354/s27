@@ -1156,19 +1156,6 @@
             }
         });
 
-        /* Listen for "open create" events from themes.js */
-        window.addEventListener("tcm:openCreate", e => {
-            openModal(e.detail || null);
-        });
-
-        window.addEventListener("tcm:openEdit", e => {
-            if (e.detail) openEdit(e.detail);
-        });
-
-        /* After save, refresh themes grid */
-        window.addEventListener("tcm:themeSaved", () => {
-            /* themes.js listens to this and will reload its grid */
-        });
     }
 
     /* ════════════════════════════════════════
@@ -1291,14 +1278,13 @@
         injectModal();
     }
 
-    /* ── Patch themes.js to call this modal ── */
-    const _origCreate = window.themeCreator?.open;
-    window.addEventListener("DOMContentLoaded", () => {
-        /* 
-         * themes.js calls handleCreateNew() which now dispatches tcm:openCreate,
-         * and handleEditTheme() dispatches tcm:openEdit.
-         * Patch those dispatchers after both modules load.
-         */
+    /* ── Top-level event listeners (always registered regardless of inject timing) ── */
+    window.addEventListener("tcm:openCreate", e => {
+        openModal(e.detail || null);
+    });
+
+    window.addEventListener("tcm:openEdit", e => {
+        if (e.detail) openEdit(e.detail);
     });
 
 })();
