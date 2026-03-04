@@ -9,7 +9,7 @@
 
     const MODULES = [
         "themes",
-        "tcreate-themes",
+        "tcreate-modal",
         "accent",
         // Future tabs go here: "appearance", "layout", "fonts", etc.
     ];
