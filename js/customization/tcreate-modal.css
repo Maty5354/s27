@@ -1,0 +1,968 @@
+/* ========================================
+   THEME CREATE / EDIT MODAL — tcreate-modal.css
+   ======================================== */
+
+/* ── Backdrop ────────────────────────────── */
+.tcm-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--overlay-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    padding: 1rem;
+}
+
+.tcm-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ── Shell ───────────────────────────────── */
+.tcm-shell {
+    width: min(900px, 98vw);
+    max-height: min(92vh, 800px);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-modal);
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.93) translateY(24px);
+    transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+    overflow: hidden;
+    position: relative;
+}
+
+.tcm-overlay.active .tcm-shell {
+    transform: scale(1) translateY(0);
+}
+
+/* ── Header ──────────────────────────────── */
+.tcm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--highlight-color) 60%, var(--card-bg));
+    flex-shrink: 0;
+    gap: 1rem;
+}
+
+.tcm-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tcm-header-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--border-radius-sm);
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.tcm-header h2 {
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
+}
+
+.tcm-header-subtitle {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.tcm-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.tcm-close-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--highlight-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: all var(--transition-speed) ease;
+}
+
+.tcm-close-btn:hover {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--accent-color);
+}
+
+/* ── Step Indicator ──────────────────────── */
+.tcm-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tcm-steps::-webkit-scrollbar { display: none; }
+
+.tcm-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all var(--transition-speed) ease;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    font-family: var(--font-family);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.tcm-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 30%;
+    height: 40%;
+    width: 1px;
+    background: var(--border-color);
+}
+
+.tcm-step:hover {
+    color: var(--text-color);
+    background: color-mix(in srgb, var(--highlight-color) 50%, transparent);
+}
+
+.tcm-step.active {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+    font-weight: 700;
+}
+
+.tcm-step.done .tcm-step-num {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.tcm-step-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.tcm-step.active .tcm-step-num {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-on-accent);
+}
+
+/* ── Body Layout ─────────────────────────── */
+.tcm-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* ── Panels ──────────────────────────────── */
+.tcm-panel {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    gap: 1.25rem;
+    flex-direction: column;
+    animation: fadeInUp 0.25s ease-out;
+}
+
+.tcm-panel.active {
+    display: flex;
+}
+
+/* ── Live Preview Sidebar ────────────────── */
+.tcm-preview-sidebar {
+    width: 220px;
+    border-left: 1px solid var(--border-color);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-shrink: 0;
+    background: var(--highlight-color);
+    overflow-y: auto;
+}
+
+.tcm-preview-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+}
+
+/* Live mini-mockup */
+.tcm-live-mockup {
+    border-radius: var(--border-radius-sm);
+    overflow: hidden;
+    border: 1.5px solid var(--border-color);
+    box-shadow: var(--box-shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.tcm-mockup-bar {
+    height: 18px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    gap: 4px;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border-color);
+    flex-shrink: 0;
+}
+
+.tcm-mockup-strip {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-body {
+    display: flex;
+    height: 90px;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-aside {
+    width: 35%;
+    height: 100%;
+    border-right: 1px solid;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.tcm-mockup-dot-accent {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-line {
+    height: 3px;
+    border-radius: 2px;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-main {
+    flex: 1;
+    padding: 6px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background 0.3s ease;
+}
+
+.tcm-mockup-card {
+    border-radius: 3px;
+    padding: 4px 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    border: 1px solid;
+}
+
+.tcm-mockup-btn {
+    height: 5px;
+    width: 40%;
+    border-radius: 2px;
+    margin-top: 2px;
+    transition: background 0.3s ease;
+}
+
+/* Color gen matrix */
+.tcm-gen-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.tcm-gen-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.tcm-gen-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+}
+
+.tcm-gen-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Form Groups ─────────────────────────── */
+.tcm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.tcm-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.tcm-label i {
+    font-size: 0.65rem;
+    opacity: 0.8;
+}
+
+.tcm-hint {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+    line-height: 1.4;
+}
+
+/* Grid layout for fields */
+.tcm-row {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+.tcm-row.col3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* ── Text Inputs (cb-text-field pattern) ─── */
+.tcm-panel .cb-text-field input,
+.tcm-panel textarea.tcm-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    outline: none;
+    transition: border-color var(--transition-speed) ease;
+    box-sizing: border-box;
+}
+
+.tcm-panel .cb-text-field input:focus,
+.tcm-panel textarea.tcm-textarea:focus {
+    border-color: var(--accent-color);
+}
+
+textarea.tcm-textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+}
+
+/* ── Dark Mode Toggle Section ────────────── */
+.tcm-mode-toggle-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.1rem;
+    background: var(--highlight-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    gap: 1rem;
+    transition: border-color var(--transition-speed) ease,
+        background var(--transition-speed) ease;
+}
+
+.tcm-mode-toggle-wrap.is-dark {
+    background: color-mix(in srgb, #1a1a2e 30%, var(--highlight-color));
+    border-color: color-mix(in srgb, #60a5fa 35%, var(--border-color));
+}
+
+.tcm-mode-info {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.tcm-mode-emoji {
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    width: 1.8rem;
+    text-align: center;
+}
+
+.tcm-mode-text strong {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.tcm-mode-text span {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* Reuses exact .cb-toggle pattern from base tab */
+/* no extra CSS needed — base styles cover it */
+
+/* ── Color Picker Grid ───────────────────── */
+.tcm-colors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+}
+
+/* Individual color pick item */
+.tcm-color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.tcm-color-item-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.tcm-color-required {
+    color: var(--accent-color);
+    font-size: 0.55rem;
+}
+
+.tcm-color-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 6px 8px;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.tcm-color-row:focus-within,
+.tcm-color-row:hover {
+    border-color: var(--accent-color);
+}
+
+/* Native color input — styled as a swatch */
+.tcm-color-native {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: var(--border-radius-xs);
+    cursor: pointer;
+    padding: 0;
+    background: none;
+    flex-shrink: 0;
+    /* Browsers vary — this hides the ugly border */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.tcm-color-native::-webkit-color-swatch-wrapper { padding: 0; }
+.tcm-color-native::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--border-radius-xs) - 2px);
+}
+.tcm-color-native::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--border-radius-xs) - 2px);
+}
+
+/* Hex text input — mirrors .cb-text-field without label */
+.tcm-hex-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-transform: uppercase;
+    min-width: 0;
+    padding: 0;
+}
+
+.tcm-hex-input::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Generated badge */
+.tcm-gen-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.55rem;
+    padding: 2px 6px;
+    border-radius: var(--border-radius-pill);
+    background: color-mix(in srgb, #10b981 12%, transparent);
+    color: #10b981;
+    border: 1px solid color-mix(in srgb, #10b981 25%, transparent);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* Generated color preview strip */
+.tcm-generated-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    padding: 0.75rem;
+    background: var(--input-bg);
+    border: 1.5px dashed var(--border-color);
+    border-radius: var(--border-radius-sm);
+}
+
+.tcm-gen-preview-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.tcm-gen-preview-swatch {
+    width: 100%;
+    height: 24px;
+    border-radius: var(--border-radius-xs);
+    border: 1px solid rgba(0,0,0,0.08);
+    transition: background 0.3s ease;
+}
+
+.tcm-gen-preview-name {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* ── Accent Colors Section (mirrors cb-tags) ── */
+.tcm-accents-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.tcm-accent-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 4px 10px 4px 6px;
+    border-radius: var(--border-radius-pill);
+    border: 1.5px solid var(--border-color);
+    background: var(--input-bg);
+    cursor: default;
+    animation: scaleIn 0.15s ease;
+}
+
+.tcm-accent-chip-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0,0,0,0.1);
+}
+
+.tcm-accent-chip-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.tcm-accent-chip-rm {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.6rem;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color var(--transition-speed) ease;
+}
+
+.tcm-accent-chip-rm:hover { color: var(--danger-color); }
+
+.tcm-add-accent-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.tcm-add-accent-color {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--border-radius-xs);
+    border: 2px solid var(--border-color);
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    background: none;
+}
+
+.tcm-add-accent-color::-webkit-color-swatch-wrapper { padding: 0; }
+.tcm-add-accent-color::-webkit-color-swatch { border: none; border-radius: 2px; }
+.tcm-add-accent-color::-moz-color-swatch { border: none; border-radius: 2px; }
+
+.tcm-add-accent-btn {
+    padding: 6px 12px;
+    background: var(--highlight-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-color);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all var(--transition-speed) ease;
+}
+
+.tcm-add-accent-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+/* ── Tags Section (mirrors cb-tags-container) ── */
+/* Inherits all .cb-tags-container / .cb-tag / .cb-tag-input styles from base */
+
+/* Predefined tag pills */
+.tcm-preset-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.tcm-preset-tag {
+    padding: 4px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius-pill);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    text-transform: capitalize;
+}
+
+.tcm-preset-tag:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+}
+
+.tcm-preset-tag.added {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--text-on-accent);
+}
+
+/* ── Icon / Emoji Picker ─────────────────── */
+.tcm-emoji-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.tcm-emoji-preview {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--border-radius-sm);
+    border: 2px solid var(--border-color);
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.tcm-emoji-preview:hover {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 6%, var(--input-bg));
+}
+
+.tcm-emoji-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    flex: 1;
+}
+
+.tcm-emoji-btn {
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--border-radius-xs);
+    background: var(--input-bg);
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    padding: 0;
+}
+
+.tcm-emoji-btn:hover {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 8%, transparent);
+    transform: scale(1.12);
+}
+
+.tcm-emoji-btn.selected {
+    border-color: var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+/* ── Segmented (mirrors base) ────────────── */
+/* inherits all .cb-segmented styles */
+
+/* ── Footer ──────────────────────────────── */
+.tcm-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: color-mix(in srgb, var(--highlight-color) 50%, var(--card-bg));
+    flex-shrink: 0;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.tcm-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+.tcm-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Footer buttons re-use modal-btn and control-btn base styles */
+.tcm-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 8px 18px;
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.tcm-btn-secondary {
+    background: var(--highlight-color);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.tcm-btn-secondary:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.tcm-btn-primary {
+    background: var(--accent-color);
+    color: var(--text-on-accent);
+    box-shadow: 0 2px 10px var(--accent-glow);
+}
+
+.tcm-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--accent-glow-strong);
+}
+
+.tcm-btn-primary:active,
+.tcm-btn-secondary:active { transform: scale(0.97); }
+
+.tcm-btn-ghost {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 8px 10px;
+}
+
+.tcm-btn-ghost:hover { color: var(--accent-color); }
+
+/* ── Divider ─────────────────────────────── */
+.tcm-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.25rem 0;
+    opacity: 0.6;
+}
+
+/* ── Scrollbar inside panels ─────────────── */
+.tcm-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+.tcm-panel::-webkit-scrollbar { width: 5px; }
+.tcm-panel::-webkit-scrollbar-track { background: transparent; }
+.tcm-panel::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+/* ── Validation Errors ───────────────────── */
+.tcm-error {
+    font-size: 0.68rem;
+    color: var(--danger-color);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.tcm-field.has-error .tcm-color-row,
+.tcm-field.has-error .cb-text-field input {
+    border-color: var(--danger-color) !important;
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 700px) {
+    .tcm-overlay { padding: 0; align-items: flex-end; }
+
+    .tcm-shell {
+        width: 100%;
+        max-height: 96dvh;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+        transform: translateY(100%);
+    }
+
+    .tcm-overlay.active .tcm-shell {
+        transform: translateY(0);
+    }
+
+    .tcm-preview-sidebar { display: none; }
+
+    .tcm-body { flex-direction: column; }
+
+    .tcm-row { grid-template-columns: 1fr; }
+    .tcm-row.col3 { grid-template-columns: 1fr 1fr; }
+
+    .tcm-colors-grid { grid-template-columns: 1fr 1fr; }
+
+    .tcm-generated-strip { grid-template-columns: repeat(2, 1fr); }
+
+    .tcm-footer { padding: 0.75rem 1rem; }
+
+    .tcm-footer-left { display: none; }
+}
+
+@media (max-width: 400px) {
+    .tcm-colors-grid { grid-template-columns: 1fr; }
+    .tcm-row.col3 { grid-template-columns: 1fr; }
+}
