@@ -3,18 +3,16 @@
    Dynamically loads all tab modules from ./js/customization/
    ======================================== */
 
-// ── Module Loader ──────────────────────────
-(function loadCustomizationModules() {
+// ── Module Loader ─────────────────────────
+ (function loadCustomizationModules() {
     "use strict";
 
     const MODULES = [
         "themes",
         "tcreate-modal",
         "accent",
-        // Future tabs go here: "appearance", "layout", "fonts", etc.
     ];
 
-    // Resolve base path relative to this script's location
     const BASE_PATH = (function () {
         const scripts = document.querySelectorAll("script[src]");
         for (const s of scripts) {
@@ -26,20 +24,39 @@
     })();
 
     function loadModule(name) {
-        // Load CSS first
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = BASE_PATH + name + ".css";
-        document.head.appendChild(link);
+        return new Promise((resolve, reject) => {
+            // Load CSS
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = BASE_PATH + name + ".css";
+            link.onerror = reject;
+            document.head.appendChild(link);
 
-        // Then load JS
-        const script = document.createElement("script");
-        script.src = BASE_PATH + name + ".js";
-        script.async = false; // Preserve order
-        document.head.appendChild(script);
+            // Load JS
+            const script = document.createElement("script");
+            script.src = BASE_PATH + name + ".js";
+            script.onload = () => {
+                console.log(`✓ Loaded: ${name}.js`);
+                resolve();
+            };
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 
-    MODULES.forEach(loadModule);
+    // Load modules sequentially
+    async function loadAllModules() {
+        try {
+            for (const name of MODULES) {
+                await loadModule(name);
+            }
+            console.log("✓ All customization modules loaded");
+        } catch (error) {
+            console.error("Error loading customization modules:", error);
+        }
+    }
+
+    loadAllModules();
 })();
 
 
