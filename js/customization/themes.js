@@ -61,75 +61,7 @@
        INLINE FALLBACK DATA  (mirrors themes.json)
        Used when fetch() is unavailable.
        ════════════════════════════════════════ */
-    const FALLBACK = {
-        themes: [
-            {
-                id: "auto",
-                name: "Auto Theme",
-                icon: "🌤️",
-                description: "Follows your system preference",
-                tags: ["dynamic"],
-                isDarkThemed: null,
-                isSystemCreated: true,
-                colors: {},
-                recommendedAccentColors: ["#6196ff", "#f59e0b", "#10b981"]
-            },
-            {
-                id: "light",
-                name: "Classic Light",
-                icon: "☀️",
-                description: "Clean and bright default",
-                tags: ["light", "minimal"],
-                isSystemCreated: true,
-                isDarkThemed: false,
-                colors: {
-                    "--text-color": "#2d2d2d",
-                    "--text-muted": "#666666",
-                    "--bg-color": "#f9f9f9",
-                    "--surface-color": "#ffffff",
-                    "--surface-alt": "#fafafa",
-                    "--card-bg": "#ffffff",
-                    "--input-bg": "#f5f5f5",
-                    "--highlight-color": "#f5f5f5",
-                    "--border-color": "#e0e0e0",
-                    "--divider-color": "#e5e5e5",
-                    "--shadow-color": "rgba(0,0,0,0.1)",
-                    "--shadow-color-strong": "rgba(0,0,0,0.15)",
-                    "--shadow-color-modal": "rgba(0,0,0,0.5)",
-                    "--overlay-bg": "rgba(0,0,0,0.5)",
-                    "--overlay-bg-strong": "rgba(0,0,0,0.85)"
-                },
-                recommendedAccentColors: ["#6196ff", "#ef4444", "#8b5cf6", "#10b981", "#FF6B6B"]
-            },
-            {
-                id: "dark",
-                name: "Classic Dark",
-                icon: "🌙",
-                description: "Deep and easy on the eyes",
-                tags: ["dark", "minimal"],
-                isDarkThemed: true,
-                isSystemCreated: true,
-                colors: {
-                    "--text-color": "#f0f0f0",
-                    "--text-muted": "#a0a0a0",
-                    "--bg-color": "#121212",
-                    "--surface-color": "#1e1e1e",
-                    "--surface-alt": "#252525",
-                    "--card-bg": "#1e1e1e",
-                    "--input-bg": "#2c2c2c",
-                    "--highlight-color": "#333333",
-                    "--border-color": "#333333",
-                    "--divider-color": "#3d3d3d",
-                    "--shadow-color": "rgba(0,0,0,0.4)",
-                    "--shadow-color-strong": "rgba(0,0,0,0.4)",
-                    "--shadow-color-modal": "rgba(0,0,0,0.6)",
-                    "--overlay-bg": "rgba(0,0,0,0.7)",
-                    "--overlay-bg-strong": "rgba(0,0,0,0.9)"
-                },
-                recommendedAccentColors: ["#60a5fa", "#f472b6", "#34d399", "#FF6B6B", "#FA9EFA"]
-            }
-        ]
-    };
+   
 
 
     /* ════════════════════════════════════════
