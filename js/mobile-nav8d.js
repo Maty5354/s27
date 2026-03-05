@@ -159,7 +159,7 @@
         return `${dd[d.getDay()]}, ${mm[d.getMonth()]} ${d.getDate()}`;
     }
     async function load() {
-        const p = window.DATA_PATH || "../data/",
+        const p = window.DATA_PATH || "data/",
             id = window.CLASS_ID || "8d";
         try {
             const [a, b] = await Promise.all([
