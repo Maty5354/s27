@@ -15,7 +15,7 @@ async function loadTimetableData() {
             fetch(`${dataPath}manuals.json`)
         ]);
         
-        timetableData = await ttResponse.json();
+        const timetableData = await ttResponse.json();
         const manuals = await manualResponse.json();
         
         // Build manual map for quick access
