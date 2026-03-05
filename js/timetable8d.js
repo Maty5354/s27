@@ -16,7 +16,7 @@ async function loadTimetableData() {
             fetch(`${dataPath}manuals.json`)
         ]);
 
-        const timetableData = await ttResponse.json();
+        timetableData = await ttResponse.json();
         const manuals = await manualResponse.json();
 
         manuals.forEach(m => {
