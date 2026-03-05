@@ -7,8 +7,8 @@ let timetableData = null;
 let manualMap = {};
 
 async function loadTimetableData() {
-    const dataPath = 'data/';
-    const classId = '8d';
+    const dataPath = window.DATA_PATH || "../data/";
+    const classId = window.CLASS_ID || "8d";
 
     try {
         const [ttResponse, manualResponse] = await Promise.all([
