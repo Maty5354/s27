@@ -7,18 +7,18 @@ let timetableData = null;
 let manualMap = {};
 
 async function loadTimetableData() {
-    const dataPath = window.DATA_PATH || '/data/';
-    const classId = window.CLASS_ID || '8d';
+    const dataPath = '/data/';
+    const classId = '8d';
+
     try {
         const [ttResponse, manualResponse] = await Promise.all([
             fetch(`${dataPath}${classId}.json`),
             fetch(`${dataPath}manuals.json`)
         ]);
-        
+
         const timetableData = await ttResponse.json();
         const manuals = await manualResponse.json();
-        
-        // Build manual map for quick access
+
         manuals.forEach(m => {
             if (m.subject) {
                 manualMap[m.subject.toLowerCase()] = m.link;
@@ -27,7 +27,8 @@ async function loadTimetableData() {
 
         renderTimetable();
         setupSubjectHighlight();
-        startHighlightLoop(); // Start highlighting loop after data is loaded
+        startHighlightLoop();
+
     } catch (error) {
         console.error("Error loading timetable data:", error);
     }
