@@ -160,7 +160,7 @@
     }
     async function load() {
         const p = window.DATA_PATH || "../data/",
-            id = window.CLASS_ID || "8a";
+            id = window.CLASS_ID || "8d";
         try {
             const [a, b] = await Promise.all([
                 fetch(`${p}${id}.json`),
