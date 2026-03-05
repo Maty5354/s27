@@ -7,7 +7,7 @@ let timetableData = null;
 let manualMap = {};
 
 async function loadTimetableData() {
-    const dataPath = '/data/';
+    const dataPath = 'data/';
     const classId = '8d';
 
     try {
