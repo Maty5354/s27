@@ -7,7 +7,7 @@
 let allManualsData = [];
 
 async function loadManualsData() {
-    const dataPath = window.DATA_PATH || '../data/';
+    const dataPath = window.DATA_PATH || 'data/';
     try {
         const response = await fetch(`${dataPath}manuals.json`);
         allManualsData = await response.json();
