@@ -11,6 +11,7 @@
         "themes",
         "tcreate-modal",
         "accent",
+        "font",
     ];
 
     const BASE_PATH = (function () {
