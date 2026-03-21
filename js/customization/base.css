@@ -1,0 +1,114 @@
+/* ========================================
+   BASE TAB — base.css
+   Component showcase + global cb- overrides
+   ======================================== */
+
+/* ── Section shell ───────────────────────── */
+#baseSection {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+}
+
+#baseSection.active {
+    display: flex;
+}
+
+/* ── Grid layout ─────────────────────────── */
+.base-inputs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+}
+
+.base-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    background: var(--surface-alt);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    transition: box-shadow var(--transition-speed) ease,
+                border-color var(--transition-speed) ease;
+}
+
+.base-input-group:hover {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 1px var(--accent-glow);
+}
+
+.base-input-group h4 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent-color);
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+/* ── Section header ──────────────────────── */
+.base-section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-lg) 0;
+    color: var(--text-color);
+}
+
+.base-section-header h3 {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+}
+
+.base-section-header i {
+    color: var(--accent-color);
+}
+
+/* ========================================
+   GLOBAL SELECT REPLACEMENT
+   ======================================== */
+
+select[data-cb-replaced] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+.form-group-edit .cb-dropdown,
+.form-group-edit .cb-dropdown-trigger {
+    width: 100%;
+}
+
+.repeating-options .cb-dropdown,
+.repeating-options .cb-dropdown-trigger {
+    width: 100%;
+}
+
+/* ========================================
+   KNOB FIX
+   ======================================== */
+
+.cb-knob {
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.cb-knob svg {
+    overflow: visible;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .base-inputs-grid {
+        grid-template-columns: 1fr;
+    }
+}
