@@ -120,40 +120,7 @@
     margin-bottom: 1.5rem;
 }
 
-/* ========================================
-   BASE INPUTS GRID
-   ======================================== */
-.base-inputs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-}
-
-.base-input-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-lg);
-    background: var(--surface-alt);
-    border-radius: var(--border-radius-sm);
-    border: 1px solid var(--border-color);
-    transition: box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
-}
-
-.base-input-group:hover {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 1px var(--accent-glow);
-}
-
-.base-input-group h4 {
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--accent-color);
-    margin: 0 0 var(--spacing-xs) 0;
-}
+/* BASE GRID — moved to js/customization/base.css */
 
 /* ========================================
    1. COLOR PICKER (existing — Pickr)
@@ -1959,10 +1926,6 @@
     .custom-sidebar {
         width: 220px;
     }
-
-    .base-inputs-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
 }
 
 @media (max-width: 480px) {
@@ -1983,10 +1946,6 @@
     .sidebar-item {
         justify-content: center;
         padding: 1rem 0;
-    }
-
-    .base-inputs-grid {
-        grid-template-columns: 1fr;
     }
 
     .custom-content {
