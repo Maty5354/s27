@@ -462,9 +462,6 @@
             if (emptyState) emptyState.classList.remove('active');
             container.innerHTML = sorted.map((task, index) => {
                 const folder = folders.find(f => f.id === task.folderId);
-                const pColor = {
-                    'very-high': '#dc2626', 'high': '#ea580c', 'medium': '#f59e0b', 'low': '#10b981', 'very-low': '#3b82f6'
-                }[task.priority];
                 
                 const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
                 const dateStr = task.dueDate ? new Date(task.dueDate).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }) : '';
@@ -474,13 +471,14 @@
 
                 return `
                 <div class="task-item ${task.completed ? 'completed' : ''}" 
-                     data-task-id="${task.id}" 
+                     data-task-id="${task.id}"
+                     data-priority="${task.priority}"
                      draggable="${currentSort === 'manual'}"
-                     style="--priority-color: ${pColor}; animation-delay: ${index * 0.05}s">
+                     style="animation-delay: ${index * 0.05}s">
                     <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
                     <div class="task-content">
                         <div class="task-header">
-                            <span class="task-priority" style="color: ${pColor}"><i class="fa-solid fa-flag"></i></span>
+                            <span class="task-priority"><i class="fa-solid fa-flag"></i></span>
                             <div class="task-title">${task.title}</div>
                         </div>
                         <div class="task-meta">
@@ -881,12 +879,9 @@
                 <div class="calendar-day-number">${i}</div>
                 <div class="calendar-tasks">
                     ${dayTasks.slice(0, 4).map(t => {
-                        const pColor = {
-                            'very-high': '#dc2626', 'high': '#ea580c', 'medium': '#f59e0b', 'low': '#10b981', 'very-low': '#3b82f6'
-                        }[t.priority];
-                        return `<div class="calendar-task-dot" style="background: ${pColor}" title="${t.title}"></div>`;
+                        return `<div class="calendar-task-dot" data-priority="${t.priority}" title="${t.title}"></div>`;
                     }).join('')}
-                    ${dayTasks.length > 4 ? `<div class="calendar-task-dot" style="background: #999" title="More..."></div>` : ''}
+                    ${dayTasks.length > 4 ? `<div class="calendar-task-dot calendar-task-dot--overflow" title="More..."></div>` : ''}
                 </div>
             `;
             
