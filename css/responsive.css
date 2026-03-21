@@ -736,13 +736,31 @@
         width: 100%;
     }
 
+    /* Fix #9 — align view-switcher left, consistent with the other stacked controls */
     .view-switcher {
+        justify-content: flex-start;
+    }
+
+    /* Fix #5 — FAB becomes a full-width in-flow button; no longer floats over content */
+    .add-task-btn {
+        position: static;
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-base);
+        padding: 0.85rem 1.25rem;
         justify-content: center;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
+        animation: none; /* scaleIn looks odd on a full-width bar */
+    }
+    .add-task-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color) 45%, transparent);
     }
 
     .list-view,
     .calendar-view {
         padding: 1rem;
+        /* No extra padding-bottom needed — FAB is now in the header, not floating */
+        padding-bottom: 1.5rem;
     }
 
     .task-edit-container,

@@ -192,7 +192,7 @@
     background: transparent;
     border: none;
     color: var(--accent-color);
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     cursor: pointer;
     padding: 0.35rem;
     border-radius: var(--border-radius-xs);
@@ -355,31 +355,7 @@
     position: relative;
     min-height: 80px;
 }
-.close-btn-todo {
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    width: 40px;
-    height: 40px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-pill);
-    color: var(--accent-color);
-    font-size: var(--font-size-xl);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 100;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.close-btn-todo:hover {
-    background: var(--danger-color);
-    color: var(--text-on-danger);
-    border-color: var(--danger-color);
-    transform: rotate(90deg) scale(1.1);
-}
+/* close-btn-todo base styles are in overlays.css (unified close button system) */
 .header-left {
     display: flex;
     flex-direction: column;
@@ -845,7 +821,7 @@
 .calendar-day:hover {
     border-color: var(--accent-color);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow-md);
 }
 .calendar-day.other-month {
     opacity: 0.4;
@@ -869,7 +845,11 @@
     width: 100%;
     height: 4px;
     border-radius: var(--border-radius-xs);
-    background: var(--priority-color);
+    background: var(--priority-color, var(--text-muted));
+}
+.calendar-task-dot--overflow {
+    background: var(--text-muted);
+    opacity: 0.6;
 }
 
 /* Task Edit Modal */
@@ -917,21 +897,7 @@
     align-items: center;
     gap: 0.75rem;
 }
-.close-btn-modal {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: var(--font-size-xl);
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: var(--border-radius-sm);
-    transition: all 0.2s ease;
-}
-.close-btn-modal:hover {
-    background: var(--highlight-color);
-    color: var(--accent-color);
-    transform: scale(1.1) rotate(90deg);
-}
+/* close-btn-modal base styles are in overlays.css (unified close button system) */
 .task-edit-content {
     flex: 1;
     overflow-y: auto;
@@ -1004,11 +970,35 @@
 .priority-flag.active i {
     color: white;
 }
-.priority-flag[data-priority="very-high"] { --priority-flag-color: #dc2626; }
-.priority-flag[data-priority="high"] { --priority-flag-color: #ea580c; }
-.priority-flag[data-priority="medium"] { --priority-flag-color: #f59e0b; }
-.priority-flag[data-priority="low"] { --priority-flag-color: #10b981; }
-.priority-flag[data-priority="very-low"] { --priority-flag-color: #3b82f6; }
+/* Priority color palette — single source of truth for both task stripes and flag buttons */
+:root {
+    --priority-very-high: #dc2626;
+    --priority-high:      #ea580c;
+    --priority-medium:    #f59e0b;
+    --priority-low:       #10b981;
+    --priority-very-low:  #3b82f6;
+}
+
+/* Drive the task-item left-stripe and calendar dot colour from data-priority */
+.task-item[data-priority="very-high"]  { --priority-color: var(--priority-very-high); }
+.task-item[data-priority="high"]       { --priority-color: var(--priority-high); }
+.task-item[data-priority="medium"]     { --priority-color: var(--priority-medium); }
+.task-item[data-priority="low"]        { --priority-color: var(--priority-low); }
+.task-item[data-priority="very-low"]   { --priority-color: var(--priority-very-low); }
+
+/* Drive the calendar dot colour via the same attribute */
+.calendar-task-dot[data-priority="very-high"]  { --priority-color: var(--priority-very-high); }
+.calendar-task-dot[data-priority="high"]       { --priority-color: var(--priority-high); }
+.calendar-task-dot[data-priority="medium"]     { --priority-color: var(--priority-medium); }
+.calendar-task-dot[data-priority="low"]        { --priority-color: var(--priority-low); }
+.calendar-task-dot[data-priority="very-low"]   { --priority-color: var(--priority-very-low); }
+
+/* Drive the flag-button colour — now references the shared palette */
+.priority-flag[data-priority="very-high"] { --priority-flag-color: var(--priority-very-high); }
+.priority-flag[data-priority="high"]      { --priority-flag-color: var(--priority-high); }
+.priority-flag[data-priority="medium"]    { --priority-flag-color: var(--priority-medium); }
+.priority-flag[data-priority="low"]       { --priority-flag-color: var(--priority-low); }
+.priority-flag[data-priority="very-low"]  { --priority-flag-color: var(--priority-very-low); }
 .priority-flag i {
     color: var(--priority-flag-color);
     transition: color 0.2s ease;
@@ -1126,6 +1116,52 @@
     accent-color: var(--accent-color);
     cursor: pointer;
 }
+/* Primary / Secondary Buttons (Save & Cancel in edit panels) */
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all var(--transition-speed) ease;
+    border: 2px solid transparent;
+    font-family: inherit;
+    white-space: nowrap;
+}
+.btn-primary {
+    background: var(--accent-color);
+    color: var(--bg-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+.btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+.btn-primary:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+.btn-secondary {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+.btn-secondary:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: var(--highlight-color);
+}
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
 .task-edit-footer, .folder-edit-footer {
     padding: 1.25rem 2rem;
     border-top: 1px solid var(--border-color);
