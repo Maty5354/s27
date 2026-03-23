@@ -715,10 +715,10 @@
         const list = document.getElementById('attachmentsList');
         if (!list) return;
         list.innerHTML = tempAttachments.map((att, i) => `
-            <div class="attachment-item">
-                <i class="fa-solid fa-file attachment-icon"></i>
-                <span class="attachment-name">${att.name}</span>
-                <button class="attachment-remove" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
+            <div class="cb-file-item">
+                <i class="fa-solid fa-file"></i>
+                <span class="cb-file-item-name">${att.name}</span>
+                <button class="cb-file-item-remove attachment-remove" type="button" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
             </div>
         `).join('');
 
@@ -736,9 +736,9 @@
         list.innerHTML = tempReminders.map((rem, i) => {
             const dateStr = new Date(rem).toLocaleString();
             return `
-            <div class="reminder-item">
-                <span class="reminder-time"><i class="fa-solid fa-clock"></i> ${dateStr}</span>
-                <button class="reminder-remove" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
+            <div class="cb-reminder-item">
+                <span class="cb-reminder-time"><i class="fa-solid fa-bell"></i> ${dateStr}</span>
+                <button class="cb-reminder-remove reminder-remove" type="button" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
             </div>`;
         }).join('');
 
@@ -754,10 +754,10 @@
         const list = document.getElementById('subtasksList');
         if (!list) return;
         list.innerHTML = tempSubtasks.map((st, i) => `
-            <div class="subtask-item ${st.completed ? 'completed' : ''}">
-                <input type="checkbox" ${st.completed ? 'checked' : ''} data-index="${i}">
-                <span class="subtask-text">${st.title}</span>
-                <button class="subtask-remove" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
+            <div class="cb-subtask-item ${st.completed ? 'completed' : ''}">
+                <input type="checkbox" class="cb-subtask-check" ${st.completed ? 'checked' : ''} data-index="${i}">
+                <span class="cb-subtask-label ${st.completed ? 'done' : ''}">${st.title}</span>
+                <button class="cb-subtask-remove subtask-remove" type="button" data-index="${i}"><i class="fa-solid fa-xmark"></i></button>
             </div>
         `).join('');
 
@@ -1046,32 +1046,31 @@
             document.getElementById('repeatingOptions').style.display = e.target.checked ? 'block' : 'none';
         });
 
-        // Dynamic Lists Buttons in Modal
-        document.getElementById('addAttachmentBtn')?.addEventListener('click', () => {
-            // Simulation: In a real app this would upload file
-            const name = prompt("Attachment Name (Simulation):");
-            if (name) {
-                tempAttachments.push({ name: name, url: '#' });
-                renderTempAttachments();
-            }
+        // Attachments — wired through cb-file drag/browse events
+        document.addEventListener('cb-files-added', (e) => {
+            if (!document.getElementById('attachmentsList')) return;
+            Array.from(e.detail.files).forEach(f => {
+                tempAttachments.push({ name: f.name, url: '#', size: f.size });
+            });
+            renderTempAttachments();
         });
 
+        // Reminders — cb-reminder-list add button
         document.getElementById('addReminderBtn')?.addEventListener('click', () => {
-            const time = prompt("Enter reminder time (YYYY-MM-DD HH:MM):", new Date().toISOString().slice(0, 16).replace('T', ' '));
-            if (time) {
-                const d = new Date(time);
-                if (!isNaN(d.getTime())) {
-                    tempReminders.push(d.toISOString());
-                    renderTempReminders();
-                } else {
-                    alert("Invalid Date");
-                }
+            const input = document.getElementById('reminderInput');
+            if (!input || !input.value) return;
+            const d = new Date(input.value);
+            if (!isNaN(d.getTime())) {
+                tempReminders.push(d.toISOString());
+                renderTempReminders();
+                input.value = '';
             }
         });
 
+        // Subtasks — cb-subtask-list add button (Enter key handled by cb init)
         document.getElementById('addSubtaskBtn')?.addEventListener('click', () => {
             const input = document.getElementById('subtaskInput');
-            const val = input.value.trim();
+            const val = input?.value.trim();
             if (val) {
                 tempSubtasks.push({ title: val, completed: false });
                 renderTempSubtasks();
@@ -1088,11 +1087,15 @@
             document.getElementById('folderEditModal').classList.remove('active');
         });
 
-        // Color Options
+        // Color Options (cb-swatch + legacy color-option dual-class)
         document.querySelectorAll('.color-option').forEach(opt => {
             opt.addEventListener('click', () => {
-                document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+                document.querySelectorAll('.color-option').forEach(o => {
+                    o.classList.remove('active');
+                    o.removeAttribute('aria-pressed');
+                });
                 opt.classList.add('active');
+                opt.setAttribute('aria-pressed', 'true');
             });
         });
 
