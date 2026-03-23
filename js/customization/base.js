@@ -525,6 +525,324 @@
                 </div>
             </div>
 
+            <!-- 32. File Upload -->
+            <div class="base-input-group">
+                <h4>File Upload</h4>
+                <div class="cb-file" data-file>
+                    <div class="cb-file-zone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Drop files here or <span class="cb-file-browse">browse</span></p>
+                        <small style="font-size:0.65rem;">Any file type</small>
+                    </div>
+                    <input type="file" class="cb-file-input" multiple style="display:none">
+                    <div class="cb-file-list"></div>
+                </div>
+            </div>
+
+            <!-- 33. Color Swatch -->
+            <div class="base-input-group">
+                <h4>Color Swatch</h4>
+                <div class="cb-color-swatch" data-color-swatch>
+                    <div class="cb-swatch-grid">
+                        <button class="cb-swatch active" data-color="#6196ff" style="background:#6196ff;" aria-label="Blue"></button>
+                        <button class="cb-swatch" data-color="#ef4444" style="background:#ef4444;" aria-label="Red"></button>
+                        <button class="cb-swatch" data-color="#f59e0b" style="background:#f59e0b;" aria-label="Amber"></button>
+                        <button class="cb-swatch" data-color="#10b981" style="background:#10b981;" aria-label="Green"></button>
+                        <button class="cb-swatch" data-color="#8b5cf6" style="background:#8b5cf6;" aria-label="Purple"></button>
+                        <button class="cb-swatch" data-color="#ec4899" style="background:#ec4899;" aria-label="Pink"></button>
+                        <button class="cb-swatch" data-color="#14b8a6" style="background:#14b8a6;" aria-label="Teal"></button>
+                        <button class="cb-swatch" data-color="#f97316" style="background:#f97316;" aria-label="Orange"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 34. Priority Selector -->
+            <div class="base-input-group">
+                <h4>Priority Selector</h4>
+                <div class="cb-priority" data-priority>
+                    <button class="cb-priority-btn" data-priority="very-high" title="Very High"><i class="fa-solid fa-flag"></i></button>
+                    <button class="cb-priority-btn" data-priority="high" title="High"><i class="fa-solid fa-flag"></i></button>
+                    <button class="cb-priority-btn active" data-priority="medium" title="Medium"><i class="fa-solid fa-flag"></i></button>
+                    <button class="cb-priority-btn" data-priority="low" title="Low"><i class="fa-solid fa-flag"></i></button>
+                    <button class="cb-priority-btn" data-priority="very-low" title="Very Low"><i class="fa-solid fa-flag"></i></button>
+                </div>
+            </div>
+
+            <!-- 35. Icon Picker -->
+            <div class="base-input-group">
+                <h4>Icon Picker</h4>
+                <div class="cb-icon-picker" data-icon-picker>
+                    <div class="cb-search-wrap cb-icon-picker-search">
+                        <i class="fa-solid fa-magnifying-glass cb-search-icon"></i>
+                        <input type="text" class="cb-search-input" placeholder="Search icons...">
+                        <button class="cb-search-clear"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="cb-icon-picker-grid cb-icon-grid" data-icon-selector>
+                        <button class="cb-icon-btn" data-icon-name="folder" title="folder"><i class="fa-solid fa-folder"></i></button>
+                        <button class="cb-icon-btn selected" data-icon-name="star" title="star"><i class="fa-solid fa-star"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="heart" title="heart"><i class="fa-solid fa-heart"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="bolt" title="bolt"><i class="fa-solid fa-bolt"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="fire" title="fire"><i class="fa-solid fa-fire"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="book" title="book"><i class="fa-solid fa-book"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="briefcase" title="briefcase"><i class="fa-solid fa-briefcase"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="music" title="music"><i class="fa-solid fa-music"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="gamepad" title="gamepad"><i class="fa-solid fa-gamepad"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="home" title="home"><i class="fa-solid fa-home"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="plane" title="plane"><i class="fa-solid fa-plane"></i></button>
+                        <button class="cb-icon-btn" data-icon-name="gem" title="gem"><i class="fa-solid fa-gem"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 36. Reminder List -->
+            <div class="base-input-group">
+                <h4>Reminder List</h4>
+                <div class="cb-reminder-list" data-reminder-list>
+                    <div class="cb-reminder-add">
+                        <input type="datetime-local" class="cb-reminder-input">
+                        <button class="cb-reminder-add-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="cb-reminder-items">
+                        <div class="cb-reminder-item">
+                            <span class="cb-reminder-time"><i class="fa-solid fa-bell"></i> Tomorrow, 9:00 AM</span>
+                            <button class="cb-reminder-remove"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 37. Subtask List -->
+            <div class="base-input-group">
+                <h4>Subtask List</h4>
+                <div class="cb-subtask-list" data-subtask-list>
+                    <div class="cb-subtask-add">
+                        <input type="text" class="cb-subtask-input" placeholder="Add a subtask..." maxlength="100">
+                        <button class="cb-subtask-add-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="cb-subtask-items">
+                        <div class="cb-subtask-item">
+                            <input type="checkbox" class="cb-subtask-check" checked>
+                            <span class="cb-subtask-label done">Research topic</span>
+                            <button class="cb-subtask-remove"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="cb-subtask-item">
+                            <input type="checkbox" class="cb-subtask-check">
+                            <span class="cb-subtask-label">Write first draft</span>
+                            <button class="cb-subtask-remove"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 38. Date+Time Picker -->
+            <div class="base-input-group">
+                <h4>DateTime Picker</h4>
+                <div class="cb-datetime" data-datetime>
+                    <input type="datetime-local" class="cb-datetime-native" style="display:none">
+                    <div class="cb-datetime-display">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        <span class="cb-datetime-text">Set date &amp; time</span>
+                        <button class="cb-datetime-clear" type="button"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="cb-datetime-panel">
+                        <div class="cb-datepicker" data-datepicker>
+                            <div class="cb-datepicker-header">
+                                <button class="cb-datepicker-nav" data-dp-nav="prev"><i class="fa-solid fa-chevron-left"></i></button>
+                                <span class="cb-datepicker-title">Loading...</span>
+                                <button class="cb-datepicker-nav" data-dp-nav="next"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                            <div class="cb-datepicker-days"></div>
+                        </div>
+                        <div class="cb-timepicker" data-timepicker>
+                            <div class="cb-time-col">
+                                <button class="cb-time-spin" data-time="h-up"><i class="fa-solid fa-chevron-up"></i></button>
+                                <span class="cb-time-display" data-time-display="h">12</span>
+                                <button class="cb-time-spin" data-time="h-down"><i class="fa-solid fa-chevron-down"></i></button>
+                            </div>
+                            <span class="cb-time-sep">:</span>
+                            <div class="cb-time-col">
+                                <button class="cb-time-spin" data-time="m-up"><i class="fa-solid fa-chevron-up"></i></button>
+                                <span class="cb-time-display" data-time-display="m">00</span>
+                                <button class="cb-time-spin" data-time="m-down"><i class="fa-solid fa-chevron-down"></i></button>
+                            </div>
+                            <div class="cb-time-period">
+                                <button class="cb-time-period-btn active" data-period="AM">AM</button>
+                                <button class="cb-time-period-btn" data-period="PM">PM</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 39. Filter Dropdown -->
+            <div class="base-input-group">
+                <h4>Filter Dropdown</h4>
+                <div class="cb-filter-dropdown" data-filter-dropdown>
+                    <button class="cb-filter-trigger" type="button">
+                        <i class="fa-solid fa-filter"></i> Filter
+                        <span class="cb-filter-badge" style="display:none">0</span>
+                    </button>
+                    <div class="cb-filter-menu">
+                        <div class="cb-filter-group">
+                            <h4 class="cb-filter-group-label">Priority</h4>
+                            <label class="cb-checkbox"><input type="checkbox" checked data-filter="priority" value="high"><span class="cb-checkbox-mark"></span><span>High</span></label>
+                            <label class="cb-checkbox"><input type="checkbox" checked data-filter="priority" value="medium"><span class="cb-checkbox-mark"></span><span>Medium</span></label>
+                            <label class="cb-checkbox"><input type="checkbox" data-filter="priority" value="low"><span class="cb-checkbox-mark"></span><span>Low</span></label>
+                        </div>
+                        <div class="cb-filter-group">
+                            <h4 class="cb-filter-group-label">Status</h4>
+                            <label class="cb-checkbox"><input type="checkbox" checked data-filter="status" value="pending"><span class="cb-checkbox-mark"></span><span>Pending</span></label>
+                            <label class="cb-checkbox"><input type="checkbox" checked data-filter="status" value="done"><span class="cb-checkbox-mark"></span><span>Completed</span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 40. Task Badge -->
+            <div class="base-input-group">
+                <h4>Task Badge</h4>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <span class="cb-task-badge" style="background:#6196ff;color:#fff;"><i class="fa-solid fa-folder"></i> Work</span>
+                    <span class="cb-task-badge" style="background:#10b981;color:#fff;"><i class="fa-solid fa-star"></i> Important</span>
+                    <span class="cb-task-badge" style="background:#f59e0b;color:#fff;"><i class="fa-solid fa-home"></i> Personal</span>
+                    <span class="cb-task-badge" style="background:#8b5cf6;color:#fff;"><i class="fa-solid fa-graduation-cap"></i> Study</span>
+                </div>
+            </div>
+
+            <!-- 41. Progress Bar -->
+            <div class="base-input-group">
+                <h4>Progress Bar</h4>
+                <div class="cb-progress-bar" data-progress="65">
+                    <div class="cb-progress-label">
+                        <span class="cb-progress-title">Subtasks</span>
+                        <span class="cb-progress-value">65%</span>
+                    </div>
+                    <div class="cb-progress-track">
+                        <div class="cb-progress-fill" style="width:65%"></div>
+                    </div>
+                </div>
+                <div class="cb-progress-bar" data-progress="30" style="margin-top:8px;">
+                    <div class="cb-progress-label">
+                        <span class="cb-progress-title">Completion</span>
+                        <span class="cb-progress-value">30%</span>
+                    </div>
+                    <div class="cb-progress-track">
+                        <div class="cb-progress-fill" style="width:30%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 42. Stat Card -->
+            <div class="base-input-group">
+                <h4>Stat Cards</h4>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <div class="cb-stat-card"><span class="cb-stat-value">12</span><span class="cb-stat-label">Total</span></div>
+                    <div class="cb-stat-card"><span class="cb-stat-value">8</span><span class="cb-stat-label">Done</span></div>
+                    <div class="cb-stat-card"><span class="cb-stat-value">3</span><span class="cb-stat-label">Overdue</span></div>
+                </div>
+            </div>
+
+            <!-- 43. Sort Menu -->
+            <div class="base-input-group">
+                <h4>Sort Menu</h4>
+                <div class="cb-sort-menu" data-sort-menu>
+                    <button class="cb-sort-trigger" type="button">
+                        <i class="fa-solid fa-sort"></i> Sort
+                    </button>
+                    <div class="cb-sort-list">
+                        <button class="cb-sort-item active" data-sort="manual"><i class="fa-solid fa-hand"></i> Manual</button>
+                        <button class="cb-sort-item" data-sort="priority"><i class="fa-solid fa-flag"></i> Priority</button>
+                        <button class="cb-sort-item" data-sort="dueDate"><i class="fa-solid fa-calendar"></i> Due Date</button>
+                        <button class="cb-sort-item" data-sort="name"><i class="fa-solid fa-font"></i> Name</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 44. Confirm Prompt -->
+            <div class="base-input-group">
+                <h4>Confirm Prompt</h4>
+                <div class="cb-confirm" data-confirm>
+                    <span class="cb-confirm-message">Delete this task? This cannot be undone.</span>
+                    <div class="cb-confirm-actions">
+                        <button class="cb-confirm-yes">Delete</button>
+                        <button class="cb-confirm-no">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 45. Empty State -->
+            <div class="base-input-group">
+                <h4>Empty State</h4>
+                <div class="cb-empty-state">
+                    <i class="fa-solid fa-inbox cb-empty-icon"></i>
+                    <h3 class="cb-empty-title">Nothing here yet</h3>
+                    <p class="cb-empty-body">Create a new task to get started!</p>
+                </div>
+            </div>
+
+            <!-- 46. Count Badge -->
+            <div class="base-input-group">
+                <h4>Count Badge</h4>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="color:var(--text-muted);font-size:var(--font-size-sm);">All Tasks <span class="cb-count-badge">12</span></span>
+                    <span style="color:var(--text-muted);font-size:var(--font-size-sm);">Overdue <span class="cb-count-badge">3</span></span>
+                    <span style="color:var(--text-muted);font-size:var(--font-size-sm);">Done <span class="cb-count-badge">0</span></span>
+                </div>
+            </div>
+
+            <!-- 47. Color Input -->
+            <div class="base-input-group">
+                <h4>Color Input</h4>
+                <div class="cb-color-input" data-color-input>
+                    <input type="color" class="cb-color-input-native" value="#6196ff">
+                    <input type="text" class="cb-color-input-hex" value="#6196FF" maxlength="7" placeholder="#000000">
+                </div>
+            </div>
+
+            <!-- 48. Tab Bar -->
+            <div class="base-input-group">
+                <h4>Tab Bar</h4>
+                <div class="cb-tab-bar" data-tab-bar>
+                    <button class="cb-tab active" data-tab="general">General</button>
+                    <button class="cb-tab" data-tab="advanced">Advanced</button>
+                    <button class="cb-tab" data-tab="about">About</button>
+                    <div class="cb-tab-indicator"></div>
+                </div>
+            </div>
+
+            <!-- 49. List Item -->
+            <div class="base-input-group">
+                <h4>List Item</h4>
+                <div style="display:flex;flex-direction:column;gap:2px;">
+                    <div class="cb-list-item active">
+                        <i class="cb-list-item-icon fa-solid fa-star"></i>
+                        <span class="cb-list-item-label">Starred</span>
+                        <div class="cb-list-item-trail"><span class="cb-count-badge">5</span></div>
+                    </div>
+                    <div class="cb-list-item">
+                        <i class="cb-list-item-icon fa-solid fa-folder"></i>
+                        <span class="cb-list-item-label">Work</span>
+                        <div class="cb-list-item-trail"><span class="cb-count-badge">3</span></div>
+                    </div>
+                    <div class="cb-list-item">
+                        <i class="cb-list-item-icon fa-solid fa-home"></i>
+                        <span class="cb-list-item-label">Personal</span>
+                        <div class="cb-list-item-trail"><span class="cb-count-badge">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 50. Inline Edit -->
+            <div class="base-input-group">
+                <h4>Inline Edit</h4>
+                <div class="cb-inline-edit" data-inline-edit>
+                    <span class="cb-inline-edit-display">Click to edit this text</span>
+                    <input type="text" class="cb-inline-edit-input" value="Click to edit this text" style="display:none">
+                    <button class="cb-inline-edit-save" style="display:none"><i class="fa-solid fa-check"></i></button>
+                    <button class="cb-inline-edit-cancel" style="display:none"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
         </div>`;
     }
 
@@ -1042,6 +1360,455 @@
     }
 
     /* ════════════════════════════════════════
+       NEW COMPONENT INITIALIZERS (20)
+       ════════════════════════════════════════ */
+
+    function initFileUploads(root) {
+        root.querySelectorAll(".cb-file[data-file]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const zone  = wrap.querySelector(".cb-file-zone");
+            const input = wrap.querySelector(".cb-file-input");
+            const list  = wrap.querySelector(".cb-file-list");
+            if (!zone || !input) return;
+
+            function addFiles(files) {
+                Array.from(files).forEach(f => {
+                    const item = document.createElement("div");
+                    item.className = "cb-file-item";
+                    const size = f.size > 1048576
+                        ? (f.size / 1048576).toFixed(1) + " MB"
+                        : (f.size / 1024).toFixed(0) + " KB";
+                    item.innerHTML = `
+                        <i class="fa-solid fa-file"></i>
+                        <span class="cb-file-item-name">${f.name}</span>
+                        <span class="cb-file-item-size">${size}</span>
+                        <button class="cb-file-item-remove" type="button"><i class="fa-solid fa-xmark"></i></button>`;
+                    item.querySelector(".cb-file-item-remove").addEventListener("click", () => item.remove());
+                    if (list) list.appendChild(item);
+                });
+                wrap.dispatchEvent(new CustomEvent("cb-files-added", { detail: { files }, bubbles: true }));
+            }
+
+            zone.addEventListener("click", () => input.click());
+            wrap.querySelector(".cb-file-browse")?.addEventListener("click", e => { e.stopPropagation(); input.click(); });
+            input.addEventListener("change", () => { addFiles(input.files); input.value = ""; });
+            zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragover"); });
+            zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+            zone.addEventListener("drop", e => {
+                e.preventDefault();
+                zone.classList.remove("dragover");
+                addFiles(e.dataTransfer.files);
+            });
+        });
+    }
+
+    function initColorSwatches(root) {
+        root.querySelectorAll("[data-color-swatch]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            wrap.querySelectorAll(".cb-swatch").forEach(swatch => {
+                swatch.addEventListener("click", () => {
+                    wrap.querySelectorAll(".cb-swatch").forEach(s => {
+                        s.classList.remove("active");
+                        s.removeAttribute("aria-pressed");
+                    });
+                    swatch.classList.add("active");
+                    swatch.setAttribute("aria-pressed", "true");
+                    wrap.dispatchEvent(new CustomEvent("cb-color-change", {
+                        detail: { color: swatch.dataset.color }, bubbles: true
+                    }));
+                });
+            });
+        });
+    }
+
+    function initPrioritySelectors(root) {
+        root.querySelectorAll("[data-priority]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            wrap.querySelectorAll(".cb-priority-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    wrap.querySelectorAll(".cb-priority-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    wrap.dispatchEvent(new CustomEvent("cb-priority-change", {
+                        detail: { priority: btn.dataset.priority }, bubbles: true
+                    }));
+                });
+            });
+        });
+    }
+
+    function initIconPickers(root) {
+        root.querySelectorAll("[data-icon-picker]:not([data-cb-init])").forEach(picker => {
+            picker.dataset.cbInit = "1";
+            const search = picker.querySelector(".cb-search-input");
+            const grid   = picker.querySelector(".cb-icon-picker-grid");
+            if (!search || !grid) return;
+
+            search.addEventListener("input", () => {
+                const q = search.value.toLowerCase();
+                let any = false;
+                grid.querySelectorAll(".cb-icon-btn").forEach(btn => {
+                    const name = (btn.dataset.iconName || btn.title || "").toLowerCase();
+                    const show = !q || name.includes(q);
+                    btn.style.display = show ? "" : "none";
+                    if (show) any = true;
+                });
+                let empty = grid.querySelector(".cb-icon-picker-empty");
+                if (!any) {
+                    if (!empty) {
+                        empty = document.createElement("div");
+                        empty.className = "cb-icon-picker-empty";
+                        empty.textContent = "No icons match";
+                        grid.appendChild(empty);
+                    }
+                } else if (empty) empty.remove();
+            });
+            // Clear btn
+            picker.querySelector(".cb-search-clear")?.addEventListener("click", () => {
+                search.value = "";
+                search.dispatchEvent(new Event("input"));
+            });
+        });
+    }
+
+    function initReminderLists(root) {
+        root.querySelectorAll("[data-reminder-list]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const input   = wrap.querySelector(".cb-reminder-input");
+            const addBtn  = wrap.querySelector(".cb-reminder-add-btn");
+            const items   = wrap.querySelector(".cb-reminder-items");
+            if (!input || !addBtn || !items) return;
+
+            function addReminder(val) {
+                if (!val) return;
+                const d = new Date(val);
+                const str = d.toLocaleString("default", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+                const item = document.createElement("div");
+                item.className = "cb-reminder-item";
+                item.dataset.value = val;
+                item.innerHTML = `
+                    <span class="cb-reminder-time"><i class="fa-solid fa-bell"></i> ${str}</span>
+                    <button class="cb-reminder-remove" type="button"><i class="fa-solid fa-xmark"></i></button>`;
+                item.querySelector(".cb-reminder-remove").addEventListener("click", () => {
+                    item.remove();
+                    wrap.dispatchEvent(new CustomEvent("cb-reminder-removed", { detail: { value: val }, bubbles: true }));
+                });
+                items.appendChild(item);
+                input.value = "";
+                wrap.dispatchEvent(new CustomEvent("cb-reminder-added", { detail: { value: val }, bubbles: true }));
+            }
+
+            addBtn.addEventListener("click", () => addReminder(input.value));
+            input.addEventListener("keydown", e => { if (e.key === "Enter") addReminder(input.value); });
+            items.querySelectorAll(".cb-reminder-remove").forEach(btn =>
+                btn.addEventListener("click", () => btn.closest(".cb-reminder-item").remove())
+            );
+        });
+    }
+
+    function initSubtaskLists(root) {
+        root.querySelectorAll("[data-subtask-list]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const input  = wrap.querySelector(".cb-subtask-input");
+            const addBtn = wrap.querySelector(".cb-subtask-add-btn");
+            const items  = wrap.querySelector(".cb-subtask-items");
+            if (!input || !addBtn || !items) return;
+
+            function addSubtask(val) {
+                if (!val.trim()) return;
+                const item = document.createElement("div");
+                item.className = "cb-subtask-item";
+                item.innerHTML = `
+                    <input type="checkbox" class="cb-subtask-check">
+                    <span class="cb-subtask-label">${val.trim()}</span>
+                    <button class="cb-subtask-remove" type="button"><i class="fa-solid fa-xmark"></i></button>`;
+                const chk = item.querySelector(".cb-subtask-check");
+                const lbl = item.querySelector(".cb-subtask-label");
+                chk.addEventListener("change", () => lbl.classList.toggle("done", chk.checked));
+                item.querySelector(".cb-subtask-remove").addEventListener("click", () => item.remove());
+                items.appendChild(item);
+                input.value = "";
+                wrap.dispatchEvent(new CustomEvent("cb-subtask-added", { detail: { text: val.trim() }, bubbles: true }));
+            }
+
+            addBtn.addEventListener("click", () => addSubtask(input.value));
+            input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addSubtask(input.value); } });
+            items.querySelectorAll(".cb-subtask-check").forEach(chk => {
+                chk.addEventListener("change", () => {
+                    chk.closest(".cb-subtask-item")?.querySelector(".cb-subtask-label")?.classList.toggle("done", chk.checked);
+                });
+            });
+            items.querySelectorAll(".cb-subtask-remove").forEach(btn =>
+                btn.addEventListener("click", () => btn.closest(".cb-subtask-item").remove())
+            );
+        });
+    }
+
+    function initDateTimeComponents(root) {
+        root.querySelectorAll("[data-datetime]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const native  = wrap.querySelector(".cb-datetime-native");
+            const display = wrap.querySelector(".cb-datetime-display");
+            const textEl  = wrap.querySelector(".cb-datetime-text");
+            const panel   = wrap.querySelector(".cb-datetime-panel");
+            const clearBtn = wrap.querySelector(".cb-datetime-clear");
+            if (!display || !panel) return;
+
+            function updateDisplay(val) {
+                if (val && textEl) {
+                    const d = new Date(val);
+                    textEl.textContent = d.toLocaleString("default", {
+                        month: "short", day: "numeric", year: "numeric",
+                        hour: "2-digit", minute: "2-digit"
+                    });
+                    textEl.classList.add("has-value");
+                    wrap.classList.add("has-value");
+                } else if (textEl) {
+                    textEl.textContent = "Set date & time";
+                    textEl.classList.remove("has-value");
+                    wrap.classList.remove("has-value");
+                }
+                if (native) native.value = val || "";
+                wrap.dispatchEvent(new CustomEvent("cb-datetime-change", { detail: { value: val }, bubbles: true }));
+            }
+
+            display.addEventListener("click", e => {
+                if (e.target.closest(".cb-datetime-clear")) return;
+                panel.classList.toggle("open");
+            });
+            clearBtn?.addEventListener("click", e => { e.stopPropagation(); updateDisplay(""); });
+
+            // Listen for datepicker / timepicker changes inside panel and sync
+            panel.addEventListener("click", e => {
+                const dayBtn = e.target.closest("[data-day]");
+                if (dayBtn && !dayBtn.disabled) {
+                    const dp = dayBtn.closest("[data-datepicker]");
+                    if (dp) {
+                        const title = dp.querySelector(".cb-datepicker-title")?.textContent || "";
+                        const day   = dayBtn.dataset.day;
+                        // Parse date from title and day
+                        const parsed = new Date(title + " " + day);
+                        if (!isNaN(parsed)) {
+                            const tp = panel.querySelector("[data-timepicker]");
+                            const hEl = tp?.querySelector('[data-time-display="h"]');
+                            const mEl = tp?.querySelector('[data-time-display="m"]');
+                            const ampm = tp?.querySelector("[data-period].active")?.dataset.period || "AM";
+                            let h = parseInt(hEl?.textContent || "12");
+                            const m = parseInt(mEl?.textContent || "0");
+                            if (ampm === "PM" && h < 12) h += 12;
+                            if (ampm === "AM" && h === 12) h = 0;
+                            parsed.setHours(h, m);
+                            const iso = parsed.toISOString().slice(0, 16);
+                            updateDisplay(iso);
+                        }
+                    }
+                }
+            });
+
+            // Close on outside click
+            document.addEventListener("click", e => {
+                if (!wrap.contains(e.target)) panel.classList.remove("open");
+            });
+        });
+    }
+
+    function initFilterDropdowns(root) {
+        root.querySelectorAll("[data-filter-dropdown]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const trigger = wrap.querySelector(".cb-filter-trigger");
+            const menu    = wrap.querySelector(".cb-filter-menu");
+            const badge   = wrap.querySelector(".cb-filter-badge");
+            if (!trigger || !menu) return;
+
+            function updateBadge() {
+                if (!badge) return;
+                const total   = menu.querySelectorAll("input[type=checkbox]").length;
+                const checked = menu.querySelectorAll("input[type=checkbox]:checked").length;
+                const inactive = total - checked;
+                badge.textContent = inactive;
+                badge.style.display = inactive > 0 ? "" : "none";
+            }
+
+            trigger.addEventListener("click", e => {
+                e.stopPropagation();
+                document.querySelectorAll("[data-filter-dropdown].open").forEach(o => {
+                    if (o !== wrap) o.classList.remove("open");
+                });
+                wrap.classList.toggle("open");
+            });
+            menu.querySelectorAll("input[type=checkbox]").forEach(chk => {
+                chk.addEventListener("change", () => {
+                    updateBadge();
+                    wrap.dispatchEvent(new CustomEvent("cb-filter-change", { bubbles: true }));
+                });
+            });
+            document.addEventListener("click", e => {
+                if (!wrap.contains(e.target)) wrap.classList.remove("open");
+            });
+            updateBadge();
+        });
+    }
+
+    function initSortMenus(root) {
+        root.querySelectorAll("[data-sort-menu]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const trigger = wrap.querySelector(".cb-sort-trigger");
+            const list    = wrap.querySelector(".cb-sort-list");
+            if (!trigger || !list) return;
+
+            trigger.addEventListener("click", e => {
+                e.stopPropagation();
+                document.querySelectorAll("[data-sort-menu].open").forEach(o => {
+                    if (o !== wrap) o.classList.remove("open");
+                });
+                wrap.classList.toggle("open");
+            });
+            list.querySelectorAll(".cb-sort-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    list.querySelectorAll(".cb-sort-item").forEach(i => i.classList.remove("active"));
+                    item.classList.add("active");
+                    wrap.classList.remove("open");
+                    wrap.dispatchEvent(new CustomEvent("cb-sort-change", {
+                        detail: { sort: item.dataset.sort }, bubbles: true
+                    }));
+                });
+            });
+            document.addEventListener("click", e => {
+                if (!wrap.contains(e.target)) wrap.classList.remove("open");
+            });
+        });
+    }
+
+    function initConfirmPrompts(root) {
+        root.querySelectorAll("[data-confirm]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            wrap.querySelector(".cb-confirm-yes")?.addEventListener("click", () => {
+                wrap.dispatchEvent(new CustomEvent("cb-confirm-yes", { bubbles: true }));
+            });
+            wrap.querySelector(".cb-confirm-no")?.addEventListener("click", () => {
+                wrap.dispatchEvent(new CustomEvent("cb-confirm-no", { bubbles: true }));
+            });
+        });
+    }
+
+    function initColorInputs(root) {
+        root.querySelectorAll("[data-color-input]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const native = wrap.querySelector(".cb-color-input-native");
+            const hex    = wrap.querySelector(".cb-color-input-hex");
+            if (!native || !hex) return;
+
+            native.addEventListener("input", () => {
+                hex.value = native.value.toUpperCase();
+                wrap.dispatchEvent(new CustomEvent("cb-color-input-change", {
+                    detail: { color: native.value }, bubbles: true
+                }));
+            });
+            hex.addEventListener("input", () => {
+                const val = hex.value.trim();
+                if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+                    native.value = val;
+                    wrap.dispatchEvent(new CustomEvent("cb-color-input-change", {
+                        detail: { color: val }, bubbles: true
+                    }));
+                }
+            });
+            hex.addEventListener("blur", () => {
+                if (!/^#[0-9a-fA-F]{6}$/.test(hex.value)) {
+                    hex.value = native.value.toUpperCase();
+                }
+            });
+        });
+    }
+
+    function initTabBars(root) {
+        root.querySelectorAll("[data-tab-bar]:not([data-cb-init])").forEach(bar => {
+            bar.dataset.cbInit = "1";
+            const indicator = bar.querySelector(".cb-tab-indicator");
+
+            function activateTab(btn) {
+                bar.querySelectorAll(".cb-tab").forEach(t => t.classList.remove("active"));
+                btn.classList.add("active");
+                if (indicator) {
+                    indicator.style.left  = btn.offsetLeft + "px";
+                    indicator.style.width = btn.offsetWidth + "px";
+                }
+                bar.dispatchEvent(new CustomEvent("cb-tab-change", {
+                    detail: { tab: btn.dataset.tab }, bubbles: true
+                }));
+            }
+
+            bar.querySelectorAll(".cb-tab").forEach(btn => {
+                btn.addEventListener("click", () => activateTab(btn));
+            });
+
+            // Position indicator on current active tab
+            const activeTab = bar.querySelector(".cb-tab.active");
+            if (activeTab && indicator) {
+                requestAnimationFrame(() => {
+                    indicator.style.left  = activeTab.offsetLeft + "px";
+                    indicator.style.width = activeTab.offsetWidth + "px";
+                });
+            }
+        });
+    }
+
+    function initListItems(root) {
+        root.querySelectorAll(".cb-list-item:not([data-cb-init])").forEach(item => {
+            item.dataset.cbInit = "1";
+            item.addEventListener("click", () => {
+                const group = item.parentElement;
+                if (group) {
+                    group.querySelectorAll(".cb-list-item").forEach(i => i.classList.remove("active"));
+                }
+                item.classList.add("active");
+                item.dispatchEvent(new CustomEvent("cb-list-item-click", { bubbles: true }));
+            });
+        });
+    }
+
+    function initInlineEdits(root) {
+        root.querySelectorAll("[data-inline-edit]:not([data-cb-init])").forEach(wrap => {
+            wrap.dataset.cbInit = "1";
+            const display  = wrap.querySelector(".cb-inline-edit-display");
+            const input    = wrap.querySelector(".cb-inline-edit-input");
+            const saveBtn  = wrap.querySelector(".cb-inline-edit-save");
+            const cancelBtn = wrap.querySelector(".cb-inline-edit-cancel");
+            if (!display || !input) return;
+
+            function enterEdit() {
+                input.value = display.textContent;
+                display.style.display = "none";
+                input.style.display   = "";
+                saveBtn && (saveBtn.style.display = "");
+                cancelBtn && (cancelBtn.style.display = "");
+                input.focus();
+                input.select();
+            }
+
+            function exitEdit(save) {
+                if (save && input.value.trim()) {
+                    display.textContent = input.value.trim();
+                    wrap.dispatchEvent(new CustomEvent("cb-inline-save", {
+                        detail: { value: input.value.trim() }, bubbles: true
+                    }));
+                }
+                display.style.display  = "";
+                input.style.display    = "none";
+                saveBtn && (saveBtn.style.display = "none");
+                cancelBtn && (cancelBtn.style.display = "none");
+            }
+
+            display.addEventListener("click", enterEdit);
+            saveBtn?.addEventListener("click",  () => exitEdit(true));
+            cancelBtn?.addEventListener("click", () => exitEdit(false));
+            input.addEventListener("keydown", e => {
+                if (e.key === "Enter")  exitEdit(true);
+                if (e.key === "Escape") exitEdit(false);
+            });
+        });
+    }
+
+    /* ════════════════════════════════════════
        MASTER INIT — call this on any container
        ════════════════════════════════════════ */
 
@@ -1067,6 +1834,21 @@
         initDatePickers(root);
         initTimePickers(root);
         initKnobs(root);
+        // New components
+        initFileUploads(root);
+        initColorSwatches(root);
+        initPrioritySelectors(root);
+        initIconPickers(root);
+        initReminderLists(root);
+        initSubtaskLists(root);
+        initDateTimeComponents(root);
+        initFilterDropdowns(root);
+        initSortMenus(root);
+        initConfirmPrompts(root);
+        initColorInputs(root);
+        initTabBars(root);
+        initListItems(root);
+        initInlineEdits(root);
     }
 
     /* ════════════════════════════════════════
