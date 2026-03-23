@@ -259,9 +259,10 @@
                             </div>
 
                             <div class="header-actions">
-                                <div class="search-container">
-                                    <i class="fa-solid fa-search"></i>
-                                    <input type="text" id="taskSearch" placeholder="Search tasks..." />
+                                <div class="cb-search-wrap search-container">
+                                    <i class="fa-solid fa-magnifying-glass cb-search-icon"></i>
+                                    <input type="text" class="cb-search-input" id="taskSearch" placeholder="Search tasks...">
+                                    <button class="cb-search-clear" type="button"><i class="fa-solid fa-xmark"></i></button>
                                 </div>
 
                                 <div class="view-switcher">
@@ -398,8 +399,10 @@
                         <!-- Title -->
                         <div class="form-group-edit">
                             <label for="editTaskTitle">Title *</label>
-                            <input type="text" id="editTaskTitle" placeholder="What needs to be done?" maxlength="200"
-                                required>
+                            <div class="cb-text-field">
+                                <input type="text" id="editTaskTitle" placeholder=" " maxlength="200" required>
+                                <label for="editTaskTitle">What needs to be done?</label>
+                            </div>
                         </div>
 
                         <!-- Folder Selection -->
@@ -413,18 +416,20 @@
                         <!-- Description -->
                         <div class="form-group-edit">
                             <label for="editTaskDescription">Description</label>
-                            <textarea id="editTaskDescription" placeholder="Add more details..." rows="4"></textarea>
+                            <textarea class="cb-textarea" id="editTaskDescription" placeholder="Add more details..." rows="4" maxlength="1000"></textarea>
+                            <div class="cb-textarea-counter"><span class="cb-textarea-count" data-textarea="editTaskDescription">0</span> / 1000</div>
                         </div>
 
                         <!-- Attachments -->
                         <div class="form-group-edit">
                             <label>Attachments</label>
-                            <div class="attachments-area">
-                                <button class="add-attachment-btn" id="addAttachmentBtn">
-                                    <i class="fa-solid fa-paperclip"></i> Add Attachment
-                                </button>
-                                <input type="file" id="attachmentInput" multiple style="display: none;">
-                                <div class="attachments-list" id="attachmentsList"></div>
+                            <div class="cb-file" data-file>
+                                <div class="cb-file-zone">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    <p>Drop files here or <span class="cb-file-browse">browse</span></p>
+                                </div>
+                                <input type="file" class="cb-file-input" id="attachmentInput" multiple>
+                                <div class="cb-file-list" id="attachmentsList"></div>
                             </div>
                         </div>
 
@@ -432,22 +437,12 @@
                         <div class="form-row">
                             <div class="form-group-edit">
                                 <label>Priority</label>
-                                <div class="priority-flags">
-                                    <button class="priority-flag" data-priority="very-high" title="Very High">
-                                        <i class="fa-solid fa-flag"></i>
-                                    </button>
-                                    <button class="priority-flag" data-priority="high" title="High">
-                                        <i class="fa-solid fa-flag"></i>
-                                    </button>
-                                    <button class="priority-flag active" data-priority="medium" title="Medium">
-                                        <i class="fa-solid fa-flag"></i>
-                                    </button>
-                                    <button class="priority-flag" data-priority="low" title="Low">
-                                        <i class="fa-solid fa-flag"></i>
-                                    </button>
-                                    <button class="priority-flag" data-priority="very-low" title="Very Low">
-                                        <i class="fa-solid fa-flag"></i>
-                                    </button>
+                                <div class="cb-priority" data-priority>
+                                    <button class="cb-priority-btn priority-flag" data-priority="very-high" title="Very High"><i class="fa-solid fa-flag"></i></button>
+                                    <button class="cb-priority-btn priority-flag" data-priority="high" title="High"><i class="fa-solid fa-flag"></i></button>
+                                    <button class="cb-priority-btn priority-flag active" data-priority="medium" title="Medium"><i class="fa-solid fa-flag"></i></button>
+                                    <button class="cb-priority-btn priority-flag" data-priority="low" title="Low"><i class="fa-solid fa-flag"></i></button>
+                                    <button class="cb-priority-btn priority-flag" data-priority="very-low" title="Very Low"><i class="fa-solid fa-flag"></i></button>
                                 </div>
                             </div>
 
@@ -465,26 +460,65 @@
 
                         <!-- Due Date & Reminders -->
                         <div class="form-group-edit">
-                            <label for="editTaskDueDate">Due Date</label>
-                            <input type="datetime-local" id="editTaskDueDate">
+                            <label>Due Date</label>
+                            <div class="cb-datetime" data-datetime>
+                                <input type="datetime-local" class="cb-datetime-native" id="editTaskDueDate" style="display:none">
+                                <div class="cb-datetime-display">
+                                    <i class="fa-solid fa-calendar-days"></i>
+                                    <span class="cb-datetime-text">Set date &amp; time</span>
+                                    <button class="cb-datetime-clear" type="button"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div class="cb-datetime-panel">
+                                    <div class="cb-datepicker" data-datepicker>
+                                        <div class="cb-datepicker-header">
+                                            <button class="cb-datepicker-nav" data-dp-nav="prev"><i class="fa-solid fa-chevron-left"></i></button>
+                                            <span class="cb-datepicker-title">Loading...</span>
+                                            <button class="cb-datepicker-nav" data-dp-nav="next"><i class="fa-solid fa-chevron-right"></i></button>
+                                        </div>
+                                        <div class="cb-datepicker-days"></div>
+                                    </div>
+                                    <div class="cb-timepicker" data-timepicker>
+                                        <div class="cb-time-col">
+                                            <button class="cb-time-spin" data-time="h-up"><i class="fa-solid fa-chevron-up"></i></button>
+                                            <span class="cb-time-display" data-time-display="h">12</span>
+                                            <button class="cb-time-spin" data-time="h-down"><i class="fa-solid fa-chevron-down"></i></button>
+                                        </div>
+                                        <span class="cb-time-sep">:</span>
+                                        <div class="cb-time-col">
+                                            <button class="cb-time-spin" data-time="m-up"><i class="fa-solid fa-chevron-up"></i></button>
+                                            <span class="cb-time-display" data-time-display="m">00</span>
+                                            <button class="cb-time-spin" data-time="m-down"><i class="fa-solid fa-chevron-down"></i></button>
+                                        </div>
+                                        <div class="cb-time-period">
+                                            <button class="cb-time-period-btn active" data-period="AM">AM</button>
+                                            <button class="cb-time-period-btn" data-period="PM">PM</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group-edit">
                             <label>Reminders</label>
-                            <div class="reminders-area">
-                                <button class="add-reminder-btn" id="addReminderBtn">
-                                    <i class="fa-solid fa-bell"></i> Add Reminder
-                                </button>
-                                <div class="reminders-list" id="remindersList"></div>
+                            <div class="cb-reminder-list" data-reminder-list>
+                                <div class="cb-reminder-add">
+                                    <input type="datetime-local" class="cb-reminder-input" id="reminderInput">
+                                    <button class="cb-reminder-add-btn" id="addReminderBtn" type="button"><i class="fa-solid fa-plus"></i></button>
+                                </div>
+                                <div class="cb-reminder-items" id="remindersList"></div>
                             </div>
                         </div>
 
                         <!-- Repeating Task -->
                         <div class="form-group-edit">
-                            <label class="toggle-label">
-                                <input type="checkbox" id="editTaskRepeating">
-                                <span>Repeating Task</span>
-                            </label>
+                            <div class="cb-switch-row">
+                                <span class="cb-switch-label">Repeating Task</span>
+                                <label class="cb-toggle">
+                                    <input type="checkbox" id="editTaskRepeating">
+                                    <span class="cb-toggle-track"></span>
+                                    <span class="cb-toggle-thumb"></span>
+                                </label>
+                            </div>
                             <div class="repeating-options" id="repeatingOptions" style="display: none;">
                                 <select id="editTaskRepeatInterval">
                                     <option value="daily">Daily</option>
@@ -499,14 +533,12 @@
                         <!-- Subtasks -->
                         <div class="form-group-edit">
                             <label>Subtasks</label>
-                            <div class="subtasks-area">
-                                <div class="add-subtask-input">
-                                    <input type="text" id="subtaskInput" placeholder="Add a subtask..." maxlength="100">
-                                    <button id="addSubtaskBtn">
-                                        <i class="fa-solid fa-plus"></i>
-                                    </button>
+                            <div class="cb-subtask-list" data-subtask-list>
+                                <div class="cb-subtask-add">
+                                    <input type="text" class="cb-subtask-input" id="subtaskInput" placeholder="Add a subtask..." maxlength="100">
+                                    <button class="cb-subtask-add-btn" id="addSubtaskBtn" type="button"><i class="fa-solid fa-plus"></i></button>
                                 </div>
-                                <div class="subtasks-list" id="subtasksList"></div>
+                                <div class="cb-subtask-items" id="subtasksList"></div>
                             </div>
                         </div>
                     </div>
@@ -531,33 +563,43 @@
                     <div class="folder-edit-content">
                         <div class="form-group-edit">
                             <label for="editFolderName">Name *</label>
-                            <input type="text" id="editFolderName" placeholder="Folder name" maxlength="50" required>
+                            <div class="cb-text-field">
+                                <input type="text" id="editFolderName" placeholder=" " maxlength="50" required>
+                                <label for="editFolderName">Folder name</label>
+                            </div>
                         </div>
 
                         <div class="form-group-edit">
                             <label for="editFolderDescription">Description</label>
-                            <textarea id="editFolderDescription" placeholder="Optional description" rows="2"></textarea>
+                            <textarea class="cb-textarea" id="editFolderDescription" placeholder="Optional description" rows="2" maxlength="300"></textarea>
+                            <div class="cb-textarea-counter"><span class="cb-textarea-count" data-textarea="editFolderDescription">0</span> / 300</div>
                         </div>
 
                         <div class="form-group-edit">
                             <label>Color</label>
-                            <div class="color-picker-grid">
-                                <button class="color-option active" data-color="#6196ff"
-                                    style="background: #6196ff;"></button>
-                                <button class="color-option" data-color="#ef4444" style="background: #ef4444;"></button>
-                                <button class="color-option" data-color="#f59e0b" style="background: #f59e0b;"></button>
-                                <button class="color-option" data-color="#10b981" style="background: #10b981;"></button>
-                                <button class="color-option" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
-                                <button class="color-option" data-color="#ec4899" style="background: #ec4899;"></button>
-                                <button class="color-option" data-color="#14b8a6" style="background: #14b8a6;"></button>
-                                <button class="color-option" data-color="#f97316" style="background: #f97316;"></button>
+                            <div class="cb-color-swatch color-picker-grid" data-color-swatch>
+                                <button class="cb-swatch color-option active" data-color="#6196ff" style="background:#6196ff;" aria-label="Blue"></button>
+                                <button class="cb-swatch color-option" data-color="#ef4444" style="background:#ef4444;" aria-label="Red"></button>
+                                <button class="cb-swatch color-option" data-color="#f59e0b" style="background:#f59e0b;" aria-label="Amber"></button>
+                                <button class="cb-swatch color-option" data-color="#10b981" style="background:#10b981;" aria-label="Green"></button>
+                                <button class="cb-swatch color-option" data-color="#8b5cf6" style="background:#8b5cf6;" aria-label="Purple"></button>
+                                <button class="cb-swatch color-option" data-color="#ec4899" style="background:#ec4899;" aria-label="Pink"></button>
+                                <button class="cb-swatch color-option" data-color="#14b8a6" style="background:#14b8a6;" aria-label="Teal"></button>
+                                <button class="cb-swatch color-option" data-color="#f97316" style="background:#f97316;" aria-label="Orange"></button>
                             </div>
                         </div>
 
                         <div class="form-group-edit">
                             <label>Icon</label>
-                            <div class="icon-picker-grid" id="iconPickerGrid">
-                                <!-- Icons will be rendered here -->
+                            <div class="cb-icon-picker" data-icon-picker>
+                                <div class="cb-search-wrap cb-icon-picker-search">
+                                    <i class="fa-solid fa-magnifying-glass cb-search-icon"></i>
+                                    <input type="text" class="cb-search-input" placeholder="Search icons...">
+                                    <button class="cb-search-clear" type="button"><i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <div class="cb-icon-picker-grid cb-icon-grid" data-icon-selector id="iconPickerGrid">
+                                    <!-- Icons injected by todo.js -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -613,7 +655,11 @@
             <div id="manualsPopup" class="manuals-popup">
                 <button id="closeManualsPopup" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
                 <h2>All Textbooks</h2>
-                <input type="text" id="manualSearch" placeholder="Search for a textbook...">
+                <div class="cb-search-wrap">
+                    <i class="fa-solid fa-magnifying-glass cb-search-icon"></i>
+                    <input type="text" class="cb-search-input" id="manualSearch" placeholder="Search for a textbook...">
+                    <button class="cb-search-clear" type="button"><i class="fa-solid fa-xmark"></i></button>
+                </div>
                 <div class="boss-container" id="manualsPopupContent" data-simplebar>
                     <!-- Manuals will be rendered here dynamically from manuals.json -->
                 </div>
